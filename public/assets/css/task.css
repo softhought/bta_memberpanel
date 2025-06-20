@@ -1,0 +1,404 @@
+.page-todo .tasks {
+    background: #fff;
+    padding: 0;
+    border-right: 1px solid #d1d4d7;
+    margin: -30px 15px -30px -15px;
+    border-radius: 7px;
+}
+
+.page-todo .task-list {
+    padding: 30px 15px;
+    height: 100%;
+}
+
+.page-todo .priority.task {
+    background: #fffdfd;
+    margin-bottom: 1px;
+}
+
+.page-todo .priority.task span {
+    background: #1a8811;
+    padding: 2px 10px;
+    color: #fff;
+    display: inline-block;
+    font-size: 12px;
+}
+
+.page-todo .priority.daily {
+    background: #fffdfd;
+    margin-bottom: 1px;
+}
+
+.page-todo .priority.daily span {
+    background: #ff7e39;
+    padding: 2px 10px;
+    color: #fff;
+    display: inline-block;
+    font-size: 12px;
+}
+
+.page-todo .priority.monthly span {
+    background: #f8cb00;
+    padding: 2px 10px;
+    color: #fff;
+    display: inline-block;
+    font-size: 12px;
+}
+
+.page-todo .priority.hulfyear span {
+    background: #569df8;
+    padding: 2px 10px;
+    color: #fff;
+    display: inline-block;
+    font-size: 12px;
+}
+
+.page-todo .priority.yearly span {
+    background: #f856f8;
+    padding: 2px 10px;
+    color: #fff;
+    display: inline-block;
+    font-size: 12px;
+}
+
+.page-todo .priority.weekly {
+    margin-bottom: 1px;
+}
+
+.page-todo .priority.weekly span {
+    background: #4dbd74;
+    padding: 2px 10px;
+    color: #fff;
+    display: inline-block;
+    font-size: 12px;
+}
+
+.page-todo .task {
+    border-bottom: 1px solid #e4e5e6;
+    margin-bottom: 1px;
+    position: relative;
+}
+
+.page-todo .task .desc {
+    display: inline-block;
+    width: 75%;
+    padding: 10px 10px;
+    font-size: 12px;
+}
+
+.page-todo .task .desc .title {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.page-todo .task .time {
+    display: inline-block;
+    width: 15%;
+    padding: 10px 10px 10px 0;
+    font-size: 12px;
+    text-align: right;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.page-todo .task .time .date {
+    font-size: 18px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #1a8811;
+}
+
+.page-todo .task.last {
+    border-bottom: 1px solid transparent;
+}
+
+.page-todo .task.task {
+    border-left: 2px solid #1a8811;
+}
+
+
+.page-todo .task.daily {
+    border-left: 2px solid #ff7e39;
+}
+
+.page-todo .task.monthly {
+    border-left: 2px solid #f8cb00;
+}
+
+.page-todo .task.hulfyear {
+    border-left: 2px solid #569df8;
+}
+
+.page-todo .task.yearly {
+    border-left: 2px solid #f856f8;
+}
+
+.page-todo .task.weekly {
+    border-left: 2px solid #4dbd74;
+}
+
+.button-group {
+    margin-top: 10px;
+}
+
+.status-button {
+    border: none;
+    color: white;
+    padding: 5px 15px;
+    font-size: 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    margin-right: 5px;
+    width: 12rem;
+}
+
+.header {
+    font-size: 24px;
+    font-weight: bold;
+    color: #438601;
+    margin-bottom: -1.5rem;
+    padding: 1.5rem;
+}
+
+.disabled {
+    background-color: #c6c6c6 !important;
+}
+
+.approved {
+    background-color: #178a3e !important;
+}
+
+.status-button.supervisor {
+    background-color: #4c878e;
+}
+
+.status-button.onetime-task {
+    background-color: #4c878e;
+}
+
+
+.status-button.manager {
+    background-color: #d7b11d;
+}
+
+.status-button:hover {
+    transform: scale(1.05);
+}
+
+.status-button.onetime-task:hover {
+    background-color: #4c878e;
+}
+
+.status-button.supervisor:hover {
+    background-color: #4c878e;
+}
+
+.status-button.manager:hover {
+    background-color: #d7b11d;
+}
+
+.status-button:active {
+    transform: scale(0.95);
+}
+
+
+.nav-tabs {
+    border-bottom: 2px solid #438601;
+    background-color: #f7f7f7;
+    box-shadow: 0 2px 5px rgba(255, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+.nav-item {
+    margin-right: 10px;
+}
+
+.nav-link {
+    border: 2px solid transparent;
+    border-radius: 25px;
+    padding: 5px 15px;
+    font-weight: 500;
+    color: #438601;
+    text-transform: uppercase;
+    position: relative;
+    border-radius: 30px;
+}
+
+.nav-link.active {
+    border-color: #fff #fff #fff !important;
+    color: #fff !important;
+    background: #1a8811 !important;
+    box-shadow: 0 2px 2px rgba(0, 59, 66, 0.5);
+    margin-bottom: 10px;
+    border-radius: 30px;
+}
+
+.nav-link:hover {
+    background-color: rgba(0, 59, 66, 0.1);
+    color: #438601;
+    border-radius: 25px;
+}
+
+.tab-content {
+    border: 1px solid #dee2e6;
+    border-radius: 30px;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.tab-pane {
+    transition: opacity 0.3s ease;
+}
+
+
+/* Responsive Adjustments */
+@media only screen and (max-width: 1024px) {
+    .page-todo .task .desc {
+        width: 65%;
+    }
+
+    .page-todo .task .time {
+        width: 25%;
+    }
+
+    .page-todo .task .time {
+        width: 100%;
+        text-align: right;
+        font-size: 10px;
+    }
+
+    .remaining {
+        display: none;
+    }
+
+    .status-button {
+        width: auto;
+    }
+
+    .status-button {
+        padding: 5px;
+        font-size: 10px;
+        width: 100%;
+        margin: 2px;
+    }
+
+    .nav-tabs {
+        flex-direction: column;
+    }
+
+    .nav-item {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .nav-link {
+        text-align: center;
+        border-radius: 15px;
+    }
+
+    .tab-content {
+        padding: 15px;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .page-todo .task {
+        flex-direction: column;
+    }
+
+    .page-todo .task .desc {
+        width: 100%;
+    }
+
+    .page-todo .task .time {
+        width: 100%;
+        text-align: right;
+        font-size: 10px;
+    }
+
+    .remaining {
+        display: none;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    .header {
+        font-size: 20px;
+    }
+
+    .status-button {
+        padding: 5px;
+        font-size: 10px;
+        width: 100%;
+        margin: 2px;
+    }
+
+    .nav-tabs {
+        flex-direction: column;
+    }
+
+    .nav-item {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .nav-link {
+        text-align: center;
+        border-radius: 15px;
+    }
+
+    .tab-content {
+        padding: 15px;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    .header {
+        font-size: 18px;
+    }
+
+    .page-todo .task .desc,
+    .page-todo .task .time {
+        padding: 5px;
+    }
+
+    .page-todo .task .time {
+        width: 100%;
+        text-align: right;
+        font-size: 10px;
+    }
+
+    .remaining {
+        display: none;
+    }
+
+    .status-button {
+        padding: 5px;
+        font-size: 10px;
+        width: 100%;
+        margin: 2px;
+    }
+
+    .nav-tabs {
+        flex-direction: column;
+    }
+
+    .nav-item {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .nav-link {
+        text-align: center;
+        border-radius: 15px;
+    }
+
+    .tab-content {
+        padding: 15px;
+    }
+}
