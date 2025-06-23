@@ -377,7 +377,7 @@
         }
     }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.0/lottie.min.js"></script>
+
 
 <div class="tabs-container">
     <div class="tabs-header">
