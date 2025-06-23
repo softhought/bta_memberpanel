@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Member\FeesPaymentsController;
+use App\Http\Controllers\Member\TransactionsController;
 use App\Models\Menu;
 use Illuminate\Support\Facades\Route;
 
@@ -38,6 +39,9 @@ Route::prefix('member')->middleware(['member_auth'])->group(function () {
 
 
     Route::post('fetchMonths', [FeesPaymentsController::class, 'fetchMonths']);
+
+    /** Transactions */
+    Route::post('fetchTransactions', [TransactionsController::class, 'fetchTransactions']);
 });
 
 Route::get('member', [UserController::class, 'member']);

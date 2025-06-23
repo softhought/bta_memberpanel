@@ -32,4 +32,15 @@ class MemberController extends Controller
         $data['bodyView'] = view('member.fees.feesPayments', $data ?? []);
         return $this->renderView($data);
     }
+
+    public function transactions() {
+        $btaAdmin = session()->get('btaMember');
+        $memberId = $btaAdmin['memberId'];
+
+        $memberData = Member::with(['programEnrollment.program', 'programEnrollment.group'])->find($memberId);
+        $data['member'] = $memberData;
+
+        $data['bodyView'] = view('member.transactions.transactions', $data ?? []);
+        return $this->renderView($data);
+    }
 }

@@ -61,15 +61,15 @@
             container.html('');
             tabPane.addClass('active');
 
-            const urlMap = {
-                hp: 'fetchHPView',
-                jhp: 'fetchJHPView',
-                jcp: 'fetchJCPView',
-                pf: 'fetchPFView'
+            const programMap = {
+                hp: 'HP',
+                jhp: 'JHP',
+                jcp: 'JCP',
+                pf: 'PF'
             };
 
-            if (urlMap[tabId]) {
-                ajaxRequest(urlMap[tabId], {}, function(response) {
+            if (programMap[tabId]) {
+                ajaxRequest('fetchTransactions', { program: programMap[tabId]}, function(response) {
                     container.html(response.view);
                 }, true);
             }
@@ -77,42 +77,4 @@
 
         $('.tab-button.active').trigger('click');
     });
-
-    function calculateSummary() {
-        let totalAmount = 0;
-        let totalDiscount = 0;
-        let totalTaxable = 0;
-        let totalCGST = 0;
-        let totalSGST = 0;
-        let totalPayable = 0;
-        let bankCharges = 0;
-
-        $('.month-row .row').each(function() {
-            const row = $(this);
-
-            totalAmount += parseFloat(row.find('.amount input').val()) || 0;
-            totalDiscount += parseFloat(row.find('.discount input').val()) || 0;
-            totalTaxable += parseFloat(row.find('.taxable input').val()) || 0;
-            totalCGST += parseFloat(row.find('.cgst-amt input').val()) || 0;
-            totalSGST += parseFloat(row.find('.sgst-amt input').val()) || 0;
-            totalPayable += parseFloat(row.find('.payable input').val()) || 0;
-        });
-
-        // const selectedOption = $('#payment_mode option:selected');
-        // const bankChargePercent = parseFloat(selectedOption.data('charges')) || 0;
-        // bankCharges = (totalPayable * bankChargePercent) / 100;
-
-        const netAmount = totalTaxable + totalCGST + totalSGST;
-        const grossPayable = totalPayable + bankCharges;
-
-        const roundedPayable = Math.round(grossPayable);
-        const roundOff = (roundedPayable - grossPayable).toFixed(2);
-
-        $('#total_amount').text(totalAmount.toFixed(2));
-        $('#total_payable').text(roundedPayable.toFixed(2));
-
-        // Update hidden inputs
-        $('#total_amount_value').val(totalAmount);
-        $('#total_payable_value').val(roundedPayable);
-    }
 </script>
