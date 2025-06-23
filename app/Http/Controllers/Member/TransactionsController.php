@@ -27,8 +27,9 @@ class TransactionsController extends Controller
             ->orderByDesc('payment_date')
             ->first();
 
-        $data['enrollmentReceiptGST'] = PaymentMaster::GetEnrollmentReceiptGST($enrolmentModel->first()?->enrollment_id);
-        // pre($data['enrollmentReceiptGST']);exit;
+        $data['enrollmentReceiptGST'] = PaymentMaster::GetEnrollmentReceiptGSTByEnrollment($enrolmentModel->first()?->enrollment_id);
+        // $data['enrollmentReceiptSecurityGST'] = PaymentMaster::GetEnrollmentReceiptSecurityByEntrollment($enrolmentModel->first()?->enrollment_id, $enrolmentModel->first()?->programme_id);
+        // pre($data['enrollmentReceiptSecurityGST']);exit;
         $view = view('member.transactions.transactionsView', $data)->render();
         return response()->json(['status' => Constant::SUCCESS, 'view' => $view]);
     }

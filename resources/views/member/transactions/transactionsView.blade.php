@@ -39,28 +39,28 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (!empty($enrollmentReceiptGST[0]['PaymentData']))
+                    @if (!empty($enrollmentReceiptGST))
                         @foreach ($enrollmentReceiptGST as $list)
                             <tr>
-                                <td>{{ date_dmy($list['PaymentData']->payment_date) }}</td>
-                                <td>{{ $list['PaymentData']->payment_no }}</td>
-                                <td class="text-center">{{ $list['Description'] }}</td>
-                                <td>{{ $list['PaymentData']->is_wave_receipt === 'Y' ? 'Yes' : 'No' }}</td>
+                                <td>{{ date_dmy($list->payment_date) }}</td>
+                                <td>{{ $list->payment_no }}</td>
+                                <td class="text-center">{{ $list->description }}</td>
+                                <td>{{ $list->is_wave_receipt === 'Y' ? 'Yes' : 'No' }}</td>
                                 <td>
-                                    @if (!empty($list['PaymentData']->IsActive) && $list['PaymentData']->IsActive === 'N')
+                                    @if (!empty($list->IsActive) && $list->IsActive === 'N')
                                         <span class="status-badge badge-danger">
-                                            Cancelled By {{ $list['PaymentData']->cancelledBy ?? '' }}
+                                            Cancelled By {{ $list->cancelledBy ?? '' }}
                                             <br>
                                             Note: {{ $list->InActiveNote ?? '' }}
                                         </span>
                                     @endif
                                 </td>
-                                <td>{{ $list['PaymentData']->payment_mode }}</td>
-                                <td class="currency">{{ number_format($list['PaymentData']->item_amount, 2) }}</td>
-                                <td>{{ number_format($list['PaymentData']->discount, 2) }}</td>
-                                <td>{{ number_format($list['PaymentData']->cgst_amount, 2) }}</td>
-                                <td>{{ number_format($list['PaymentData']->sgst_amount, 2) }}</td>
-                                <td>{{ number_format($list['PaymentData']->item_amount + $list['PaymentData']->sgst_amount + $list['PaymentData']->cgst_amount, 2) }}
+                                <td>{{ $list->payment_mode }}</td>
+                                <td class="currency">{{ number_format($list->item_amount, 2) }}</td>
+                                <td>{{ number_format($list->discount, 2) }}</td>
+                                <td>{{ number_format($list->cgst_amount, 2) }}</td>
+                                <td>{{ number_format($list->sgst_amount, 2) }}</td>
+                                <td>{{ number_format($list->item_amount + $list->sgst_amount + $list->cgst_amount, 2) }}
                                 </td>
                             </tr>
                         @endforeach

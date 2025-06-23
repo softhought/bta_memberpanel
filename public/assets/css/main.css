@@ -9670,10 +9670,15 @@ hr {
     background: #e6f7cb;
     color: rgb(29, 26, 26);
     font-weight: 600;
-    padding: 16px 12px;
+    padding: 12px 12px;
     text-align: center;
     position: sticky;
     top: 0;
+
+    white-space: nowrap;       /* Prevents line break */
+    overflow: hidden;          /* Hides overflow text */
+    text-overflow: ellipsis;   /* Adds ... */
+    max-width: 120px;          /* Adjust as needed */
 }
 
 .payment-table tbody td {
