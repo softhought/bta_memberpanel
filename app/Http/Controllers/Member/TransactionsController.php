@@ -18,7 +18,7 @@ class TransactionsController extends Controller
 
         $program = $request->post('program');
 
-        $enrolmentModel = Member::GetEnrolledDetail($memberId, $program);
+        $enrolmentModel = Member::GetEnrolledDetail($memberId, $program, NULL);
 
         $data['isExists'] = $enrolmentModel->exists();
 
@@ -28,8 +28,9 @@ class TransactionsController extends Controller
             ->first();
 
         $data['enrollmentReceiptGST'] = PaymentMaster::GetEnrollmentReceiptGSTByEnrollment($enrolmentModel->first()?->enrollment_id);
-        // $data['enrollmentReceiptSecurityGST'] = PaymentMaster::GetEnrollmentReceiptSecurityByEntrollment($enrolmentModel->first()?->enrollment_id, $enrolmentModel->first()?->programme_id);
-        // pre($data['enrollmentReceiptSecurityGST']);exit;
+        $data['enrollmentReceiptSecurityGST'] = PaymentMaster::GetEnrollmentReceiptSecurityByEntrollment($enrolmentModel->first()?->enrollment_id, $enrolmentModel->first()?->programme_id);
+        $data['enrollmentReceiptMonthly'] = PaymentMaster::GetEnrollmentReceiptByEnrollment($enrolmentModel->first()?->enrollment_id, $enrolmentModel->first()?->programme_id);
+
         $view = view('member.transactions.transactionsView', $data)->render();
         return response()->json(['status' => Constant::SUCCESS, 'view' => $view]);
     }

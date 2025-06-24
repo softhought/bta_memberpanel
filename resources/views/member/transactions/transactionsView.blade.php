@@ -39,7 +39,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (!empty($enrollmentReceiptGST))
+                    @if (!$enrollmentReceiptGST->isEmpty())
                         @foreach ($enrollmentReceiptGST as $list)
                             <tr>
                                 <td>{{ date_dmy($list->payment_date) }}</td>
@@ -100,9 +100,36 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td colspan="11" class="no-records">No security deposits found</td>
-                    </tr>
+                    @if (!$enrollmentReceiptSecurityGST->isEmpty())
+                        @foreach ($enrollmentReceiptSecurityGST as $list)
+                            <tr>
+                                <td>{{ date_dmy($list->payment_date) }}</td>
+                                <td>{{ $list->payment_no }}</td>
+                                <td class="text-center">{{ $list->description }}</td>
+                                <td>{{ $list->is_waiver === 'Y' ? 'Yes' : 'No' }}</td>
+                                <td>
+                                    @if (!empty($list->IsActive) && $list->IsActive === 'N')
+                                        <span class="status-badge badge-danger">
+                                            Cancelled By {{ $list->cancelledBy ?? '' }}
+                                            <br>
+                                            Note: {{ $list->InActiveNote ?? '' }}
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>{{ $list->payment_mode }}</td>
+                                <td class="currency">{{ number_format($list->total_amount, 2) }}</td>
+                                <td>{{ number_format($list->total_discount, 2) }}</td>
+                                <td>{{ number_format($list->total_cgst_amount, 2) }}</td>
+                                <td>{{ number_format($list->total_sgst_amount, 2) }}</td>
+                                <td>{{ number_format($list->net_amount + $list->total_cgst_amount + $list->total_cgst_amount, 2) }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    @else
+                        <tr>
+                            <td colspan="11" class="no-records">No security deposits found</td>
+                        </tr>
+                    @endif
                 </tbody>
             </table>
         </div>
@@ -134,49 +161,36 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>09/06/2025</td>
-                        <td>NGST/01094/25-26</td>
-                        <td class="text-start">Junior Coaching Fees-Afternoon</td>
-                        <td>Apr 2025</td>
-                        <td>-</td>
-                        <td><span class="status-badge badge-success">Paid</span></td>
-                        <td>Cash</td>
-                        <td class="currency">3,000.00</td>
-                        <td>0.00</td>
-                        <td>0.00</td>
-                        <td class="currency">3,000.00</td>
-                    </tr>
-                    <tr>
-                        <td>09/06/2025</td>
-                        <td>NGST/01094/25-26</td>
-                        <td class="text-start">Junior Coaching Fees-Afternoon</td>
-                        <td>May 2025</td>
-                        <td>-</td>
-                        <td><span class="status-badge badge-success">Paid</span></td>
-                        <td>Cash</td>
-                        <td class="currency">3,000.00</td>
-                        <td>0.00</td>
-                        <td>0.00</td>
-                        <td class="currency">3,000.00</td>
-                    </tr>
-                    <tr>
-                        <td>09/06/2025</td>
-                        <td>NGST/01094/25-26</td>
-                        <td class="text-start">Junior Coaching Fees-Afternoon</td>
-                        <td>Jun 2025</td>
-                        <td>-</td>
-                        <td><span class="status-badge badge-success">Paid</span></td>
-                        <td>Cash</td>
-                        <td class="currency">3,000.00</td>
-                        <td>0.00</td>
-                        <td>0.00</td>
-                        <td class="currency">3,000.00</td>
-                    </tr>
-                    <tr class="total-row">
-                        <td colspan="10" class="text-end">Total Amount</td>
-                        <td class="currency">9,000.00</td>
-                    </tr>
+                    @if (!$enrollmentReceiptMonthly->isEmpty())
+                        @foreach ($enrollmentReceiptMonthly as $list)
+                            <tr>
+                                <td>{{ date_dmy($list->payment_date) }}</td>
+                                <td>{{ $list->payment_no }}</td>
+                                <td class="text-center">{{ $list->description }}</td>
+                                <td class="text-center">{{ "{$list->short_name} {$list->year}" }}</td>
+                                <td>{{ $list->is_waiver === 'Y' ? 'Yes' : 'No' }}</td>
+                                <td>
+                                    @if (!empty($list->IsActive) && $list->IsActive === 'N')
+                                        <span class="status-badge badge-danger">
+                                            Cancelled By {{ $list->cancelledBy ?? '' }}
+                                            <br>
+                                            Note: {{ $list->InActiveNote ?? '' }}
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>{{ $list->payment_mode }}</td>
+                                <td class="currency">{{ number_format($list->taxable_amount, 2) }}</td>
+                                <td>{{ number_format($list->cgst_amount, 2) }}</td>
+                                <td>{{ number_format($list->sgst_amount, 2) }}</td>
+                                <td>{{ number_format($list->taxable_amount + $list->cgst_amount + $list->sgst_amount, 2) }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    @else
+                        <tr>
+                            <td colspan="11" class="text-center">No data available</td>
+                        </tr>
+                    @endif
                 </tbody>
             </table>
         </div>
