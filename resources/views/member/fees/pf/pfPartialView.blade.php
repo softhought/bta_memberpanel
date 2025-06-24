@@ -86,7 +86,7 @@
                 monthCount: monthCount,
                 lastPaidMonthId: lastPaidMonthId,
                 lastPaidYear: lastPaidYear,
-                program: 'HP'
+                program: 'PF'
             }, function(response) {
                 container.html(response.view);
                 calculateSummary();

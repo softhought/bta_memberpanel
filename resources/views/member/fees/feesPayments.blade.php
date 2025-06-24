@@ -1,5 +1,5 @@
 <div class="tabs-container">
-    <div class="tabs-header">
+    {{-- <div class="tabs-header">
         <button class="tab-button active" data-tab="hp">
             <i class="fas fa-table-tennis"></i> HP
         </button>
@@ -12,11 +12,29 @@
         <button class="tab-button" data-tab="pf">
             <i class="fas fa-table-tennis"></i> PF
         </button>
+    </div> --}}
+
+    <div class="tabs-header">
+        @php
+            $firstActiveSet = false;
+        @endphp
+
+        @foreach ($member->programEnrollment as $enroll)
+            @if ($enroll->is_active === 'Y' && $enroll->program->programme_name)
+                @php
+                    $tabName = strtolower($enroll->program->short_code);
+                    $isActiveClass = !$firstActiveSet ? 'active' : '';
+                    $firstActiveSet = true;
+                @endphp
+
+                <button class="tab-button {{ $isActiveClass }}" data-tab="{{ $tabName }}">
+                    <i class="fas fa-table-tennis"></i> {{ $enroll->program->short_code }}
+                </button>
+            @endif
+        @endforeach
     </div>
 
     <div class="tabs-content">
-
-
         <!-- High Performance Tab -->
         <div id="hp" class="tab-pane active">
             <div id="hp-container"></div>
