@@ -1,4 +1,24 @@
+@php
+    $activeEnrollments = $member->programEnrollment->filter(fn ($enroll) => $enroll->is_active === 'Y');
+@endphp
+
+@if ($member->programEnrollment->isEmpty() || $activeEnrollments->isEmpty())
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <div class="no-program-wrapper">
+                <div class="no-program-box">
+                    <p class="no-program-text">No active program enrollment</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    @php return; @endphp
+@endif
+
+
 <div class="tabs-container">
+
     {{-- <div class="tabs-header">
         <button class="tab-button active" data-tab="hp">
             <i class="fas fa-table-tennis"></i> HP

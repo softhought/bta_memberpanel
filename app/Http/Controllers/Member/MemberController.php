@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Member;
 
+use App\Constants\Constant;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\LayoutController;
 use App\Models\Member;
 use App\Models\OneTimeTaskMaster;
 use App\Models\TaskCapture;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class MemberController extends Controller
 {
@@ -42,5 +45,56 @@ class MemberController extends Controller
 
         $data['bodyView'] = view('member.transactions.transactions', $data ?? []);
         return $this->renderView($data);
+    }
+
+    public function changePassword()
+    {
+        $btaAdmin = session()->get('btaMember');
+        $memberId = $btaAdmin['memberId'];
+
+        $data['member'] = Member::find($memberId);
+
+        $data['bodyView'] = view('member.password', $data ?? []);
+        return $this->renderView($data);
+    }
+
+    public function changePasswordAction(Request $request)
+    {
+        $btaAdmin = session()->get('btaMember');
+        $memberId = $btaAdmin['memberId'];
+
+        $currentPassword = $request->post('current_password');
+        $newPassword = $request->post('new_password');
+
+        $result = Member::find($memberId);
+
+        $validator = Validator::make($request->all(), [
+            'current_password' => 'required',
+            'new_password' => 'required|min:6',
+            'confirm_password' => 'required|same:new_password',
+        ], [
+            'current_password.required' => 'The current password is required.',
+            'new_password.required' => 'The new password is required.',
+            'new_password.min' => 'The new password must be at least 6 characters.',
+            'confirm_password.required' => 'The confirm password is required.',
+            'confirm_password.same' => 'The confirm password must match the new password.',
+        ]);
+
+
+        if ($validator->fails()) {
+            $error = $validator->errors();
+            return response()->json(['status' => Constant::VALID_FAILURE, 'errors' => $error]);
+        } else {
+
+            if (Hash::check($currentPassword, $result->password)) {
+                $result->password = Hash::make($newPassword);
+                $result->save();
+
+                return response()->json(['status' => Constant::SUCCESS, 'message' => 'Password changed successfully.']);
+
+            } else {
+                return response()->json(['status' => Constant::VALID_FAILURE, 'errors' => ["current_password" => "The current password is invalid."]]);
+            }
+        }
     }
 }

@@ -132,7 +132,6 @@ if (!function_exists('getIpAddress')) {
 function getMenuTree($userId)
 {
     $menus = Menu::parents($userId)->with('childrenRecursive')->get();
-    // pre($menus->toarray());exit;
     return generateMenuTree($menus, 0);
 }
 
@@ -143,12 +142,11 @@ function generateMenuTree($menus, $level)
     if ($level == 1) {
         $html .= '<ul>';
     }
-    // pre($menus->toArray());
+
     foreach ($menus as $item) {
         $html .= '<li id="' . $item['id'] . '">' . $item['name'];
         $html .= generateMenuTree($item['children'], 1);
         $html .= '</li>';
-        // pre($html);exit;
     }
     if ($level == 1) {
         $html .= '</ul>';
@@ -167,11 +165,6 @@ function getEditData($mode, $arrayData, $filled, $imagePath = "")
         }
     }
     return $value;
-}
-
-function getUrlWithAdmin($url)
-{
-    return url('admin/' . $url);
 }
 
 function getEditDate($mode, $arrayData, $filled)

@@ -186,9 +186,9 @@
                                     <div class="admin-settings">
                                         <ul class="admin-settings-list">
                                             <li>
-                                                <a href="{{ url('/') }}">
-                                                    <span class="icon icon-face"></span>
-                                                    <span class="text-name">My Profile</span>
+                                                <a href="{{ url("{$slug}/changePassword") }}">
+                                                    <i class="fa-solid fa-lock"></i>
+                                                    <span class="text-name">Change Password</span>
                                                 </a>
                                             </li>
                                         </ul>

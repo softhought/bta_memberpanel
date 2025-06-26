@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Schema;
 class BaseModel extends Model
 {
     protected $primaryKey = 'id';
+    public $timestamps = false;
 
     public function __construct(array $attributes = [])
     {
