@@ -15,6 +15,23 @@
 
 </head>
 
+<style>
+    footer a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    footer a:hover {
+        text-decoration: underline;
+    }
+
+    .footer-text {
+        color: #09343e;
+        font-weight: bold;
+    }
+</style>
+
+
 <body>
     <section class="ftco-section">
         <div class="container" style="height: 2rem;">
@@ -48,8 +65,8 @@
 
                                 <div class="form-group mb-3" id="passerr">
                                     <label class="label" for="password">Password</label>
-                                    <input type="password" class="form-control" placeholder="Password"
-                                        name="password" id="password">
+                                    <input type="password" class="form-control" placeholder="Password" name="password"
+                                        id="password">
                                     <div class="invalid-feedback d-block text-start px-2" id="password_error"></div>
                                 </div>
 
@@ -62,8 +79,24 @@
                     </div>
                 </div>
             </div>
+            <footer class="text-center mt-5 p-3" style="font-size: 14px; background: #70d45b;">
+                <div class="container">
+                    <p class="mb-1">
+                        <a href="{{ url('/about-us') }}" class="mx-2 footer-text" target="_blank">About Us</a> |
+                        <a href="{{ url('/contact-us') }}" class="mx-2 footer-text" target="_blank">Contact Us</a> |
+                        <a href="{{ url('/privacy-policy') }}" class="mx-2 footer-text" target="_blank">Privacy
+                            Policy</a> |
+                        <a href="{{ url('/terms-and-conditions') }}" class="mx-2 footer-text" target="_blank">Terms &
+                            Conditions</a>
+                        {{-- <a href="{{ url('/refund-policy') }}" class="mx-2 footer-text" target="_blank">Refund Policy</a> --}}
+                    </p>
+                    <p class="mb-0 footer-text">Legal Name: <strong>Bengal Tennis Association</strong></p>
+                </div>
+            </footer>
         </div>
     </section>
+
+
 
     <script src="{{ asset('assets/app/js/cdn/jquery-3.6.0.min.js') }}"></script>
     <script src="{{ vasset('assets/app/js/emp_login.js') }}"></script>

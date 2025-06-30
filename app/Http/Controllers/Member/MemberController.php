@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Member;
 use App\Constants\Constant;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\LayoutController;
+use App\Models\Enquiry;
 use App\Models\Member;
 use App\Models\OneTimeTaskMaster;
 use App\Models\TaskCapture;
@@ -14,7 +15,8 @@ use Illuminate\Support\Facades\Validator;
 
 class MemberController extends Controller
 {
-    public function index() {
+    public function index()
+    {
         $btaAdmin = session()->get('btaMember');
         $memberId = $btaAdmin['memberId'];
 
@@ -25,7 +27,8 @@ class MemberController extends Controller
         return $this->renderView($data);
     }
 
-    public function feesPayments() {
+    public function feesPayments()
+    {
         $btaAdmin = session()->get('btaMember');
         $memberId = $btaAdmin['memberId'];
 
@@ -36,7 +39,8 @@ class MemberController extends Controller
         return $this->renderView($data);
     }
 
-    public function transactions() {
+    public function transactions()
+    {
         $btaAdmin = session()->get('btaMember');
         $memberId = $btaAdmin['memberId'];
 
@@ -96,5 +100,53 @@ class MemberController extends Controller
                 return response()->json(['status' => Constant::VALID_FAILURE, 'errors' => ["current_password" => "The current password is invalid."]]);
             }
         }
+    }
+
+    public function aboutUs()
+    {
+        return view('aboutUs');
+    }
+
+    public function contactUs()
+    {
+        return view('contactUs');
+    }
+
+    public function privacyPolicy()
+    {
+        return view('privacyPolicy');
+    }
+
+    public function termsAndConditions()
+    {
+        return view('termsAndConditions');
+    }
+
+    public function refundPolicy()
+    {
+        return view('refundPolicy');
+    }
+
+    public function enquirySubmit(Request $request)
+    {
+        // Validate the input
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'phone' => 'required',
+            'message' => 'required|string',
+        ]);
+
+        Enquiry::updateOrCreate(
+            ['id' => 0],
+            [
+                'name' => $request->post('name'),
+                'email' => $request->post('email'),
+                'phone' => $request->post('phone'),
+                'message' => $request->post('message')
+            ]
+        );
+
+        return back()->with('success', 'Thank you! Your enquiry has been submitted.');
     }
 }
