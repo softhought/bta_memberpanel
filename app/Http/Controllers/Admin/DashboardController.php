@@ -8,7 +8,8 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $data['bodyView'] = view('admin.dashboard', $data ?? []);
+        $data = [];
+        $data['bodyView'] = view('admin.dashboard', $data);
         return $this->renderView($data);
     }
 }

@@ -281,11 +281,18 @@ function insertLog($model, $mode = 'Add')
     $data = $model->toArray();
     $insertedId = $model->id;
 
-    $logType = match ($mode) {
-        'Edit' => config('constants.LOG_U'),
-        'Delete' => config('constants.LOG_D'),
-        default => config('constants.LOG_I')
-    };
+    switch ($mode) {
+        case 'Edit':
+            $logType = config('constants.LOG_U');
+            break;
+        case 'Delete':
+            $logType = config('constants.LOG_D');
+            break;
+        default:
+            $logType = config('constants.LOG_I');
+            break;
+    }
+
 
     LogTable::insertLogData($table, $data, $insertedId, $logType);
 }

@@ -12,6 +12,13 @@
     @php return; @endphp
 @endif
 
+@php
+    $receipt = isset($paymentMaster) && $paymentMaster->receipt ? $paymentMaster->receipt : null;
+    $receiptDetails = $receipt && $receipt->receiptDetails ? $receipt->receiptDetails : collect();
+    $lastDetail = $receiptDetails->last();
+    $lastMonth = $lastDetail && $lastDetail->month ? $lastDetail->month : null;
+@endphp
+
 <div class="container">
     <div class="accordion-item">
         <div class="accordion-body">
@@ -27,14 +34,16 @@
                     class="custom-input-class onlynumber" placeholder="Enter month" value="" />
 
                 <input type="hidden" name="last_paid_month_id" id="last_paid_month_id"
-                    value="{{ $paymentMaster?->receipt?->receiptDetails->last()?->month?->id ?? 1 }}">
+                    value="{{ $lastMonth ? $lastMonth->id : 1 }}">
                 <input type="hidden" name="last_paid_year" id="last_paid_year"
-                    value="{{ $paymentMaster?->receipt?->receiptDetails->last()?->year ?? '2020' }}">
+                    value="{{ $lastDetail ? $lastDetail->year : '2020' }}">
 
-                @if ($paymentMaster?->receipt?->receiptDetails->last()?->month?->month_name)
-                    <span>months <span class="text-success fw-bold p-text"><b>(You Paid up to
-                                {{ $paymentMaster?->receipt?->receiptDetails->last()?->month?->month_name }}
-                                {{ $paymentMaster?->receipt?->receiptDetails->last()?->year }})</b></span></span>
+                @if ($lastMonth && $lastMonth->month_name)
+                    <span>months
+                        <span class="text-success fw-bold p-text">
+                            <b>(You Paid up to {{ $lastMonth->month_name }} {{ $lastDetail->year }})</b>
+                        </span>
+                    </span>
                 @endif
             </div>
 

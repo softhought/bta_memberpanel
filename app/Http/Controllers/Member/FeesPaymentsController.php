@@ -24,10 +24,15 @@ class FeesPaymentsController extends Controller
 
         $data['isExists'] = $enrolmentModel->exists();
 
-        $data['paymentMaster'] = PaymentMaster::where('enrollment_id', $enrolmentModel->first()?->enrollment_id)
-            ->where('member_id', $memberId)
-            ->orderByDesc('payment_date')
-            ->first();
+        $enrollment = $enrolmentModel->first();
+
+        $data['paymentMaster'] = null;
+        if ($enrollment) {
+            $data['paymentMaster'] = PaymentMaster::where('enrollment_id', $enrollment->enrollment_id)
+                ->where('member_id', $memberId)
+                ->orderByDesc('payment_date')
+                ->first();
+        }
 
         $data['paymentMode'] = PaymentMode::all();
         $data['bank'] = Bank::all();
@@ -45,10 +50,15 @@ class FeesPaymentsController extends Controller
 
         $data['isExists'] = $enrolmentModel->exists();
 
-        $data['paymentMaster'] = PaymentMaster::where('enrollment_id', $enrolmentModel->first()?->enrollment_id)
-            ->where('member_id', $memberId)
-            ->orderByDesc('payment_date')
-            ->first();
+        $enrollment = $enrolmentModel->first();
+
+        $data['paymentMaster'] = null;
+        if ($enrollment) {
+            $data['paymentMaster'] = PaymentMaster::where('enrollment_id', $enrollment->enrollment_id)
+                ->where('member_id', $memberId)
+                ->orderByDesc('payment_date')
+                ->first();
+        }
 
         $data['paymentMode'] = PaymentMode::all();
         $data['bank'] = Bank::all();
@@ -66,10 +76,15 @@ class FeesPaymentsController extends Controller
 
         $data['isExists'] = $enrolmentModel->exists();
 
-        $data['paymentMaster'] = PaymentMaster::where('enrollment_id', $enrolmentModel->first()?->enrollment_id)
-            ->where('member_id', $memberId)
-            ->orderByDesc('payment_date')
-            ->first();
+        $enrollment = $enrolmentModel->first();
+
+        $data['paymentMaster'] = null;
+        if ($enrollment) {
+            $data['paymentMaster'] = PaymentMaster::where('enrollment_id', $enrollment->enrollment_id)
+                ->where('member_id', $memberId)
+                ->orderByDesc('payment_date')
+                ->first();
+        }
 
         $data['paymentMode'] = PaymentMode::all();
         $data['bank'] = Bank::all();
@@ -87,10 +102,15 @@ class FeesPaymentsController extends Controller
 
         $data['isExists'] = $enrolmentModel->exists();
 
-        $data['paymentMaster'] = PaymentMaster::where('enrollment_id', $enrolmentModel->first()?->enrollment_id)
-            ->where('member_id', $memberId)
-            ->orderByDesc('payment_date')
-            ->first();
+        $enrollment = $enrolmentModel->first();
+
+        $data['paymentMaster'] = null;
+        if ($enrollment) {
+            $data['paymentMaster'] = PaymentMaster::where('enrollment_id', $enrollment->enrollment_id)
+                ->where('member_id', $memberId)
+                ->orderByDesc('payment_date')
+                ->first();
+        }
 
         $data['paymentMode'] = PaymentMode::all();
         $data['bank'] = Bank::all();
@@ -109,16 +129,20 @@ class FeesPaymentsController extends Controller
         $lastPaidYear = $request->post('lastPaidYear');
         $program = $request->post('program');
 
-        $enrolmentModel = Member::GetEnrolledDetail($memberId, $program)->first();
+        $enrollment = Member::GetEnrolledDetail($memberId, $program)->first();
 
-        $componentModel = Component::where('programme_id', $enrolmentModel->programme_id)
-            ->when($enrolmentModel->group_id != 0, function ($query) use ($enrolmentModel) {
-                $query->where('group_id', $enrolmentModel->group_id);
+        if (!$enrollment) {
+            return response()->json(['status' => Constant::FAILURE, 'message' => 'No enrollment found']);
+        }
+
+        $componentModel = Component::where('programme_id', $enrollment->programme_id)
+            ->when($enrollment->group_id != 0, function ($query) use ($enrollment) {
+                $query->where('group_id', $enrollment->group_id);
             })
             ->where('component_type', 'MONTHLY')
             ->first();
 
-        $componentId = $componentModel->component_id;
+        $componentId = $componentModel ? $componentModel->component_id : 0;
 
         $data['upcomingMonthlyDetails'] = ComponentMonthlyDetail::where('component_id', $componentId)
             ->where(function ($query) use ($lastPaidYear, $lastPaidMonthId) {

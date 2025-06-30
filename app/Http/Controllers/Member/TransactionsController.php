@@ -19,19 +19,30 @@ class TransactionsController extends Controller
         $program = $request->post('program');
 
         $enrolmentModel = Member::GetEnrolledDetail($memberId, $program, NULL);
-
         $data['isExists'] = $enrolmentModel->exists();
 
-        $data['paymentMaster'] = PaymentMaster::where('enrollment_id', $enrolmentModel->first()?->enrollment_id)
-            ->where('member_id', $memberId)
-            ->orderByDesc('payment_date')
-            ->first();
+        $enrollment = $enrolmentModel->first();
 
-        $data['enrollmentReceiptGST'] = PaymentMaster::GetEnrollmentReceiptGSTByEnrollment($enrolmentModel->first()?->enrollment_id);
-        $data['enrollmentReceiptSecurityGST'] = PaymentMaster::GetEnrollmentReceiptSecurityByEntrollment($enrolmentModel->first()?->enrollment_id, $enrolmentModel->first()?->programme_id);
-        $data['enrollmentReceiptMonthly'] = PaymentMaster::GetEnrollmentReceiptByEnrollment($enrolmentModel->first()?->enrollment_id, $enrolmentModel->first()?->programme_id);
+        $data['paymentMaster'] = null;
+        if ($enrollment) {
+            $data['paymentMaster'] = PaymentMaster::where('enrollment_id', $enrollment->enrollment_id)
+                ->where('member_id', $memberId)
+                ->orderByDesc('payment_date')
+                ->first();
+        }
+
+        $data['enrollmentReceiptGST'] = null;
+        $data['enrollmentReceiptSecurityGST'] = null;
+        $data['enrollmentReceiptMonthly'] = null;
+
+        if ($enrollment) {
+            $data['enrollmentReceiptGST'] = PaymentMaster::GetEnrollmentReceiptGSTByEnrollment($enrollment->enrollment_id);
+            $data['enrollmentReceiptSecurityGST'] = PaymentMaster::GetEnrollmentReceiptSecurityByEntrollment($enrollment->enrollment_id, $enrollment->programme_id);
+            $data['enrollmentReceiptMonthly'] = PaymentMaster::GetEnrollmentReceiptByEnrollment($enrollment->enrollment_id, $enrollment->programme_id);
+        }
 
         $view = view('member.transactions.transactionsView', $data)->render();
         return response()->json(['status' => Constant::SUCCESS, 'view' => $view]);
     }
+
 }

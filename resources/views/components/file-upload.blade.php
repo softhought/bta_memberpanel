@@ -56,25 +56,28 @@
     }
 </style>
 
-<label>{{ $label }}</label>
+<label>{{ isset($label) ? $label : '' }}</label>
 <span class="control-fileupload">
-    <button onclick="document.getElementById('{{ $id }}').click()">Browse...</button>
-    <input type="hidden" id="{{ $id }}_validate" name="{{ $id }}_validate" value="{{ $value }}">
-    <label for="{{ $id }}" id="{{ $id }}_label">{{ $value ? $value : 'Chose ' . $label }}</label>
-    <input type="file" style="opacity: 0;" id="{{ $id }}" name="{{ $id }}" class="p-0"
-        accept="{{ $accept }}">
+    <button onclick="document.getElementById('{{ isset($id) ? $id : '' }}').click()">Browse...</button>
+    <input type="hidden" id="{{ isset($id) ? $id : '' }}_validate" name="{{ isset($id) ? $id : '' }}_validate" value="{{ isset($value) ? $value : '' }}">
+    <label for="{{ isset($id) ? $id : '' }}" id="{{ isset($id) ? $id : '' }}_label">
+        {{ isset($value) && $value ? $value : 'Choose ' . (isset($label) ? $label : 'file') }}
+    </label>
+    <input type="file" style="opacity: 0;" id="{{ isset($id) ? $id : '' }}" name="{{ isset($id) ? $id : '' }}" class="p-0"
+        accept="{{ isset($accept) ? $accept : '' }}">
 </span>
-<p class="invalid-feedback d-block error-text" id="{{ $id }}_validate_error"></p>
-
+<p class="invalid-feedback d-block error-text" id="{{ isset($id) ? $id : '' }}_validate_error"></p>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        var fileInput = document.getElementById("{{ $id }}");
-        fileInput.addEventListener("change", function() {
-            var t = this.value;
-            var labelText = t.split('\\').pop();
-            document.getElementById("{{ $id }}_label").textContent = labelText;
-            document.getElementById("{{ $id }}_validate").value = labelText;
-        });
+        var fileInput = document.getElementById("{{ isset($id) ? $id : '' }}");
+        if (fileInput) {
+            fileInput.addEventListener("change", function() {
+                var t = this.value;
+                var labelText = t.split('\\').pop();
+                document.getElementById("{{ isset($id) ? $id : '' }}_label").textContent = labelText;
+                document.getElementById("{{ isset($id) ? $id : '' }}_validate").value = labelText;
+            });
+        }
     });
 </script>

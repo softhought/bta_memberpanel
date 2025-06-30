@@ -27,17 +27,19 @@
         transform: translateY(-3px);
     }
 </style>
-<div class="modal fade" id="{{ $id }}" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-    <div class="modal-dialog {{ $dialogclass }}">
+
+<div class="modal fade" id="{{ isset($id) ? $id : '' }}" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog {{ isset($dialogclass) ? $dialogclass : '' }}">
         <div class="modal-content card" style="border-radius: 5px;">
             <div class="card-header" style="height: 2.6rem !important;">
                 <h5 class="modal-title" id="header_title" style="font-size: 1rem; font-weight: 600; color: #eaf0fb;">
-                    {{ $title }}</h5>
+                    {{ isset($title) ? $title : '' }}
+                </h5>
                 <button type="button" class="btn btn-close custom-close-btn-full" data-bs-dismiss="modal"
                     aria-label="Close"></button>
-
             </div>
-            <div class="modal-body {{ $bodyclass }}" id="bodyContent">
+
+            <div class="modal-body {{ isset($bodyclass) ? $bodyclass : '' }}" id="bodyContent">
                 {{ $slot }}
             </div>
         </div>

@@ -4,11 +4,8 @@ namespace App\Http\Controllers\Member;
 
 use App\Constants\Constant;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\LayoutController;
 use App\Models\Enquiry;
 use App\Models\Member;
-use App\Models\OneTimeTaskMaster;
-use App\Models\TaskCapture;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -23,7 +20,7 @@ class MemberController extends Controller
         $memberData = Member::with(['programEnrollment.program', 'programEnrollment.group'])->find($memberId);
         $data['member'] = $memberData;
 
-        $data['bodyView'] = view('member.dashboard', $data ?? []);
+        $data['bodyView'] = view('member.dashboard', $data);
         return $this->renderView($data);
     }
 
@@ -35,7 +32,7 @@ class MemberController extends Controller
         $memberData = Member::with(['programEnrollment.program', 'programEnrollment.group'])->find($memberId);
         $data['member'] = $memberData;
 
-        $data['bodyView'] = view('member.fees.feesPayments', $data ?? []);
+        $data['bodyView'] = view('member.fees.feesPayments', $data);
         return $this->renderView($data);
     }
 
@@ -47,7 +44,7 @@ class MemberController extends Controller
         $memberData = Member::with(['programEnrollment.program', 'programEnrollment.group'])->find($memberId);
         $data['member'] = $memberData;
 
-        $data['bodyView'] = view('member.transactions.transactions', $data ?? []);
+        $data['bodyView'] = view('member.transactions.transactions', $data);
         return $this->renderView($data);
     }
 
@@ -58,7 +55,7 @@ class MemberController extends Controller
 
         $data['member'] = Member::find($memberId);
 
-        $data['bodyView'] = view('member.password', $data ?? []);
+        $data['bodyView'] = view('member.password', $data);
         return $this->renderView($data);
     }
 
@@ -84,20 +81,20 @@ class MemberController extends Controller
             'confirm_password.same' => 'The confirm password must match the new password.',
         ]);
 
-
         if ($validator->fails()) {
             $error = $validator->errors();
             return response()->json(['status' => Constant::VALID_FAILURE, 'errors' => $error]);
         } else {
-
             if (Hash::check($currentPassword, $result->password)) {
                 $result->password = Hash::make($newPassword);
                 $result->save();
 
                 return response()->json(['status' => Constant::SUCCESS, 'message' => 'Password changed successfully.']);
-
             } else {
-                return response()->json(['status' => Constant::VALID_FAILURE, 'errors' => ["current_password" => "The current password is invalid."]]);
+                return response()->json([
+                    'status' => Constant::VALID_FAILURE,
+                    'errors' => ['current_password' => 'The current password is invalid.']
+                ]);
             }
         }
     }
@@ -129,7 +126,6 @@ class MemberController extends Controller
 
     public function enquirySubmit(Request $request)
     {
-        // Validate the input
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email',
@@ -138,12 +134,12 @@ class MemberController extends Controller
         ]);
 
         Enquiry::updateOrCreate(
-            ['id' => 0],
+            ['id' => 0], // Always inserts new
             [
                 'name' => $request->post('name'),
                 'email' => $request->post('email'),
                 'phone' => $request->post('phone'),
-                'message' => $request->post('message')
+                'message' => $request->post('message'),
             ]
         );
 
