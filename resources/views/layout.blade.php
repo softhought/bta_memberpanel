@@ -134,7 +134,7 @@
     <input type="hidden" id="slug" name="slug" value="{{ $slug }}">
 
     <!-- BEGIN .app-wrap -->
-    <div class="app-wrap">
+    <div class="app-wrap" style="zoom: 90%">
 
         <!-- BEGIN .app-heading -->
         <header class="app-header">
@@ -161,11 +161,8 @@
                             </a>
                         </div>
 
-                        <div class="live-updates">
-                            <ul class="header-news" id="header-news.">
-
-                            </ul>
-
+                        <div class="header-content">
+                            BENGAL TENNIS ASSOCIATION
                         </div>
 
                     </div>
@@ -259,6 +256,18 @@
 
                 </x-modal-full>
             </div>
+
+            <footer style="position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; text-align: center; padding: 10px; box-shadow: 0 -1px 5px rgba(0,0,0,0.1); z-index: 999;">
+                <p style="margin: 0;">BTA ©2025 All Rights Reserved</p>
+                <p style="margin: 5px 0;">
+                    <a href="{{ url('/about-us') }}" class="footer-text" target="_blank" style="text-decoration: none; color: #000;">About Us</a> |
+                    <a href="{{ url('/contact-us') }}" class="footer-text" target="_blank" style="text-decoration: none; color: #000;">Contact Us</a> |
+                    <a href="{{ url('/privacy-policy') }}" class="footer-text" target="_blank" style="text-decoration: none; color: #000;">Privacy Policy</a> |
+                    <a href="{{ url('/terms-and-conditions') }}" class="footer-text" target="_blank" style="text-decoration: none; color: #000;">Terms & Conditions</a>
+                </p>
+                <p style="margin: 0;">Yuba Bharati Krirangan, Street Number 2, beside Gate, JB Block, Sector 3, Bidhannagar, Kolkata, West Bengal 700106</p>
+            </footer>
+
         </div>
     </div>
 </body>

@@ -9675,10 +9675,14 @@ hr {
     position: sticky;
     top: 0;
 
-    white-space: nowrap;       /* Prevents line break */
-    overflow: hidden;          /* Hides overflow text */
-    text-overflow: ellipsis;   /* Adds ... */
-    max-width: 120px;          /* Adjust as needed */
+    white-space: nowrap;
+    /* Prevents line break */
+    overflow: hidden;
+    /* Hides overflow text */
+    text-overflow: ellipsis;
+    /* Adds ... */
+    max-width: 120px;
+    /* Adjust as needed */
 }
 
 .payment-table tbody td {
@@ -9780,6 +9784,13 @@ hr {
     line-height: 1.6;
 }
 
+.header-content {
+    font-size: 34px;
+    font-weight: bold;
+    color: white;
+    padding: 6px;
+}
+
 @media (max-width: 768px) {
     .payment-container {
         padding: 0 15px;
@@ -9802,6 +9813,19 @@ hr {
 
     .payment-header h1 {
         font-size: 24px;
+    }
+
+    .header-content {
+        font-size: 13px;
+        font-weight: bold;
+        color: white;
+        padding: 0;
+        padding-top: 0px;
+        padding-top: 1.5rem;
+        text-align: center;
+        top: -29px;
+        position: relative;
+        left: 74px;
     }
 }
 
