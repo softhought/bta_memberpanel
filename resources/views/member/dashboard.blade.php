@@ -1,6 +1,7 @@
 <style>
     .profile-container {
         padding: 0 15px;
+        min-height: 800px;
     }
 
     .profile-header {
@@ -200,7 +201,7 @@
     use Carbon\Carbon;
 @endphp
 
-<div class="profile-container mb-5">
+<div class="profile-container">
     <!-- Profile Header -->
     <div class="profile-header">
         @php
