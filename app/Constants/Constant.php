@@ -2,6 +2,7 @@
 
 namespace App\Constants;
 
+
 class Constant
 {
     public const SUCCESS = 'SUCCESS';
