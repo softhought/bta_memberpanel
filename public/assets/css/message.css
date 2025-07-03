@@ -1,0 +1,234 @@
+.comments-form {
+    width: 87%;
+    margin-left: 8%;
+    margin-top: -3%;
+}
+
+.note-insert {
+    display: none;
+}
+
+.note-table {
+    display: none;
+}
+
+.note-btn[aria-label="Help"] {
+    display: none;
+}
+
+.note-color {
+    display: none;
+}
+
+.share-name {
+    cursor: pointer;
+    color: white !important;
+}
+
+.header h3 {
+    font-size: 16px !important;
+    font-weight: bold;
+    color: #438601;
+}
+
+.chat-window {
+    background-color: #f8f9fa;
+    height: auto;
+    min-height: 300px;
+    border-radius: 8px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.name-initial-container {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.name-initial {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #4476ac;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+
+.name-initial:hover {
+    background-color: #4d88c7;
+}
+
+/** Selected Users Section */
+
+
+.selected-users {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.selected-user {
+    background-color: #e7f0ff;
+    border-radius: 150px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 5px;
+    font-weight: bold;
+    color: #438601;
+    padding: 30px;
+}
+
+/* General Modal Styles */
+.custom-modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+}
+
+/* Modal Content */
+.custom-modal-content {
+    background: #ffffff;
+    border-radius: 10px;
+    width: 400px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+/* Modal Close Button */
+.custom-modal-content .close-modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    color: #438601;
+    /* Icon color */
+}
+
+/* Modal Title */
+.flush {
+    margin: 0 0 20px;
+    font-size: 1.2rem;
+    text-align: center;
+    color: #438601;
+    font-weight: bold;
+    font-family: sans-serif;
+}
+
+/* List Picker Header */
+.list-picker__header {
+    margin: 10px 0;
+    font-size: 1.3rem;
+    text-align: left;
+    font-weight: bold;
+}
+
+/* Checkbox Item */
+.list-picker-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+    border-radius: 5px;
+}
+
+.list-picker-item:hover {
+    background-color: #e7f0ff;
+    /* Light blue on hover */
+}
+
+/* Checkbox Button */
+.checkbox__label {
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.checkbox__input {
+    display: none;
+    /* Hide the default checkbox */
+}
+
+.checkbox__button {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #438601;
+    border-radius: 3px;
+    margin-right: 10px;
+    position: relative;
+    background: white;
+    transition: background 0.3s, border-color 0.3s;
+}
+
+/* Checkbox Checkmark Icon */
+.checkbox__input:checked+.checkbox__button {
+    background: #438601;
+    border-color: #438601;
+}
+
+/* Icon Styles */
+.checkbox__icon {
+    font-size: 16px;
+    color: #ffffff;
+    /* White color for checkmark */
+    position: absolute;
+    top: -2px;
+    left: 2px;
+    opacity: 0;
+    /* Initially hidden */
+    transition: opacity 0.2s;
+}
+
+.checkbox__input:checked+.checkbox__button .checkbox__icon {
+    opacity: 1;
+    /* Show on check */
+}
+
+/* Modal Footer */
+.modal-sheet__footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.btn--primary {
+    background: #007bff;
+    color: white;
+}
+
+.btn--secondary {
+    background: #6c757d;
+    color: white;
+}
+
+/* Button Hover Effects */
+.btn--primary:hover {
+    background: #0056b3;
+}
+
+.btn--secondary:hover {
+    background: #5a6268;
+}
