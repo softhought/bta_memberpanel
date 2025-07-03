@@ -107,7 +107,7 @@
         <h2 class="text-center">About Us</h2>
         <p><strong>Purpose of this Portal</strong><br>
             This portal has been developed by BTA to serve as a user-friendly digital platform that enables students and
-            guardians to conveniently manage and pay monthly tuition fees online. The system is designed to ensure a
+            guardians to conveniently manage and pay monthly coaching fees online. The system is designed to ensure a
             seamless, secure, and transparent transaction process, reducing the need for physical visits and manual
             payment methods. By streamlining the fee payment process, the portal enhances overall efficiency, improves
             financial tracking for both users and the institution, and supports timely communication regarding dues,
