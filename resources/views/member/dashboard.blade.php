@@ -1,6 +1,7 @@
 <style>
     .profile-container {
         padding: 0 15px;
+        min-height: 800px;
     }
 
     .profile-header {
