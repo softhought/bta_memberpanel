@@ -200,7 +200,7 @@
     use Carbon\Carbon;
 @endphp
 
-<div class="profile-container">
+<div class="profile-container mb-5">
     <!-- Profile Header -->
     <div class="profile-header">
         @php
