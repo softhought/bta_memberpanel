@@ -1,8 +1,8 @@
-<div class="month-row mb-1">
+<div class="month-row">
     @foreach ($upcomingMonthlyDetails as $list)
         <div class="row">
-            <x-input-component readonly="readonly" column="col-cu-2 description" type="text" label="Month"
-                name="description" id="description" class="custom-input-class onlynumber" placeholder="Month"
+            <x-input-component readonly="readonly" column="col-cu-2 description" type="text" label="Description"
+                name="description" id="description" class="custom-input-class onlynumber" placeholder="Description"
                 value="{{ $list->month->short_name }} {{ $list->year }}" />
 
             <x-input-component readonly="readonly" column="col-cu-1 amount" type="text" label="Amount" name="amount"
