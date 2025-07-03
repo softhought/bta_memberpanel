@@ -30,10 +30,10 @@
             </div>
 
             <div class="d-flex align-items-center">
-                <label class="m-3">Monthly Slots for</label>
+                <label class="m-3">Monthly Fees for</label>
 
                 <x-input-component column="col-md-2" type="text" label="" name="month" id="month"
-                    class="custom-input-class onlynumber" placeholder="Enter month" value="" />
+                    class="custom-input-class onlynumber" placeholder="No. of Months" value="" />
 
                 <input type="hidden" name="last_paid_month_id" id="last_paid_month_id" value="{{ $lastMonthId }}">
                 <input type="hidden" name="last_paid_year" id="last_paid_year" value="{{ $lastYear }}">

@@ -7,7 +7,6 @@
     <title>Bengal Tennis Association - About Us</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-
         body {
             font-family: 'Segoe UI', sans-serif;
             background-color: #f8f9fa;
@@ -106,6 +105,15 @@
     <!-- About Section -->
     <div class="container about-section">
         <h2 class="text-center">About Us</h2>
+        <p><strong>Purpose of this Portal</strong><br>
+            This portal has been developed by BTA to serve as a user-friendly digital platform that enables students and
+            guardians to conveniently manage and pay monthly tuition fees online. The system is designed to ensure a
+            seamless, secure, and transparent transaction process, reducing the need for physical visits and manual
+            payment methods. By streamlining the fee payment process, the portal enhances overall efficiency, improves
+            financial tracking for both users and the institution, and supports timely communication regarding dues,
+            receipts, and related updates.
+        </p>
+
         <p><strong>BENGAL TENNIS ASSOCIATION</strong><br>
             The BTA Complex was inaugurated in March, 2003 followed by an ITF Futures Tournament. The Complex was
             offered through a ‘Lease Agreement’ by the West Bengal Government through the untiring efforts of Late Manik
