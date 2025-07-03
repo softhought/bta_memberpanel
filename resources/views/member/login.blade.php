@@ -79,7 +79,7 @@
                     </div>
                 </div>
             </div>
-            <footer class="text-center mt-5 p-3" style="font-size: 14px; background: #70d45b;">
+            <footer class="text-center mt-2 p-3" style="font-size: 14px; background: #70d45b;">
                 <div class="container">
                     <p class="mb-1">
                         <a href="{{ url('/about-us') }}" class="mx-2 footer-text" target="_blank">About Us</a> |
@@ -91,6 +91,7 @@
                         {{-- <a href="{{ url('/refund-policy') }}" class="mx-2 footer-text" target="_blank">Refund Policy</a> --}}
                     </p>
                     <p class="mb-0 footer-text">Legal Name: <strong>Bengal Tennis Association</strong></p>
+                    <p class="footer-text">Yuba Bharati Krirangan, Street Number 2, beside Gate, JB Block, Sector 3, Bidhannagar, Kolkata, West Bengal 700106</p>
                 </div>
             </footer>
         </div>

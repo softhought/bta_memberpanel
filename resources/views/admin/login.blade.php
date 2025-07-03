@@ -14,7 +14,21 @@
     <link rel="stylesheet" href="{{ asset('assets') }}/login/css/style.css">
 
 </head>
+<style>
+    footer a {
+        color: #007bff;
+        text-decoration: none;
+    }
 
+    footer a:hover {
+        text-decoration: underline;
+    }
+
+    .footer-text {
+        color: #09343e;
+        font-weight: bold;
+    }
+</style>
 <body>
     <section class="ftco-section">
         <div class="container" style="height: 2rem;">
@@ -41,15 +55,15 @@
 
                                 <div class="form-group mb-3" id="usererr">
                                     <label class="label" for="name">Username</label>
-                                    <input type="text" class="form-control" placeholder="Username"
-                                        name="username" id="username">
+                                    <input type="text" class="form-control" placeholder="Username" name="username"
+                                        id="username">
                                     <div class="invalid-feedback d-block text-start px-2" id="username_error"></div>
                                 </div>
 
                                 <div class="form-group mb-3" id="passerr">
                                     <label class="label" for="password">Password</label>
-                                    <input type="password" class="form-control" placeholder="Password"
-                                        name="password" id="password">
+                                    <input type="password" class="form-control" placeholder="Password" name="password"
+                                        id="password">
                                     <div class="invalid-feedback d-block text-start px-2" id="password_error"></div>
                                 </div>
 
@@ -62,6 +76,23 @@
                     </div>
                 </div>
             </div>
+
+            <footer class="text-center mt-2 p-3" style="font-size: 14px; background: #70d45b;">
+                <div class="container">
+                    <p class="mb-1">
+                        <a href="{{ url('/about-us') }}" class="mx-2 footer-text" target="_blank">About Us</a> |
+                        <a href="{{ url('/contact-us') }}" class="mx-2 footer-text" target="_blank">Contact Us</a> |
+                        <a href="{{ url('/privacy-policy') }}" class="mx-2 footer-text" target="_blank">Privacy
+                            Policy</a> |
+                        <a href="{{ url('/terms-and-conditions') }}" class="mx-2 footer-text" target="_blank">Terms &
+                            Conditions</a>
+                        {{-- <a href="{{ url('/refund-policy') }}" class="mx-2 footer-text" target="_blank">Refund Policy</a> --}}
+                    </p>
+                    <p class="mb-0 footer-text">Legal Name: <strong>Bengal Tennis Association</strong></p>
+                    <p class="footer-text">Yuba Bharati Krirangan, Street Number 2, beside Gate, JB Block, Sector 3,
+                        Bidhannagar, Kolkata, West Bengal 700106</p>
+                </div>
+            </footer>
         </div>
     </section>
 
