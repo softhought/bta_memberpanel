@@ -9816,16 +9816,21 @@ hr {
     }
 
     .header-content {
-        font-size: 13px;
+        font-size: 14px;
         font-weight: bold;
         color: white;
         padding: 0;
         padding-top: 0px;
+        padding-top: 0px;
         padding-top: 1.5rem;
         text-align: center;
-        top: -29px;
+        top: -30px;
         position: relative;
-        left: 74px;
+        left: 83px;
+    }
+
+    .unifyMenu {
+        margin-top: 17px;
     }
 }
 
