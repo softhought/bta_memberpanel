@@ -102,7 +102,6 @@
             alt="BTA Logo" class="logo bg-white p-2 rounded">
     </div>
 
-    <!-- About Section -->
     <div class="container about-section">
         <h2 class="text-center">About Us</h2>
         <p><strong>Purpose of this Portal</strong><br>
