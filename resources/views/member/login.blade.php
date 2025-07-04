@@ -29,10 +29,60 @@
         color: #09343e;
         font-weight: bold;
     }
+
+    .captcha-box {
+        gap: 0.5rem;
+        position: relative;
+    }
+
+    .captcha-display {
+        width: 145px;
+        font-weight: bold;
+        background: #fff;
+        border: 1px solid #ccc;
+        font-size: 18px;
+        pointer-events: none;
+    }
+
+    .captcha-input {
+        width: 145px;
+        background: #fff;
+        border: 1px solid #ccc;
+        font-size: 18px;
+    }
+
+    .btn-refresh {
+        background-color: #f7297f;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 40px;
+        width: 40px;
+        transition: background 0.3s ease;
+    }
+
+    .btn-refresh:hover {
+        background-color: #c91c64;
+    }
+
+    #captcha_error {
+        margin-top: -18px;
+        margin-bottom: 8px;
+        height: 20px;
+    }
+
+    @media (max-width: 576px) {
+        .captcha-box{
+            display: flex !important;
+            flex-direction: row !important;
+        }
+    }
 </style>
 
 
-<body>
+<body style="zoom: 90%;">
     <section class="ftco-section">
         <div class="container" style="height: 2rem;">
             <div class="row justify-content-center" style="margin-top: -4rem;">
@@ -58,16 +108,33 @@
 
                                 <div class="form-group mb-3" id="usererr">
                                     <label class="label" for="name">Registration No.</label>
-                                    <input type="text" class="form-control" placeholder="Registration No. : Eg M12345" name="member_code" id="member_code">
+                                    <input type="text" class="form-control"
+                                        placeholder="Registration No. : Eg M12345" name="member_code" autocomplete="off" id="member_code">
                                     <div class="invalid-feedback d-block text-start px-2" id="member_code_error"></div>
                                 </div>
 
                                 <div class="form-group mb-3" id="passerr">
                                     <label class="label" for="password">Password</label>
-                                    <input type="password" class="form-control" placeholder="Password" name="password"
+                                    <input type="password" class="form-control" placeholder="Password" autocomplete="off" name="password"
                                         id="password">
                                     <div class="invalid-feedback d-block text-start px-2" id="password_error"></div>
                                 </div>
+
+                                <div
+                                    class="form-group mb-3 captcha-box d-flex align-items-center justify-content-center">
+                                    <input type="text" class="form-control text-center captcha-display"
+                                        id="math_question" readonly />
+
+                                    <button type="button" class="btn btn-refresh mx-2" id="refresh_captcha"
+                                        aria-label="Refresh Captcha">
+                                        <i class="fa fa-refresh text-white"></i>
+                                    </button>
+
+                                    <input type="text" class="form-control onlynumber text-center captcha-input"
+                                        id="captcha_answer" placeholder="Answer">
+                                </div>
+                                <div class="invalid-feedback d-block text-start px-2 w-100" id="captcha_error"></div>
+
 
                                 <div class="form-group">
                                     <button type="submit" id="login_btn"
@@ -90,7 +157,8 @@
                         {{-- <a href="{{ url('/refund-policy') }}" class="mx-2 footer-text" target="_blank">Refund Policy</a> --}}
                     </p>
                     <p class="mb-0 footer-text">Legal Name: <strong>Bengal Tennis Association</strong></p>
-                    <p class="footer-text">Yuba Bharati Krirangan, Street Number 2, beside Gate, JB Block, Sector 3, Bidhannagar, Kolkata, West Bengal 700106</p>
+                    <p class="footer-text">Yuba Bharati Krirangan, Street Number 2, beside Gate, JB Block, Sector 3,
+                        Bidhannagar, Kolkata, West Bengal 700106</p>
                 </div>
             </footer>
         </div>
