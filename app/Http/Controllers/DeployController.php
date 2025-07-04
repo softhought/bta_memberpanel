@@ -14,6 +14,7 @@ class DeployController extends Controller
 
         $path = base_path();
 
+        $output = shell_exec('eval "$(ssh-agent -s)" > /dev/null ssh-add ~/.ssh/bta 2>/dev/null');
         $process = new Process(['git', 'pull']);
         $process->setWorkingDirectory($path);
         $process->run();
@@ -27,7 +28,8 @@ class DeployController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'output' => $process->getOutput()
+            'output' => $process->getOutput(),
+            'process' => $output
         ]);
     }
 }
