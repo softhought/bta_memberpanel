@@ -30,4 +30,5 @@ Route::prefix('member')->middleware(['member_auth'])->group(function () {
     /** Others */
     Route::request('changePassword', [MemberController::class, 'changePassword']);
     Route::request('changePasswordAction', [MemberController::class, 'changePasswordAction']);
+    Route::request('forceChangePassword', [MemberController::class, 'forceChangePassword']);
 });

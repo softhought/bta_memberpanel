@@ -99,6 +99,47 @@ class MemberController extends Controller
         }
     }
 
+    public function forceChangePassword(Request $request)
+    {
+        $btaAdmin = session()->get('btaMember');
+        $memberId = $btaAdmin['memberId'];
+
+        $newPassword = $request->post('new_password');
+
+        $result = Member::find($memberId);
+
+        $validator = Validator::make($request->all(), [
+            'new_password' => [
+                'required',
+                'min:6',
+                function ($attribute, $value, $fail) {
+                    if ($value === '123456') {
+                        $fail('The password "123456" is too common and not acceptable.');
+                    }
+                }
+            ],
+            'confirm_password' => 'required|same:new_password',
+        ], [
+            'new_password.required' => 'The new password is required.',
+            'new_password.min' => 'The new password must be at least 6 characters.',
+            'confirm_password.required' => 'The confirm password is required.',
+            'confirm_password.same' => 'The confirm password must match the new password.',
+        ]);
+
+
+        if ($validator->fails()) {
+            $error = $validator->errors();
+            return response()->json(['status' => Constant::VALID_FAILURE, 'errors' => $error]);
+        } else {
+
+            $result->password = Hash::make($newPassword);
+            $result->save();
+
+            return response()->json(['status' => Constant::SUCCESS, 'message' => 'Password changed successfully.']);
+
+        }
+    }
+
     public function aboutUs()
     {
         return view('aboutUs');
