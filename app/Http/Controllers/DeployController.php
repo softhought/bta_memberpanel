@@ -8,30 +8,20 @@ class DeployController extends Controller
 {
     public function pullCode()
     {
-        $branch = 'development';
-        $path = base_path();
+        $repoPath = base_path();
+        $keyPath = storage_path('ssh/bta');
 
-        // Tell Git to use a specific SSH key
-        $sshCommand = "ssh -i /usr/share/httpd/bta/.ssh/id_rsa -o StrictHostKeyChecking=no";
-
-        // Set GIT_SSH_COMMAND so it uses the custom key
-        $process = Process::fromShellCommandline("git pull origin $branch", $path, [
-            'GIT_SSH_COMMAND' => $sshCommand,
-        ]);
+        $process = Process::fromShellCommandline(
+            'GIT_SSH_COMMAND="ssh -i ' . $keyPath . ' -o StrictHostKeyChecking=no" git pull',
+            $repoPath
+        );
 
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            return response()->json([
-                'status' => 'error',
-                'output' => $process->getErrorOutput(),
-                'process' => null
-            ], 500);
+        if ($process->isSuccessful()) {
+            echo "Git pulled successfully: " . $process->getOutput();
+        } else {
+            echo "Git pull failed: " . $process->getErrorOutput();
         }
-
-        return response()->json([
-            'status' => 'success',
-            'output' => $process->getOutput()
-        ]);
     }
 }
