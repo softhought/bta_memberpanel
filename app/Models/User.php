@@ -8,4 +8,9 @@ class User extends BaseModel
 {
     use HasFactory;
     protected $table = 'users';
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'web_role_id');
+    }
 }
