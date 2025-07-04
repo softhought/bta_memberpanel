@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Constants;
-//
+// Constant
 class Constant
 {
     public const SUCCESS = 'SUCCESS';
