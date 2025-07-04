@@ -255,19 +255,101 @@
                     bodyclass="an-box-shadow">
 
                 </x-modal-full>
+
+                @if ($forceChangePassword)
+                    <style>
+                        .custom-modal {
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background-color: rgba(0, 0, 0, 0.5);
+                            z-index: 1050;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+
+                        .custom-modal-content {
+                            background: #fff;
+                            padding: 30px;
+                            border-radius: 8px;
+                            width: 100%;
+                            max-width: 500px;
+                            box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+                            position: relative;
+                        }
+
+                        .custom-modal h4 {
+                            margin-top: 0;
+                            font-weight: bold;
+                            margin-bottom: 20px;
+                        }
+
+                        .custom-modal .form-group {
+                            margin-bottom: 15px;
+                        }
+
+                        .custom-modal-actions {
+                            text-align: right;
+                        }
+                    </style>
+                    <div id="customChangePasswordModal" class="custom-modal">
+                        <div class="custom-modal-content">
+                            <h4>Change Your Password</h4>
+
+
+                            <form id="forceChangePasswordForm" method="POST">
+                                <div class="row">
+                                    <x-input-component column="col-md-12" type="password" label="New Password"
+                                        name="new_password" id="new_password" class="custom-input-class"
+                                        placeholder="Enter New Password" value="" readonly="" />
+
+                                    <x-input-component column="col-md-12" type="password" label="Confirm Password"
+                                        name="confirm_password" id="confirm_password" class="custom-input-class"
+                                        placeholder="Enter Confirm Password" value="" readonly="" />
+                                </div>
+                                {{-- <small class="text-danger">Note: "123456" is not acceptable as a password.</small> --}}
+                                <div class="custom-modal-actions">
+                                    <button type="submit" id="savebtn" class="btn btn-primary">Update</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <script>
+                        $(document).ready(function() {
+                            $('#customChangePasswordModal').fadeIn();
+
+                            ajaxCall('forceChangePasswordForm', 'forceChangePassword', function(response) {
+                                showToast(response.message);
+                                window.location.reload();
+                            });
+                        });
+                    </script>
+                @endif
+
+
             </div>
 
             <div style="height: 200px"></div>
 
-            <footer style="position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; text-align: center; padding: 10px; box-shadow: 0 -1px 5px rgba(0,0,0,0.1); z-index: 999;">
+            <footer
+                style="position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; text-align: center; padding: 10px; box-shadow: 0 -1px 5px rgba(0,0,0,0.1); z-index: 999;">
                 <p style="margin: 0;">BTA ©2025 All Rights Reserved</p>
                 <p style="margin: 5px 0;">
-                    <a href="{{ url('/about-us') }}" class="footer-text" target="_blank" style="text-decoration: none; color: #000;">About Us</a> |
-                    <a href="{{ url('/contact-us') }}" class="footer-text" target="_blank" style="text-decoration: none; color: #000;">Contact Us</a> |
-                    <a href="{{ url('/privacy-policy') }}" class="footer-text" target="_blank" style="text-decoration: none; color: #000;">Privacy Policy</a> |
-                    <a href="{{ url('/terms-and-conditions') }}" class="footer-text" target="_blank" style="text-decoration: none; color: #000;">Terms & Conditions</a>
+                    <a href="{{ url('/about-us') }}" class="footer-text" target="_blank"
+                        style="text-decoration: none; color: #000;">About Us</a> |
+                    <a href="{{ url('/contact-us') }}" class="footer-text" target="_blank"
+                        style="text-decoration: none; color: #000;">Contact Us</a> |
+                    <a href="{{ url('/privacy-policy') }}" class="footer-text" target="_blank"
+                        style="text-decoration: none; color: #000;">Privacy Policy</a> |
+                    <a href="{{ url('/terms-and-conditions') }}" class="footer-text" target="_blank"
+                        style="text-decoration: none; color: #000;">Terms & Conditions</a>
                 </p>
-                <p style="margin: 0;">Yuba Bharati Krirangan, Street Number 2, beside Gate, JB Block, Sector 3, Bidhannagar, Kolkata, West Bengal 700106</p>
+                <p style="margin: 0;">Yuba Bharati Krirangan, Street Number 2, beside Gate, JB Block, Sector 3,
+                    Bidhannagar, Kolkata, West Bengal 700106</p>
             </footer>
 
         </div>

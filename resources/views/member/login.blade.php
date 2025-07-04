@@ -131,7 +131,7 @@
                                     </button>
 
                                     <input type="text" class="form-control onlynumber text-center captcha-input"
-                                        id="captcha_answer" placeholder="Answer">
+                                        id="captcha_answer" placeholder="Answer" autocomplete="off">
                                 </div>
                                 <div class="invalid-feedback d-block text-start px-2 w-100" id="captcha_error"></div>
 
