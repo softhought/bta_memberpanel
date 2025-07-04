@@ -22,7 +22,8 @@ class DeployController extends Controller
         if (!$process->isSuccessful()) {
             return response()->json([
                 'status' => 'error',
-                'output' => $process->getErrorOutput()
+                'output' => $process->getErrorOutput(),
+                'process' => $output
             ], 500);
         }
 
