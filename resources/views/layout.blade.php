@@ -324,7 +324,7 @@
 
                             ajaxCall('forceChangePasswordForm', 'forceChangePassword', function(response) {
                                 showToast(response.message);
-                                window.location.reload();
+                                window.location.href = '{{ url('admin/logout/2') }}';
                             });
                         });
                     </script>
