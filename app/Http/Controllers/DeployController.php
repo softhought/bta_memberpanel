@@ -12,7 +12,7 @@ class DeployController extends Controller
         $keyPath = storage_path('ssh/bta');
 
         $process = Process::fromShellCommandline(
-            'GIT_SSH_COMMAND="ssh -i ' . $keyPath . ' -o StrictHostKeyChecking=no" git pull',
+            'GIT_SSH_COMMAND="ssh -i ' . $keyPath . ' -o StrictHostKeyChecking=no" git reset --hard origin/development',
             $repoPath
         );
 
