@@ -58,8 +58,7 @@
 
                                 <div class="form-group mb-3" id="usererr">
                                     <label class="label" for="name">Registration No.</label>
-                                    <input type="text" class="form-control" placeholder="Registration No."
-                                        name="member_code" id="member_code">
+                                    <input type="text" class="form-control" placeholder="Registration No. : Eg M12345" name="member_code" id="member_code">
                                     <div class="invalid-feedback d-block text-start px-2" id="member_code_error"></div>
                                 </div>
 
