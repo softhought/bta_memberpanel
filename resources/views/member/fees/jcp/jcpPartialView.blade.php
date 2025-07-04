@@ -57,7 +57,7 @@
 
             <div class="summary-box p-3 mt-4">
                 <p><strong>Total Amount :</strong><span id="total_amount">0.00</span></p>
-                <p class="highlight"><strong>Total Payable :</strong><span id="total_payable">0.00</span></p>
+                <p class="highlight"><strong>Total Payment Amount :</strong><span id="total_payable">0.00</span></p>
             </div>
         </div>
 

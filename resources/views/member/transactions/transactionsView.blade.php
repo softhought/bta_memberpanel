@@ -155,8 +155,8 @@
                         <th>Status</th>
                         <th>Mode</th>
                         <th>Amount</th>
-                        <th>CGST</th>
-                        <th>SGST</th>
+                        {{-- <th>CGST</th>
+                        <th>SGST</th> --}}
                         <th>Pay Amt.</th>
                     </tr>
                 </thead>
@@ -180,8 +180,8 @@
                                 </td>
                                 <td>{{ $list->payment_mode }}</td>
                                 <td class="currency">{{ number_format($list->taxable_amount, 2) }}</td>
-                                <td>{{ number_format($list->cgst_amount, 2) }}</td>
-                                <td>{{ number_format($list->sgst_amount, 2) }}</td>
+                                {{-- <td>{{ number_format($list->cgst_amount, 2) }}</td>
+                                <td>{{ number_format($list->sgst_amount, 2) }}</td> --}}
                                 <td>{{ number_format($list->taxable_amount + $list->cgst_amount + $list->sgst_amount, 2) }}
                                 </td>
                             </tr>
