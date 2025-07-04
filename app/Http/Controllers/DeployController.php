@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class DeployController extends Controller
 {
@@ -14,7 +12,6 @@ class DeployController extends Controller
 
         $path = base_path();
 
-        $output = shell_exec('eval "$(ssh-agent -s)" > /dev/null ssh-add ~/.ssh/bta 2>/dev/null');
         $process = new Process(['git', 'pull']);
         $process->setWorkingDirectory($path);
         $process->run();
@@ -22,15 +19,13 @@ class DeployController extends Controller
         if (!$process->isSuccessful()) {
             return response()->json([
                 'status' => 'error',
-                'output' => $process->getErrorOutput(),
-                'process' => $output
+                'output' => $process->getErrorOutput()
             ], 500);
         }
 
         return response()->json([
             'status' => 'success',
-            'output' => $process->getOutput(),
-            'process' => $output
+            'output' => $process->getOutput()
         ]);
     }
 }
