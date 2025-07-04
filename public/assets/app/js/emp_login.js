@@ -1,6 +1,18 @@
 
 $(document).ready(function () {
 
+    // Generate random math CAPTCHA
+    let num1 = Math.floor(Math.random() * 10) + 1;
+    let num2 = Math.floor(Math.random() * 10) + 1;
+    let correctAnswer = num1 + num2;
+    $("#math_question").val(num1 + " + " + num2);
+
+    // Reset CAPTCHA error on input
+    $("#captcha_answer").on("input", function () {
+        $("#captcha_error").text("");
+    });
+
+
     $(document).on('keyup change', 'input, select', function () {
         var inputValue = $(this).val();
         var id = $(this).attr('id');
@@ -30,11 +42,27 @@ $(document).ready(function () {
         });
     });
 
+    $("#refresh_captcha").on("click", function (e) {
+        e.preventDefault();
+        num1 = Math.floor(Math.random() * 10) + 1;
+        num2 = Math.floor(Math.random() * 10) + 1;
+        correctAnswer = num1 + num2;
+        $("#math_question").val(num1 + " + " + num2);
+        $("#captcha_answer").val("");
+        $("#captcha_error").text("");
+    });
 
     $(document).on('submit', '#loginForm', function (e) {
         e.preventDefault();
 
         if (1) {
+
+            // Check CAPTCHA first
+            const userAnswer = parseInt($("#captcha_answer").val());
+            if (isNaN(userAnswer) || userAnswer !== correctAnswer) {
+                $("#captcha_error").text("Incorrect answer. Please try again.");
+                return; // Prevent form submission
+            }
 
             var formData = new FormData($(this)[0]);
             var csrfToken = $('input[name="_token"]').val();

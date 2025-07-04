@@ -9791,6 +9791,11 @@ hr {
     padding: 6px;
 }
 
+.password-btn {
+    margin-top: 1.7rem;
+    margin-left: 2rem;
+}
+
 @media (max-width: 768px) {
     .payment-container {
         padding: 0 15px;
@@ -9831,6 +9836,11 @@ hr {
 
     .unifyMenu {
         margin-top: 17px;
+    }
+
+    .password-btn {
+        margin-top: 1.7rem;
+        margin-left: 0rem;
     }
 }
 
