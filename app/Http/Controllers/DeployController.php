@@ -14,7 +14,7 @@ class DeployController extends Controller
 
         $path = base_path();
 
-        $process = new Process(['git', 'pull', 'origin', $branch]);
+        $process = new Process(['git', 'pull']);
         $process->setWorkingDirectory($path);
         $process->run();
 
