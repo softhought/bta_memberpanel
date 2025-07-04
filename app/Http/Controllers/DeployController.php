@@ -8,24 +8,20 @@ class DeployController extends Controller
 {
     public function pullCode()
     {
-        $branch = 'development';
+        $repoPath = base_path();
+        $keyPath = storage_path('ssh/bta');
 
-        $path = base_path();
+        $process = Process::fromShellCommandline(
+            'GIT_SSH_COMMAND="ssh -i ' . $keyPath . ' -o StrictHostKeyChecking=no" git pull',
+            $repoPath
+        );
 
-        $process = new Process(['git', 'pull']);
-        $process->setWorkingDirectory($path);
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            return response()->json([
-                'status' => 'error',
-                'output' => $process->getErrorOutput()
-            ], 500);
+        if ($process->isSuccessful()) {
+            echo "Git pulled successfully: " . $process->getOutput();
+        } else {
+            echo "Git pull failed: " . $process->getErrorOutput();
         }
-
-        return response()->json([
-            'status' => 'success',
-            'output' => $process->getOutput()
-        ]);
     }
 }
