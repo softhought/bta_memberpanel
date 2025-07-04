@@ -46,7 +46,7 @@
                         <div class="login-wrap p-4 p-lg-5">
                             <div class="d-flex">
                                 <div class="w-100">
-                                    <h3 class="mb-4">Member Sign In</h3>
+                                    <h3 class="mb-4">Student Sign In</h3>
                                 </div>
 
                             </div>
@@ -57,8 +57,8 @@
                                     style="font-weight: 600;letter-spacing: 0.4px;"></div>
 
                                 <div class="form-group mb-3" id="usererr">
-                                    <label class="label" for="name">Member Code</label>
-                                    <input type="text" class="form-control" placeholder="Member Code"
+                                    <label class="label" for="name">Registration No.</label>
+                                    <input type="text" class="form-control" placeholder="Registration No."
                                         name="member_code" id="member_code">
                                     <div class="invalid-feedback d-block text-start px-2" id="member_code_error"></div>
                                 </div>

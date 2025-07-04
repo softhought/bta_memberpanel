@@ -103,7 +103,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'member_code' => 'required',
             'password' => 'required'
-        ]);
+        ], ['member_code.required' => 'The registration no field is required.']);
 
         if ($validator->fails()) {
             return response()->json(['msg_status' => 0, 'errors' => $validator->errors()]);
