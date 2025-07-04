@@ -4,12 +4,14 @@ use App\Http\Controllers\DeployController;
 use App\Http\Controllers\Member\FeesPaymentsController;
 use App\Http\Controllers\Member\MemberController;
 use App\Http\Controllers\Member\TransactionsController;
+use App\Http\Controllers\Admin\AdminTransactionsController;
 use Illuminate\Support\Facades\Route;
 
 Route::request('webhook/deploy', [DeployController::class, 'pullCode']);
 /** Admin Section */
 Route::prefix('admin')->middleware(['admin_auth'])->group(function () {
-
+    Route::request('fetchUserTransactionView', [AdminTransactionsController::class, 'fetchUserTransactionView']);
+    Route::request('fetchTransactions', [AdminTransactionsController::class, 'fetchTransactions']);
 });
 
 /** Member Section */
