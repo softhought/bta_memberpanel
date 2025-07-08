@@ -14,9 +14,9 @@
 
 @php
     $receipt = isset($paymentMaster) && $paymentMaster->receipt ? $paymentMaster->receipt : null;
-    $receiptDetails = $receipt && $receipt->receiptDetails ? $receipt->receiptDetails : collect();
-    $lastDetail = $receiptDetails->last();
-    $lastMonth = $lastDetail && $lastDetail->month ? $lastDetail->month : null;
+    $lastMonth = $receipt && $receipt->month ? $receipt->month : null;
+    $lastMonthId = $lastMonth && isset($lastMonth->id) ? $lastMonth->id : 1;
+    $lastYear = $receipt && isset($receipt->year) ? $receipt->year : '2020';
 @endphp
 
 <div class="container">
