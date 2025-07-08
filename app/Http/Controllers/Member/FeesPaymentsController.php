@@ -8,6 +8,8 @@ use App\Models\Bank;
 use App\Models\Component;
 use App\Models\ComponentMonthlyDetail;
 use App\Models\Member;
+use App\Models\MemberReceiptDetail;
+use App\Models\MemberReceiptMaster;
 use App\Models\PaymentMaster;
 use App\Models\PaymentMode;
 use Illuminate\Http\Request;
@@ -28,10 +30,32 @@ class FeesPaymentsController extends Controller
 
         $data['paymentMaster'] = null;
         if ($enrollment) {
-            $data['paymentMaster'] = PaymentMaster::where('enrollment_id', $enrollment->enrollment_id)
-                ->where('member_id', $memberId)
-                ->orderByDesc('payment_date')
+            $paymentMaster = PaymentMaster::query()
+                ->from('payment_master as PM')
+                ->leftJoin('payment_details as PD', 'PD.payment_master_id', '=', 'PM.payment_id')
+                ->leftJoin('member_receipt_master as MRM', 'MRM.receipt_id', '=', 'PM.receipt_master_id')
+                ->leftJoin('member_receipt_details as MRD', 'MRD.receipt_master_id', '=', 'MRM.receipt_id')
+                ->leftJoin('payment_mode_details as PMD', 'PMD.id', '=', 'PD.payment_mode_id')
+                ->leftJoin('programme_commercial_component as PCC', 'PCC.component_id', '=', 'MRD.component_id')
+                ->leftJoin('member_master as MM', 'MM.member_id', '=', 'PM.member_id')
+                ->leftJoin('month_master as MNM', 'MNM.id', '=', 'MRD.month_id')
+                ->where('PM.enrollment_id', $enrollment->enrollment_id)
+                ->where('PM.member_id', $memberId)
+                ->where('PM.is_gst_bill', 'N')
+                ->whereNotIn('PCC.component_id', function ($query) use ($enrollment) {
+                    $query->select('component_id')
+                        ->from('programme_commercial_component')
+                        ->where('programme_id', $enrollment->programme_id)
+                        ->where('is_security', 'Y');
+                })
+                ->select('PM.*')
+                ->groupBy('MRD.receipt_dtl_id')
+                ->orderBy('MRD.year')
+                ->orderBy('MRD.month_id')
                 ->first();
+
+            $paymentMaster->receipt = MemberReceiptDetail::where('receipt_master_id', $paymentMaster->receipt_master_id)->orderByDesc('receipt_master_id')->first();
+            $data['paymentMaster'] = $paymentMaster;
         }
 
         $data['paymentMode'] = PaymentMode::all();
@@ -54,10 +78,32 @@ class FeesPaymentsController extends Controller
 
         $data['paymentMaster'] = null;
         if ($enrollment) {
-            $data['paymentMaster'] = PaymentMaster::where('enrollment_id', $enrollment->enrollment_id)
-                ->where('member_id', $memberId)
-                ->orderByDesc('payment_date')
+            $paymentMaster = PaymentMaster::query()
+                ->from('payment_master as PM')
+                ->leftJoin('payment_details as PD', 'PD.payment_master_id', '=', 'PM.payment_id')
+                ->leftJoin('member_receipt_master as MRM', 'MRM.receipt_id', '=', 'PM.receipt_master_id')
+                ->leftJoin('member_receipt_details as MRD', 'MRD.receipt_master_id', '=', 'MRM.receipt_id')
+                ->leftJoin('payment_mode_details as PMD', 'PMD.id', '=', 'PD.payment_mode_id')
+                ->leftJoin('programme_commercial_component as PCC', 'PCC.component_id', '=', 'MRD.component_id')
+                ->leftJoin('member_master as MM', 'MM.member_id', '=', 'PM.member_id')
+                ->leftJoin('month_master as MNM', 'MNM.id', '=', 'MRD.month_id')
+                ->where('PM.enrollment_id', $enrollment->enrollment_id)
+                ->where('PM.member_id', $memberId)
+                ->where('PM.is_gst_bill', 'N')
+                ->whereNotIn('PCC.component_id', function ($query) use ($enrollment) {
+                    $query->select('component_id')
+                        ->from('programme_commercial_component')
+                        ->where('programme_id', $enrollment->programme_id)
+                        ->where('is_security', 'Y');
+                })
+                ->select('PM.*')
+                ->groupBy('MRD.receipt_dtl_id')
+                ->orderBy('MRD.year')
+                ->orderBy('MRD.month_id')
                 ->first();
+
+            $paymentMaster->receipt = MemberReceiptDetail::where('receipt_master_id', $paymentMaster->receipt_master_id)->orderByDesc('receipt_master_id')->first();
+            $data['paymentMaster'] = $paymentMaster;
         }
 
         $data['paymentMode'] = PaymentMode::all();
@@ -80,10 +126,32 @@ class FeesPaymentsController extends Controller
 
         $data['paymentMaster'] = null;
         if ($enrollment) {
-            $data['paymentMaster'] = PaymentMaster::where('enrollment_id', $enrollment->enrollment_id)
-                ->where('member_id', $memberId)
-                ->orderByDesc('payment_date')
+            $paymentMaster = PaymentMaster::query()
+                ->from('payment_master as PM')
+                ->leftJoin('payment_details as PD', 'PD.payment_master_id', '=', 'PM.payment_id')
+                ->leftJoin('member_receipt_master as MRM', 'MRM.receipt_id', '=', 'PM.receipt_master_id')
+                ->leftJoin('member_receipt_details as MRD', 'MRD.receipt_master_id', '=', 'MRM.receipt_id')
+                ->leftJoin('payment_mode_details as PMD', 'PMD.id', '=', 'PD.payment_mode_id')
+                ->leftJoin('programme_commercial_component as PCC', 'PCC.component_id', '=', 'MRD.component_id')
+                ->leftJoin('member_master as MM', 'MM.member_id', '=', 'PM.member_id')
+                ->leftJoin('month_master as MNM', 'MNM.id', '=', 'MRD.month_id')
+                ->where('PM.enrollment_id', $enrollment->enrollment_id)
+                ->where('PM.member_id', $memberId)
+                ->where('PM.is_gst_bill', 'N')
+                ->whereNotIn('PCC.component_id', function ($query) use ($enrollment) {
+                    $query->select('component_id')
+                        ->from('programme_commercial_component')
+                        ->where('programme_id', $enrollment->programme_id)
+                        ->where('is_security', 'Y');
+                })
+                ->select('PM.*')
+                ->groupBy('MRD.receipt_dtl_id')
+                ->orderBy('MRD.year')
+                ->orderBy('MRD.month_id')
                 ->first();
+
+            $paymentMaster->receipt = MemberReceiptDetail::where('receipt_master_id', $paymentMaster->receipt_master_id)->orderByDesc('receipt_master_id')->first();
+            $data['paymentMaster'] = $paymentMaster;
         }
 
         $data['paymentMode'] = PaymentMode::all();
@@ -106,10 +174,32 @@ class FeesPaymentsController extends Controller
 
         $data['paymentMaster'] = null;
         if ($enrollment) {
-            $data['paymentMaster'] = PaymentMaster::where('enrollment_id', $enrollment->enrollment_id)
-                ->where('member_id', $memberId)
-                ->orderByDesc('payment_date')
+            $paymentMaster = PaymentMaster::query()
+                ->from('payment_master as PM')
+                ->leftJoin('payment_details as PD', 'PD.payment_master_id', '=', 'PM.payment_id')
+                ->leftJoin('member_receipt_master as MRM', 'MRM.receipt_id', '=', 'PM.receipt_master_id')
+                ->leftJoin('member_receipt_details as MRD', 'MRD.receipt_master_id', '=', 'MRM.receipt_id')
+                ->leftJoin('payment_mode_details as PMD', 'PMD.id', '=', 'PD.payment_mode_id')
+                ->leftJoin('programme_commercial_component as PCC', 'PCC.component_id', '=', 'MRD.component_id')
+                ->leftJoin('member_master as MM', 'MM.member_id', '=', 'PM.member_id')
+                ->leftJoin('month_master as MNM', 'MNM.id', '=', 'MRD.month_id')
+                ->where('PM.enrollment_id', $enrollment->enrollment_id)
+                ->where('PM.member_id', $memberId)
+                ->where('PM.is_gst_bill', 'N')
+                ->whereNotIn('PCC.component_id', function ($query) use ($enrollment) {
+                    $query->select('component_id')
+                        ->from('programme_commercial_component')
+                        ->where('programme_id', $enrollment->programme_id)
+                        ->where('is_security', 'Y');
+                })
+                ->select('PM.*')
+                ->groupBy('MRD.receipt_dtl_id')
+                ->orderBy('MRD.year')
+                ->orderBy('MRD.month_id')
                 ->first();
+
+            $paymentMaster->receipt = MemberReceiptDetail::where('receipt_master_id', $paymentMaster->receipt_master_id)->orderByDesc('receipt_master_id')->first();
+            $data['paymentMaster'] = $paymentMaster;
         }
 
         $data['paymentMode'] = PaymentMode::all();

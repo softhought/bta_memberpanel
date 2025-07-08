@@ -13,11 +13,11 @@
 @endif
 
 @php
-    $receipt = $paymentMaster && $paymentMaster->receipt ? $paymentMaster->receipt : null;
-    $lastDetail = $receipt && $receipt->receiptDetails ? $receipt->receiptDetails->last() : null;
-    $lastMonth = $lastDetail && $lastDetail->month ? $lastDetail->month : null;
+    $receipt = isset($paymentMaster) && $paymentMaster->receipt ? $paymentMaster->receipt : null;
+    $lastMonth = $receipt && $receipt->month ? $receipt->month : null;
+    $lastMonthId = $lastMonth && isset($lastMonth->id) ? $lastMonth->id : 1;
+    $lastYear = $receipt && isset($receipt->year) ? $receipt->year : '2020';
 @endphp
-
 <div class="container">
     <div class="accordion-item">
         <div class="accordion-body">
