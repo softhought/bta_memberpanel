@@ -33,15 +33,13 @@
                 <x-input-component column="col-md-2" type="text" label="" name="month" id="month"
                     class="custom-input-class onlynumber" placeholder="No. of Months" value="" />
 
-                <input type="hidden" name="last_paid_month_id" id="last_paid_month_id"
-                    value="{{ $lastMonth ? $lastMonth->id : 1 }}">
-                <input type="hidden" name="last_paid_year" id="last_paid_year"
-                    value="{{ $lastDetail ? $lastDetail->year : '2020' }}">
+                <input type="hidden" name="last_paid_month_id" id="last_paid_month_id" value="{{ $lastMonthId }}">
+                <input type="hidden" name="last_paid_year" id="last_paid_year" value="{{ $lastYear }}">
 
-                @if ($lastMonth && $lastMonth->month_name)
+                @if ($lastMonth && isset($lastMonth->month_name))
                     <span>months
                         <span class="text-success fw-bold p-text">
-                            <b>(You Paid up to {{ $lastMonth->month_name }} {{ $lastDetail->year }})</b>
+                            <b>(You Paid up to {{ $lastMonth->month_name }} {{ $lastYear }})</b>
                         </span>
                     </span>
                 @endif
