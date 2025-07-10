@@ -257,7 +257,7 @@
                 </x-modal-full>
 
                 @if ($forceChangePassword)
-                    <style>
+                    {{-- <style>
                         .custom-modal {
                             position: fixed;
                             top: 0;
@@ -316,7 +316,7 @@
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </div> --}}
 
                     {{-- <script>
                         $(document).ready(function() {
