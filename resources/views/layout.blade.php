@@ -318,7 +318,7 @@
                         </div>
                     </div>
 
-                    <script>
+                    {{-- <script>
                         $(document).ready(function() {
                             $('#customChangePasswordModal').fadeIn();
 
@@ -327,7 +327,7 @@
                                 window.location.href = '{{ url('admin/logout/2') }}';
                             });
                         });
-                    </script>
+                    </script> --}}
                 @endif
 
 
