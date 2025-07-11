@@ -349,7 +349,7 @@
                         style="text-decoration: none; color: #000;">Terms & Conditions</a>
                 </p>
                 <p style="margin: 0;">Yuba Bharati Krirangan, Street Number 2, beside Gate, JB Block, Sector 3,
-                    Bidhannagar, Kolkata, West Bengal 700106</p>
+                    Bidhannagar, Kolkata, West Bengal 700098</p>
             </footer>
 
         </div>

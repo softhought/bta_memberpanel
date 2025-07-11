@@ -158,7 +158,7 @@
                     </p>
                     <p class="mb-0 footer-text">Legal Name: <strong>Bengal Tennis Association</strong></p>
                     <p class="footer-text">Yuba Bharati Krirangan, Street Number 2, beside Gate, JB Block, Sector 3,
-                        Bidhannagar, Kolkata, West Bengal 700106</p>
+                        Bidhannagar, Kolkata, West Bengal 700098</p>
                 </div>
             </footer>
         </div>
