@@ -186,4 +186,49 @@ class MemberController extends Controller
 
         return back()->with('success', 'Thank you! Your enquiry has been submitted.');
     }
+
+
+
+
+    public function profile()
+    {
+        $btaAdmin = session()->get('btaMember');
+        $memberId = $btaAdmin['memberId'];
+
+        $data['member'] = Member::find($memberId);
+
+        $data['bodyView'] = view('member.profile', $data);
+        return $this->renderView($data);
+    }
+
+    public function profileAction(Request $request)
+    {
+        $btaAdmin = session()->get('btaMember');
+        $memberId = $btaAdmin['memberId'];
+
+        $number = $request->post('number');
+        $email = $request->post('email');
+        $address = $request->post('address');
+
+        $result = Member::find($memberId);
+
+        $validator = Validator::make($request->all(), [
+            'number' => 'required',
+            'email' => 'required|email',
+            'address' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $error = $validator->errors();
+            return response()->json(['status' => Constant::VALID_FAILURE, 'errors' => $error]);
+        } else {
+
+            $result->primary_mobile = $number;
+            $result->primary_email = $email;
+            $result->address_one = $address;
+            $result->save();
+
+            return response()->json(['status' => Constant::SUCCESS, 'message' => 'Profile successfully updated.']);
+        }
+    }
 }

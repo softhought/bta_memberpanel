@@ -41,6 +41,7 @@ class PaymentMaster extends BaseModel
             ->leftJoin('users', 'users.id', '=', 'MRM.inactive_by')
             ->where('PM.enrollment_id', $enrollmentId)
             ->where('PM.is_gst_bill', 'Y')
+            ->where('MRM.is_active', 'Y')
             ->get();
 
         return $result;
@@ -79,6 +80,7 @@ class PaymentMaster extends BaseModel
                     ->where('programme_id', $programId)
                     ->where('is_security', 'Y');
             })
+            ->where('MRM.is_active', 'Y')
             ->groupBy('PCC.component_id')->get();
     }
 
@@ -115,6 +117,7 @@ class PaymentMaster extends BaseModel
                     ->where('programme_id', $programId)
                     ->where('is_security', 'Y');
             })
+            ->where('MRM.is_active', 'Y')
             ->groupBy('MRD.receipt_dtl_id')
             ->orderByRaw('MRD.year, MRD.month_id')
             ->get();

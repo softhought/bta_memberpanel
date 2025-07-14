@@ -217,7 +217,7 @@
 
         <div class="profile-info">
             <h1 class="profile-name">{{ ucwords(strtolower($member->member_fname . ' ' . $member->member_lname)) }}</h1>
-            <p class="profile-subtitle">Student at {{ $member->school }}</p>
+            <p class="profile-subtitle">Student at {{ $member->address_one }}</p>
             <div class="member-code">{{ $member->member_code }}</div>
         </div>
     </div>

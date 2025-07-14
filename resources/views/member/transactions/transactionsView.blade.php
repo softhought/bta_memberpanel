@@ -29,7 +29,6 @@
                         <th>Payment No.</th>
                         <th>Particular</th>
                         <th>Waive</th>
-                        <th>Status</th>
                         <th>Mode</th>
                         <th>Amount</th>
                         <th>Discount</th>
@@ -46,15 +45,6 @@
                                 <td>{{ $list->payment_no }}</td>
                                 <td class="text-center">{{ $list->description }}</td>
                                 <td>{{ $list->is_wave_receipt === 'Y' ? 'Yes' : 'No' }}</td>
-                                <td>
-                                    @if (!empty($list->IsActive) && $list->IsActive === 'N')
-                                        <span class="status-badge badge-danger">
-                                            Cancelled By {{ $list->cancelledBy ?? '' }}
-                                            <br>
-                                            Note: {{ $list->InActiveNote ?? '' }}
-                                        </span>
-                                    @endif
-                                </td>
                                 <td>{{ $list->payment_mode }}</td>
                                 <td class="currency">{{ number_format($list->item_amount, 2) }}</td>
                                 <td>{{ number_format($list->discount, 2) }}</td>
@@ -90,7 +80,6 @@
                         <th>Payment No.</th>
                         <th>Particular</th>
                         <th>Waive</th>
-                        <th>Status</th>
                         <th>Mode</th>
                         <th>Amount</th>
                         <th>Discount</th>
@@ -107,15 +96,6 @@
                                 <td>{{ $list->payment_no }}</td>
                                 <td class="text-center">{{ $list->description }}</td>
                                 <td>{{ $list->is_waiver === 'Y' ? 'Yes' : 'No' }}</td>
-                                <td>
-                                    @if (!empty($list->IsActive) && $list->IsActive === 'N')
-                                        <span class="status-badge badge-danger">
-                                            Cancelled By {{ $list->cancelledBy ?? '' }}
-                                            <br>
-                                            Note: {{ $list->InActiveNote ?? '' }}
-                                        </span>
-                                    @endif
-                                </td>
                                 <td>{{ $list->payment_mode }}</td>
                                 <td class="currency">{{ number_format($list->total_amount, 2) }}</td>
                                 <td>{{ number_format($list->total_discount, 2) }}</td>
@@ -152,7 +132,6 @@
                         <th>Particular</th>
                         <th>Month/Year</th>
                         <th>Waive</th>
-                        <th>Status</th>
                         <th>Mode</th>
                         <th>Amount</th>
                         {{-- <th>CGST</th>
@@ -169,15 +148,6 @@
                                 <td class="text-center">{{ $list->description }}</td>
                                 <td class="text-center">{{ "{$list->short_name} {$list->year}" }}</td>
                                 <td>{{ $list->is_waiver === 'Y' ? 'Yes' : 'No' }}</td>
-                                <td>
-                                    @if (!empty($list->IsActive) && $list->IsActive === 'N')
-                                        <span class="status-badge badge-danger">
-                                            Cancelled By {{ $list->cancelledBy ?? '' }}
-                                            <br>
-                                            Note: {{ $list->InActiveNote ?? '' }}
-                                        </span>
-                                    @endif
-                                </td>
                                 <td>{{ $list->payment_mode }}</td>
                                 <td class="currency">{{ number_format($list->taxable_amount, 2) }}</td>
                                 {{-- <td>{{ number_format($list->cgst_amount, 2) }}</td>

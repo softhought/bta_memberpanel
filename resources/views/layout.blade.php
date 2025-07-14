@@ -183,6 +183,12 @@
                                     <div class="admin-settings">
                                         <ul class="admin-settings-list">
                                             <li>
+                                                <a href="{{ url("{$slug}/profile") }}">
+                                                    <i class="fa-solid fa-user"></i>
+                                                    <span class="text-name">Profile</span>
+                                                </a>
+                                            </li>
+                                            <li>
                                                 <a href="{{ url("{$slug}/changePassword") }}">
                                                     <i class="fa-solid fa-lock"></i>
                                                     <span class="text-name">Change Password</span>
