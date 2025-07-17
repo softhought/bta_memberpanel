@@ -58,6 +58,7 @@ class FeesPaymentsController extends Controller
             $data['paymentMaster'] = $paymentMaster;
         }
 
+        $data['enrollment'] = $enrollment;
         $data['paymentMode'] = PaymentMode::all();
         $data['bank'] = Bank::all();
 
@@ -106,6 +107,7 @@ class FeesPaymentsController extends Controller
             $data['paymentMaster'] = $paymentMaster;
         }
 
+        $data['enrollment'] = $enrollment;
         $data['paymentMode'] = PaymentMode::all();
         $data['bank'] = Bank::all();
 
@@ -149,11 +151,11 @@ class FeesPaymentsController extends Controller
                 ->orderBy('MRD.year')
                 ->orderBy('MRD.month_id')
                 ->first();
+                $paymentMaster->receipt = MemberReceiptDetail::where('receipt_master_id', $paymentMaster->receipt_master_id)->orderByDesc('receipt_master_id')->first();
+                $data['paymentMaster'] = $paymentMaster;
+            }
 
-            $paymentMaster->receipt = MemberReceiptDetail::where('receipt_master_id', $paymentMaster->receipt_master_id)->orderByDesc('receipt_master_id')->first();
-            $data['paymentMaster'] = $paymentMaster;
-        }
-
+        $data['enrollment'] = $enrollment;
         $data['paymentMode'] = PaymentMode::all();
         $data['bank'] = Bank::all();
 
@@ -202,6 +204,7 @@ class FeesPaymentsController extends Controller
             $data['paymentMaster'] = $paymentMaster;
         }
 
+        $data['enrollment'] = $enrollment;
         $data['paymentMode'] = PaymentMode::all();
         $data['bank'] = Bank::all();
 

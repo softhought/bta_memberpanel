@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Member;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -10,24 +11,30 @@ class PaymentController extends Controller
 {
     public function payment(Request $request)
     {
-        pre($request->all());
-        // $dataArray = [
-        //     'member_code' => 'M00014',
-        //     'member_name' => 'Suman Dey',
-        //     'mobile_no' => '8944961893',
-        //     'email' => 'sumandey8976@gmail.com',
-        //     'programme_code' => '1',
-        //     'group_code' => '1',
-        //     'amount' => 1
-        // ];
+        $memberInfo = Member::find($request->post('member_id'));
+        $data = $request->all();
 
-        // $url = $this->initiatePayment($dataArray);
+        $memberCode = isset($memberInfo->member_code) && !empty($memberInfo->member_code) ? $memberInfo->member_code : 'N/A';
+        $mobileNo = isset($memberInfo->primary_mobile) && !empty($memberInfo->primary_mobile) ? $memberInfo->primary_mobile : 'N/A';
+        $email = isset($memberInfo->primary_email) && !empty($memberInfo->primary_email) ? $memberInfo->primary_email : 'N/A';
 
-        // return "
-        //     <script>
-        //             window.location.href = '$url';
-        //     </script>
-        // ";
+        $dataArray = array_merge($data, [
+            'member_code' => $memberCode,
+            'member_name' => "{$memberInfo->member_fname} {$memberInfo->member_lname}",
+            'mobile_no' => $mobileNo,
+            'email' => $email,
+            'programme_code' => $data['programme_id'],
+            'group_code' => $data['group_id'],
+            'amount' => is_array($data['amount']) ? array_sum($data['amount']) : 0,
+        ]);
+
+        $url = $this->initiatePayment($dataArray);
+
+        return "
+            <script>
+                    window.location.href = '$url';
+            </script>
+        ";
     }
 
     public function initiatePayment($dataArray = [])
