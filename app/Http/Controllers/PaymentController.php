@@ -34,47 +34,54 @@ class PaymentController extends Controller
     {
         $aesKey = "3900341616701060";
         $subMerchantId = "45";
-        $marchentId = "391678";
+        $merchantId = "391678";
 
         try {
             DB::beginTransaction();
 
             $serialMaster = DB::table('serialmaster')->where('moduleTag', 'TR')->first();
             $transaction_id = $serialMaster->module . sprintf('%05d', $serialMaster->lastnumber);
-            array_merge($dataArray, [
-                'transaction_number' => $transaction_id,
-            ]);
+            $dataArray['transaction_number'] = $transaction_id;
 
+            // ✅ Mandatory fields: transaction_id|subMerchantId|amount|full_name|email (total 5)
             $mandatoryFields = [
                 $transaction_id,
                 $subMerchantId,
                 $dataArray['donation_amount'],
-                $dataArray['full_name'],
-                $dataArray['mobile_no'],
-                $dataArray['email'],
-                $dataArray['address'] ?? 'kolkata'
+                $dataArray['full_name'],  // 4th field
+                $dataArray['email'],      // 5th field
             ];
 
-            // Encrypt each section
+            // ✅ Optional fields: mobile_no|email|x|x
+            $optionalFields = [
+                $dataArray['mobile_no'],
+                $dataArray['email'],
+                'x',
+                'x'
+            ];
+
+            // ✅ Encrypt each block
             $encryptedMandatoryFields = $this->aes128Encrypt(implode('|', $mandatoryFields), $aesKey);
+            $encryptedOptionalFields = $this->aes128Encrypt(implode('|', $optionalFields), $aesKey);
             $encryptedReturnUrl = $this->aes128Encrypt('https://members.btaportal.in/response', $aesKey);
-            $encryptedReferenceNo = $this->aes128Encrypt($mandatoryFields[0], $aesKey);
-            $encryptedSubMerchantId = $this->aes128Encrypt($mandatoryFields[1], $aesKey);
-            $encryptedAmount = $this->aes128Encrypt($mandatoryFields[2], $aesKey);
-            $encryptedPayMode = $this->aes128Encrypt('9', $aesKey);
+            $encryptedReferenceNo = $this->aes128Encrypt($transaction_id, $aesKey);
+            $encryptedSubMerchantId = $this->aes128Encrypt($subMerchantId, $aesKey);
+            $encryptedAmount = $this->aes128Encrypt($dataArray['donation_amount'], $aesKey);
+            $encryptedPayMode = $this->aes128Encrypt('9', $aesKey); // 9 = Netbanking/Card/UPI etc.
 
-            // Construct final encrypted URL
-            $encryptedUrl = "https://eazypay.icicibank.com/EazyPG?merchantid="
-                . $marchentId
-                . "&mandatory fields=" . $encryptedMandatoryFields
-                . "&optional fields="
-                . "&returnurl=" . $encryptedReturnUrl
-                . "&Reference No=" . $encryptedReferenceNo
-                . "&submerchantid=" . $encryptedSubMerchantId
-                . "&transaction amount=" . $encryptedAmount
-                . "&paymode=" . $encryptedPayMode;
+            // ✅ Construct correct final encrypted URL (no spaces in keys!)
+            $encryptedUrl = "https://eazypay.icicibank.com/EazyPG?"
+                . "merchantid=" . $merchantId
+                . "&mandatoryfields=" . urlencode($encryptedMandatoryFields)
+                . "&optionalfields=" . urlencode($encryptedOptionalFields)
+                . "&returnurl=" . urlencode($encryptedReturnUrl)
+                . "&ReferenceNo=" . urlencode($encryptedReferenceNo)
+                . "&submerchantid=" . urlencode($encryptedSubMerchantId)
+                . "&transactionamount=" . urlencode($encryptedAmount)
+                . "&paymode=" . urlencode($encryptedPayMode);
 
-            DB::table('payment_request')->insertGetId([
+            // ✅ Store in DB
+            DB::table('payment_request')->insert([
                 'transaction_id' => $transaction_id,
                 'order_id' => $dataArray['request_id'],
                 'paymeny_for' => 'Donation',
@@ -96,6 +103,7 @@ class PaymentController extends Controller
             return $e->getMessage();
         }
     }
+
 
     public function paymentResponse(Request $request)
     {
