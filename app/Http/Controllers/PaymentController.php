@@ -66,7 +66,7 @@ class PaymentController extends Controller
             // ✅ Encrypt each block
             $encryptedMandatoryFields = $this->aes128Encrypt(implode('|', $mandatoryFields), $aesKey);
             $encryptedOptionalFields = $this->aes128Encrypt(implode('|', $optionalFields), $aesKey);
-            $encryptedReturnUrl = $this->aes128Encrypt('https://members.btaportal.in/member/payment-response', $aesKey);
+            $encryptedReturnUrl = $this->aes128Encrypt('https://members.btaportal.in/payment-response', $aesKey);
             $encryptedReferenceNo = $this->aes128Encrypt($transaction_id, $aesKey);
             $encryptedSubMerchantId = $this->aes128Encrypt($subMerchantId, $aesKey);
             $encryptedAmount = $this->aes128Encrypt($dataArray['amount'], $aesKey);
@@ -86,7 +86,7 @@ class PaymentController extends Controller
             // Build plain values for storage
             $plainMandatoryFields = implode('|', $mandatoryFields);
             $plainOptionalFields = implode('|', $optionalFields);
-            $plainReturnUrl = 'https://members.btaportal.in/member/payment-response';
+            $plainReturnUrl = 'https://members.btaportal.in/payment-response';
             $plainReferenceNo = $transaction_id;
             $plainSubMerchantId = $subMerchantId;
             $plainAmount = $dataArray['amount'];
