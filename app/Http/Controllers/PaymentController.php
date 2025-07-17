@@ -105,7 +105,7 @@ class PaymentController extends Controller
     }
 
 
-    public function paymentResponse(Request $request)
+    public function paymentResponse(Request $request, $response = NULL)
     {
         pre($request->all());
         echo $this->getResponseMessage($request->get('Response_Code'));
