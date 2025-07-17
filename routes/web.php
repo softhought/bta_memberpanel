@@ -38,3 +38,4 @@ Route::prefix('member')->middleware(['member_auth'])->group(function () {
 });
 
 Route::get('ipayments', [PaymentController::class, 'payment']);
+Route::post('/', [PaymentController::class, 'paymentResponse']);

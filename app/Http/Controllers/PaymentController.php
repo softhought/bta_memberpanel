@@ -22,7 +22,12 @@ class PaymentController extends Controller
         ];
 
         $url = $this->initiatePayment($dataArray);
-        echo $url;exit;
+
+        return $HTML = "
+            <script>
+                    window.location.href = '$url';
+            </script>
+        ";
     }
 
     public function initiatePayment($dataArray = [])
@@ -90,6 +95,11 @@ class PaymentController extends Controller
             DB::rollBack();
             return $e->getMessage();
         }
+    }
+
+    public function paymentResponse(Request $request)
+    {
+        pre($request->all());
     }
 
     public function aes128Encrypt($str, $key)
