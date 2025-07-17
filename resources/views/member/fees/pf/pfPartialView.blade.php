@@ -18,58 +18,59 @@
     $lastMonthId = $lastMonth && isset($lastMonth->id) ? $lastMonth->id : 1;
     $lastYear = $receipt && isset($receipt->year) ? $receipt->year : '2020';
 @endphp
+<form method="POST" id="paymentForm">
+    <div class="container">
+        <div class="accordion-item">
+            <div class="accordion-body">
 
-<div class="container">
-    <div class="accordion-item">
-        <div class="accordion-body">
+                <div class="section-header">
+                    Monthly Payment
+                </div>
 
-            <div class="section-header">
-                Monthly Payment
-            </div>
+                <div class="d-flex align-items-center">
+                    <label class="m-3">Monthly Fees for</label>
 
-            <div class="d-flex align-items-center">
-                <label class="m-3">Monthly Fees for</label>
+                    <x-input-component column="col-md-2" type="text" label="" name="month" id="month"
+                        class="custom-input-class onlynumber" placeholder="No. of Months" value="" />
 
-                <x-input-component column="col-md-2" type="text" label="" name="month" id="month"
-                    class="custom-input-class onlynumber" placeholder="No. of Months" value="" />
+                    <input type="hidden" name="last_paid_month_id" id="last_paid_month_id" value="{{ $lastMonthId }}">
+                    <input type="hidden" name="last_paid_year" id="last_paid_year" value="{{ $lastYear }}">
 
-                <input type="hidden" name="last_paid_month_id" id="last_paid_month_id" value="{{ $lastMonthId }}">
-                <input type="hidden" name="last_paid_year" id="last_paid_year" value="{{ $lastYear }}">
-
-                @if ($lastMonth && isset($lastMonth->month_name))
-                    <span>months
-                        <span class="text-success fw-bold p-text">
-                            <b>(You Paid up to {{ $lastMonth->month_name }} {{ $lastYear }})</b>
+                    @if ($lastMonth && isset($lastMonth->month_name))
+                        <span>months
+                            <span class="text-success fw-bold p-text">
+                                <b>(You Paid up to {{ $lastMonth->month_name }} {{ $lastYear }})</b>
+                            </span>
                         </span>
-                    </span>
-                @endif
-            </div>
+                    @endif
+                </div>
 
-            <div id="month-container"></div>
-        </div>
-    </div>
-
-    <div style="margin-right: -13px;">
-        <div class="text-end">
-            <input type="hidden" id="total_amount_value" value="0">
-            <input type="hidden" id="total_payable_value" value="0">
-
-            <div class="summary-box p-3 mt-4">
-                <p><strong>Total Amount :</strong><span id="total_amount">0.00</span></p>
-                <p class="highlight"><strong>Total Payment Amount :</strong><span id="total_payable">0.00</span></p>
+                <div id="month-container"></div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-11"></div>
-            <div class="col-md-1">
-                <div class="text-end">
-                    <button type="submit" disabled id="paybtn" class="btn btn-sm btn-primary">Pay</button>
+        <div style="margin-right: -13px;">
+            <div class="text-end">
+                <input type="hidden" id="total_amount_value" value="0">
+                <input type="hidden" id="total_payable_value" value="0">
+
+                <div class="summary-box p-3 mt-4">
+                    <p><strong>Total Amount :</strong><span id="total_amount">0.00</span></p>
+                    <p class="highlight"><strong>Total Payment Amount :</strong><span id="total_payable">0.00</span></p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-11"></div>
+                <div class="col-md-1">
+                    <div class="text-end">
+                        <button type="submit" disabled id="paybtn" class="btn btn-sm btn-primary">Pay</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</form>
 
 <script>
     $(document).ready(function() {
