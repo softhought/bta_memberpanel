@@ -22,9 +22,10 @@ class PaymentController extends Controller
         ];
 
         $url = $this->initiatePayment($dataArray);
-
-        $js = "<script>window.location.href = '{$url}';</script>";
-        return response($js, 200)->header('Content-Type', 'text/html');
+        return
+            "<script>
+                window.location.href = '$url';
+            </script>";
     }
 
     public function initiatePayment($dataArray = [])
