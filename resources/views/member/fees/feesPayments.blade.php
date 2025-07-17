@@ -116,7 +116,7 @@
         $('.tab-button.active').trigger('click');
 
         ajaxCall('paymentForm', 'ipayments', function(response) {
-            showToast(response.message);
+            window.location.href = response.encryptedUrl;
         });
     });
 

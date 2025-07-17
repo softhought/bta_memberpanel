@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\Constant;
 use App\Models\Member;
 use Exception;
 use Illuminate\Http\Request;
@@ -28,13 +29,9 @@ class PaymentController extends Controller
             'amount' => is_array($data['amount']) ? array_sum($data['amount']) : 0,
         ]);
 
-        $url = $this->initiatePayment($dataArray);
+        $encryptedUrl = $this->initiatePayment($dataArray);
 
-        return "
-            <script>
-                    window.location.href = '$url';
-            </script>
-        ";
+        return response()->json(['status' => Constant::SUCCESS, 'encryptedUrl' => $encryptedUrl]);
     }
 
     public function initiatePayment($dataArray = [])
