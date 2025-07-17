@@ -71,12 +71,12 @@ class PaymentController extends Controller
             // ✅ Construct correct final encrypted URL (no spaces in keys!)
             $encryptedUrl = "https://eazypay.icicibank.com/EazyPG?"
                 . "merchantid=" . $merchantId
-                . "&mandatoryfields=" . $encryptedMandatoryFields
-                . "&optionalfields=" . $encryptedOptionalFields
+                . "&mandatory fields=" . $encryptedMandatoryFields
+                . "&optional fields=" . $encryptedOptionalFields
                 . "&returnurl=" . $encryptedReturnUrl
-                . "&ReferenceNo=" . $encryptedReferenceNo
+                . "&Reference No=" . $encryptedReferenceNo
                 . "&submerchantid=" . $encryptedSubMerchantId
-                . "&transactionamount=" . $encryptedAmount
+                . "&transaction amount=" . $encryptedAmount
                 . "&paymode=" . $encryptedPayMode;
 
             // Build plain values for storage
@@ -91,12 +91,12 @@ class PaymentController extends Controller
             // Build plain URL for storage
             $plainUrl = "https://eazypay.icicibank.com/EazyPG?"
                 . "merchantid=" . $merchantId
-                . "&mandatoryfields=" . $plainMandatoryFields
-                . "&optionalfields=" . $plainOptionalFields
+                . "&mandatory fields=" . $plainMandatoryFields
+                . "&optional fields=" . $plainOptionalFields
                 . "&returnurl=" . $plainReturnUrl
-                . "&ReferenceNo=" . $plainReferenceNo
+                . "&Reference No=" . $plainReferenceNo
                 . "&submerchantid=" . $plainSubMerchantId
-                . "&transactionamount=" . $plainAmount
+                . "&transaction amount=" . $plainAmount
                 . "&paymode=" . $plainPayMode;
 
 
