@@ -20,6 +20,11 @@
 @endphp
 
 <form method="POST" id="paymentForm">
+    <input type="hidden" name="member_id" value="{{ $enrollment->member_id }}">
+    <input type="hidden" name="enrollment_id" value="{{ $enrollment->enrollment_id }}">
+    <input type="hidden" name="programme_id" value="{{ $enrollment->programme_id }}">
+    <input type="hidden" name="group_id" value="{{ $enrollment->group_id }}">
+
     <div class="container">
         <div class="accordion-item">
             <div class="accordion-body">
@@ -31,11 +36,11 @@
                 <div class="d-flex align-items-center">
                     <label class="m-3">Monthly Fees for</label>
 
-                    <x-input-component column="col-md-2" type="text" label="" name="month" id="month"
+                    <x-input-component column="col-md-2" type="text" label="" id="month"
                         class="custom-input-class onlynumber" placeholder="No. of Months" value="" />
 
-                    <input type="hidden" name="last_paid_month_id" id="last_paid_month_id" value="{{ $lastMonthId }}">
-                    <input type="hidden" name="last_paid_year" id="last_paid_year" value="{{ $lastYear }}">
+                    <input type="hidden" id="last_paid_month_id" value="{{ $lastMonthId }}">
+                    <input type="hidden" id="last_paid_year" value="{{ $lastYear }}">
 
                     @if ($lastMonth && isset($lastMonth->month_name))
                         <span>months
