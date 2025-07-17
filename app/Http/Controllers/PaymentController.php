@@ -106,7 +106,7 @@ class PaymentController extends Controller
                 'order_id' => $dataArray['request_id'],
                 'paymeny_for' => 'Donation',
                 'payment_geteway' => 'Eazypay',
-                'amount' => $dataArray['donation_amount'],
+                'amount' => $dataArray['amount'],
                 'enc_request' => $encryptedUrl,
                 'plain_request' => $plainUrl,
                 'payment_session_data' => json_encode($dataArray),
