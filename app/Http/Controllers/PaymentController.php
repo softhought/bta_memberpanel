@@ -88,7 +88,7 @@ class PaymentController extends Controller
             return $encryptedUrl;
         } catch (Exception $e) {
             DB::rollBack();
-            return false;
+            return $e->getMessage();
         }
     }
 
