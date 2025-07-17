@@ -67,18 +67,18 @@ class PaymentController extends Controller
             $encryptedReferenceNo = $this->aes128Encrypt($transaction_id, $aesKey);
             $encryptedSubMerchantId = $this->aes128Encrypt($subMerchantId, $aesKey);
             $encryptedAmount = $this->aes128Encrypt($dataArray['donation_amount'], $aesKey);
-            $encryptedPayMode = $this->aes128Encrypt('9', $aesKey); // 9 = Netbanking/Card/UPI etc.
+            $encryptedPayMode = $this->aes128Encrypt('9', $aesKey);
 
             // ✅ Construct correct final encrypted URL (no spaces in keys!)
             $encryptedUrl = "https://eazypay.icicibank.com/EazyPG?"
                 . "merchantid=" . $merchantId
-                . "&mandatoryfields=" . urlencode($encryptedMandatoryFields)
-                . "&optionalfields=" . urlencode($encryptedOptionalFields)
-                . "&returnurl=" . urlencode($encryptedReturnUrl)
-                . "&ReferenceNo=" . urlencode($encryptedReferenceNo)
-                . "&submerchantid=" . urlencode($encryptedSubMerchantId)
-                . "&transactionamount=" . urlencode($encryptedAmount)
-                . "&paymode=" . urlencode($encryptedPayMode);
+                . "&mandatoryfields=" . $encryptedMandatoryFields
+                . "&optionalfields=" . $encryptedOptionalFields
+                . "&returnurl=" . $encryptedReturnUrl
+                . "&ReferenceNo=" . $encryptedReferenceNo
+                . "&submerchantid=" . $encryptedSubMerchantId
+                . "&transactionamount=" . $encryptedAmount
+                . "&paymode=" . $encryptedPayMode;
 
             // ✅ Store in DB
             DB::table('payment_request')->insert([
