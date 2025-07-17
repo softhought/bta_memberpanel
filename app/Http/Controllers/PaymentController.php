@@ -57,7 +57,7 @@ class PaymentController extends Controller
 
             // Encrypt each section
             $encryptedMandatoryFields = $this->aes128Encrypt(implode('|', $mandatoryFields), $aesKey);
-            $encryptedReturnUrl = $this->aes128Encrypt('https://members.btaportal.in', $aesKey);
+            $encryptedReturnUrl = $this->aes128Encrypt('https://members.btaportal.in/response', $aesKey);
             $encryptedReferenceNo = $this->aes128Encrypt($mandatoryFields[0], $aesKey);
             $encryptedSubMerchantId = $this->aes128Encrypt($mandatoryFields[1], $aesKey);
             $encryptedAmount = $this->aes128Encrypt($mandatoryFields[2], $aesKey);
