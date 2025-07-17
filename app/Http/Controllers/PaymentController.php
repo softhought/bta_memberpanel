@@ -50,7 +50,8 @@ class PaymentController extends Controller
             $mandatoryFields = [
                 $transaction_id,
                 $subMerchantId,
-                $dataArray['amount'],
+                // $dataArray['amount'],
+                1, // Assuming amount is always 1 for this example
                 $dataArray['member_code'],
                 $dataArray['member_name'],
             ];
