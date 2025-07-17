@@ -6,7 +6,7 @@ use App\Models\Menu;
 use Illuminate\Support\Facades\Route;
 
 Route::request('admin/auth', [UserController::class, 'auth'])->name('admin.auth');
-Route::request('member/auth', [UserController::class, 'memberAuth'])->name('member.auth');
+Route::request('auth', [UserController::class, 'memberAuth']);
 Route::request('admin/logout/{role}', [UserController::class, 'logout']);
 Route::request('/', [UserController::class, 'member']);
 
