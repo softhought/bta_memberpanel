@@ -111,7 +111,7 @@ class PaymentController extends Controller
             DB::table('payment_request')->insert([
                 'transaction_id' => $transaction_id,
                 'order_id' => sha1($transaction_id),
-                'paymeny_for' => 'Donation',
+                'paymeny_for' => 'Fees Payments',
                 'payment_geteway' => 'Eazypay',
                 'amount' => $dataArray['amount'],
                 'enc_request' => $encryptedUrl,
