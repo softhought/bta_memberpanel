@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 Route::request('admin/auth', [UserController::class, 'auth'])->name('admin.auth');
 Route::request('member/auth', [UserController::class, 'memberAuth'])->name('member.auth');
 Route::request('admin/logout/{role}', [UserController::class, 'logout']);
-Route::get('/', [UserController::class, 'member']);
+Route::request('/', [UserController::class, 'member']);
 
 Route::prefix('admin')->middleware(['admin_auth'])->group(function () {
     $menus = Menu::all()->where('menu_for', 'Admin')->whereNotNull('controller');
