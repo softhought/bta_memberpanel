@@ -23,7 +23,7 @@ class PaymentController extends Controller
 
         $url = $this->initiatePayment($dataArray);
 
-        return $HTML = "
+        return "
             <script>
                     window.location.href = '$url';
             </script>
