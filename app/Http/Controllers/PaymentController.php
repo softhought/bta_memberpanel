@@ -15,8 +15,8 @@ class PaymentController extends Controller
             'member_name' => 'Suman Dey',
             'mobile_no' => '8944961893',
             'email' => 'sumandey8976@gmail.com',
-            'programme_code' => '',
-            'group_code' => '',
+            'programme_code' => '1',
+            'group_code' => '1',
             'amount' => 1
         ];
 
