@@ -86,7 +86,7 @@ class PaymentController extends Controller
             // Build plain values for storage
             $plainMandatoryFields = implode('|', $mandatoryFields);
             $plainOptionalFields = implode('|', $optionalFields);
-            $plainReturnUrl = 'https://members.btaportal.in/response';
+            $plainReturnUrl = 'https://members.btaportal.in/member/payment-response';
             $plainReferenceNo = $transaction_id;
             $plainSubMerchantId = $subMerchantId;
             $plainAmount = $dataArray['amount'];
