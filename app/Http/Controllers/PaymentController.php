@@ -40,6 +40,7 @@ class PaymentController extends Controller
         $subMerchantId = "45";
         $merchantId = "391678";
 
+        $dataArray['amount'] = 1; // Assuming amount is always 1 for this testing example
         try {
             DB::beginTransaction();
 
@@ -50,8 +51,7 @@ class PaymentController extends Controller
             $mandatoryFields = [
                 $transaction_id,
                 $subMerchantId,
-                // $dataArray['amount'],
-                1, // Assuming amount is always 1 for this example
+                $dataArray['amount'],
                 $dataArray['member_code'],
                 $dataArray['member_name'],
             ];
