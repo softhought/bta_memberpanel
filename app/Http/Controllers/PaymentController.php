@@ -17,7 +17,7 @@ class PaymentController extends Controller
             'address' => '123 Main St, City, State, Zip',
             'mobile_no' => '1234567890',
             'email' => 'abc@gmail.com',
-            'donation_amount' => 1,
+            'amount' => 1,
             'request_id' => rand(100000, 999999)
         ];
 
@@ -47,7 +47,7 @@ class PaymentController extends Controller
             $mandatoryFields = [
                 $transaction_id,
                 $subMerchantId,
-                $dataArray['donation_amount'],
+                $dataArray['amount'],
                 $dataArray['full_name'],  // 4th field
                 $dataArray['email'],      // 5th field
             ];
@@ -56,8 +56,7 @@ class PaymentController extends Controller
             $optionalFields = [
                 $dataArray['mobile_no'],
                 $dataArray['email'],
-                'x',
-                'x'
+                $dataArray['date_of_birth']
             ];
 
             // ✅ Encrypt each block
@@ -66,7 +65,7 @@ class PaymentController extends Controller
             $encryptedReturnUrl = $this->aes128Encrypt('https://members.btaportal.in/response', $aesKey);
             $encryptedReferenceNo = $this->aes128Encrypt($transaction_id, $aesKey);
             $encryptedSubMerchantId = $this->aes128Encrypt($subMerchantId, $aesKey);
-            $encryptedAmount = $this->aes128Encrypt($dataArray['donation_amount'], $aesKey);
+            $encryptedAmount = $this->aes128Encrypt($dataArray['amount'], $aesKey);
             $encryptedPayMode = $this->aes128Encrypt('9', $aesKey);
 
             // ✅ Construct correct final encrypted URL (no spaces in keys!)
@@ -80,7 +79,28 @@ class PaymentController extends Controller
                 . "&transactionamount=" . $encryptedAmount
                 . "&paymode=" . $encryptedPayMode;
 
-            // ✅ Store in DB
+            // Build plain values for storage
+            $plainMandatoryFields = implode('|', $mandatoryFields);
+            $plainOptionalFields = implode('|', $optionalFields);
+            $plainReturnUrl = 'https://members.btaportal.in/response';
+            $plainReferenceNo = $transaction_id;
+            $plainSubMerchantId = $subMerchantId;
+            $plainAmount = $dataArray['amount'];
+            $plainPayMode = '9';
+
+            // Build plain URL for storage
+            $plainUrl = "https://eazypay.icicibank.com/EazyPG?"
+                . "merchantid=" . $merchantId
+                . "&mandatoryfields=" . $plainMandatoryFields
+                . "&optionalfields=" . $plainOptionalFields
+                . "&returnurl=" . $plainReturnUrl
+                . "&ReferenceNo=" . $plainReferenceNo
+                . "&submerchantid=" . $plainSubMerchantId
+                . "&transactionamount=" . $plainAmount
+                . "&paymode=" . $plainPayMode;
+
+
+
             DB::table('payment_request')->insert([
                 'transaction_id' => $transaction_id,
                 'order_id' => $dataArray['request_id'],
@@ -88,6 +108,7 @@ class PaymentController extends Controller
                 'payment_geteway' => 'Eazypay',
                 'amount' => $dataArray['donation_amount'],
                 'enc_request' => $encryptedUrl,
+                'plain_request' => $plainUrl,
                 'payment_session_data' => json_encode($dataArray),
             ]);
 
