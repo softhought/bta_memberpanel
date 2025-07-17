@@ -5,6 +5,7 @@ use App\Http\Controllers\Member\FeesPaymentsController;
 use App\Http\Controllers\Member\MemberController;
 use App\Http\Controllers\Member\TransactionsController;
 use App\Http\Controllers\Admin\AdminTransactionsController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 Route::request('webhook/deploy', [DeployController::class, 'pullCode']);
@@ -35,3 +36,5 @@ Route::prefix('member')->middleware(['member_auth'])->group(function () {
     Route::request('profile', [MemberController::class, 'profile']);
     Route::request('profileAction', [MemberController::class, 'profileAction']);
 });
+
+Route::get('ipayments', [PaymentController::class, 'payment']);
