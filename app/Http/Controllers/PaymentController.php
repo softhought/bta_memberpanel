@@ -48,15 +48,16 @@ class PaymentController extends Controller
                 $transaction_id,
                 $subMerchantId,
                 $dataArray['amount'],
-                $dataArray['full_name'],  // 4th field
                 $dataArray['email'],      // 5th field
+                $dataArray['full_name'],  // 4th field
             ];
 
             // ✅ Optional fields: mobile_no|email|x|x
             $optionalFields = [
                 $dataArray['mobile_no'],
                 $dataArray['email'],
-                $dataArray['date_of_birth']
+                $dataArray['date_of_birth'],
+                'x',
             ];
 
             // ✅ Encrypt each block
