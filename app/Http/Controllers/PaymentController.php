@@ -8,25 +8,26 @@ use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
-    public function payment()
+    public function payment(Request $request)
     {
-        $dataArray = [
-            'member_code' => 'M00014',
-            'member_name' => 'Suman Dey',
-            'mobile_no' => '8944961893',
-            'email' => 'sumandey8976@gmail.com',
-            'programme_code' => '1',
-            'group_code' => '1',
-            'amount' => 1
-        ];
+        pre($request->all());
+        // $dataArray = [
+        //     'member_code' => 'M00014',
+        //     'member_name' => 'Suman Dey',
+        //     'mobile_no' => '8944961893',
+        //     'email' => 'sumandey8976@gmail.com',
+        //     'programme_code' => '1',
+        //     'group_code' => '1',
+        //     'amount' => 1
+        // ];
 
-        $url = $this->initiatePayment($dataArray);
+        // $url = $this->initiatePayment($dataArray);
 
-        return "
-            <script>
-                    window.location.href = '$url';
-            </script>
-        ";
+        // return "
+        //     <script>
+        //             window.location.href = '$url';
+        //     </script>
+        // ";
     }
 
     public function initiatePayment($dataArray = [])
