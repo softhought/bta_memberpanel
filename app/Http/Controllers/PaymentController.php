@@ -18,7 +18,7 @@ class PaymentController extends Controller
             'mobile_no' => '1234567890',
             'email' => 'abc@gmail.com',
             'donation_amount' => 1,
-            'request_id' => 'REQ123456'
+            'request_id' => rand(100000, 999999)
         ];
 
         $url = $this->initiatePayment($dataArray);
@@ -52,7 +52,7 @@ class PaymentController extends Controller
 
             // Encrypt each section
             $encryptedMandatoryFields = $this->aes128Encrypt(implode('|', $mandatoryFields), $aesKey);
-            $encryptedReturnUrl = $this->aes128Encrypt('https://iicpindia.org/payment-response', $aesKey);
+            $encryptedReturnUrl = $this->aes128Encrypt('https://members.btaportal.in', $aesKey);
             $encryptedReferenceNo = $this->aes128Encrypt($mandatoryFields[0], $aesKey);
             $encryptedSubMerchantId = $this->aes128Encrypt($mandatoryFields[1], $aesKey);
             $encryptedAmount = $this->aes128Encrypt($mandatoryFields[2], $aesKey);
