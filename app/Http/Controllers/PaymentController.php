@@ -11,14 +11,13 @@ class PaymentController extends Controller
     public function payment()
     {
         $dataArray = [
-            'pan_no' => 'ABC1234567',
-            'full_name' => 'John Doe',
-            'date_of_birth' => '1990-01-01',
-            'address' => '123 Main St, City, State, Zip',
-            'mobile_no' => '1234567890',
-            'email' => 'abc@gmail.com',
-            'amount' => 1,
-            'request_id' => rand(100000, 999999)
+            'member_code' => 'M00014',
+            'member_name' => 'Suman Dey',
+            'mobile_no' => '8944961893',
+            'email' => 'sumandey8976@gmail.com',
+            'programme_code' => '',
+            'group_code' => '',
+            'amount' => 1
         ];
 
         $url = $this->initiatePayment($dataArray);
@@ -43,21 +42,19 @@ class PaymentController extends Controller
             $transaction_id = $serialMaster->module . sprintf('%05d', $serialMaster->lastnumber);
             $dataArray['transaction_number'] = $transaction_id;
 
-            // ✅ Mandatory fields: transaction_id|subMerchantId|amount|full_name|email (total 5)
             $mandatoryFields = [
                 $transaction_id,
                 $subMerchantId,
                 $dataArray['amount'],
-                $dataArray['email'],      // 5th field
-                $dataArray['full_name'],  // 4th field
+                $dataArray['member_code'],
+                $dataArray['member_name'],
             ];
 
-            // ✅ Optional fields: mobile_no|email|x|x
             $optionalFields = [
                 $dataArray['mobile_no'],
                 $dataArray['email'],
-                $dataArray['date_of_birth'],
-                'x',
+                $dataArray['programme_code'],
+                $dataArray['group_code'],
             ];
 
             // ✅ Encrypt each block
