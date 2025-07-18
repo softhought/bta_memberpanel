@@ -6,6 +6,7 @@ use App\Constants\Constant;
 use App\Models\Member;
 use App\Models\MemberReceiptDetail;
 use App\Models\MemberReceiptMaster;
+use App\Models\PaymentDetails;
 use App\Models\PaymentMaster;
 use App\Models\PaymentMode;
 use App\Models\PaymentRequest;
@@ -178,7 +179,7 @@ class PaymentController extends Controller
                 $memberReceiptMasterModel = MemberReceiptMaster::updateOrCreate(
                     ['reference_no' => $paymentRequestModel->id, 'receipt_no' => $this->generateReceiptNo($referenceNo)],
                     [
-                        'receipt_date' => now(),
+                        'receipt_date' => date('Y-m-d'),
                         'no_of_months' => count($sessionData['month_id']),
                         'total_amount' => array_sum($sessionData['payable']),
                         'total_discount' => 0,
@@ -237,7 +238,7 @@ class PaymentController extends Controller
                 $voucherMasterModel = VoucherMaster::updateOrCreate(
                     ['voucher_no' => $memberReceiptMasterModel->receipt_no],
                     [
-                        'voucher_date' => now(),
+                        'voucher_date' => date('Y-m-d'),
                         'tran_type' => 'ONLINE',
                         'narration' => "Payment From Student " . date("d/m/Y"),
                         'total_dr_amt' => $memberReceiptMasterModel->net_payble_amount,
@@ -277,7 +278,7 @@ class PaymentController extends Controller
                         'enrollment_id' => $sessionData['enrollment_id'],
                         'voucher_id' => $voucherMasterModel->id,
                         'payment_no' => $memberReceiptMasterModel->receipt_no,
-                        'payment_date' => now(),
+                        'payment_date' => date('Y-m-d'),
                         'total_payble_amount' => $memberReceiptMasterModel->net_payble_amount,
                         'payment_amount' => $memberReceiptMasterModel->net_payble_amount,
                         'short_excess_cr_ac_id' => 23,
@@ -288,6 +289,21 @@ class PaymentController extends Controller
                         'round_off_amount' => 0,
                         'is_gst_bill' => 'N',
                         'total_bank_charges' => 0,
+                    ]
+                );
+
+                // Create Payment Detail
+                $paymentDetailModel = PaymentDetails::updateOrCreate(
+                    [
+                        'payment_master_id' => $paymentMasterModel->payment_id,
+                        'payment_mode_id' => $paymentModeDetails->id
+                    ],
+                    [
+                        'dr_account_id' => $paymentModeDetails->account_id,
+                        'amount' => $memberReceiptMasterModel->net_payble_amount,
+                        'cheque_date' => date('Y-m-d'),
+                        'bank_charges' => 0,
+                        'payment_ref' => $bankRefNo
                     ]
                 );
             }
