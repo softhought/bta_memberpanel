@@ -8,11 +8,16 @@ class DeployController extends Controller
 {
     public function pullCode()
     {
-        $repoPath = base_path();
+        $repoPath = "/var/www/html/members-btaportal-in";
+        if (!is_dir($repoPath . '/.git')) {
+            echo "Error: Not a git repository at {$repoPath}";
+            return;
+        }
+
         $keyPath = storage_path('ssh/bta');
 
         $process = Process::fromShellCommandline(
-            'GIT_SSH_COMMAND="ssh -i ' . $keyPath . ' -o StrictHostKeyChecking=no" git reset --hard origin/development',
+            'GIT_SSH_COMMAND="ssh -i ' . $keyPath . ' -o StrictHostKeyChecking=no" git pull',
             $repoPath
         );
 
