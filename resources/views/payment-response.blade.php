@@ -65,7 +65,7 @@
             <i class="fas {{ session('status') == 'success' ? 'fa-check-circle' : 'fa-times-circle' }}"></i>
         </div>
 
-        <h2>Thank You</h2>
+        <h2>{{ session('status') == 'success' ? 'Thank You' : 'Opps' }}</h2>
 
         @if (session('status') == 'success')
             <p class="success">Transaction Successfully Completed</p>
