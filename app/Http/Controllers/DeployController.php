@@ -9,10 +9,10 @@ class DeployController extends Controller
     public function pullCode()
     {
         $repoPath = base_path();
-        echo $repoPath;exit;
         $keyPath = storage_path('ssh/bta');
 
         $process = Process::fromShellCommandline(
+            // 'GIT_SSH_COMMAND="ssh -i ' . $keyPath . ' -o StrictHostKeyChecking=no" git pull',
             'git pull',
             $repoPath
         );
