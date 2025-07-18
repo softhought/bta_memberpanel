@@ -168,20 +168,20 @@ class PaymentController extends Controller
             if ($paymentStatus) {
                 $sessionData = json_decode($paymentRequestModel->payment_session_data, true);
                 $yearId = DB::table('financialyear')->where('is_active', 'Y')->orderByDesc('year_id')->first()->year_id;
-                pre($sessionData);exit;
+
                 $memberReceiptMasterModel = MemberReceiptMaster::updateOrCreate(
                     ['reference_no' => $referenceNo, 'receipt_no' => $this->generateReceiptNo($referenceNo)],
                     [
                         'receipt_date' => now(),
                         'no_of_months' => count($sessionData['month_id']),
-                        'total_amount' => array_sum($sessionData['amount']),
+                        'total_amount' => array_sum($sessionData['payable']),
                         'total_discount' => 0,
-                        'total_taxable_amount' => array_sum($sessionData['amount']),
+                        'total_taxable_amount' => array_sum($sessionData['payable']),
                         'total_cgst_amount' => 0,
                         'total_sgst_amount' => 0,
                         'total_gst_amount' => 0,
                         'adjust_amount' => 0,
-                        'net_payble_amount' => array_sum($sessionData['amount']),
+                        'net_payble_amount' => array_sum($sessionData['payable']),
                         'year_id' => $yearId,
                         'company_id' => 1,
                         'user_id' => 12,
