@@ -19,7 +19,7 @@ class MemberController extends Controller
 
         $memberData = Member::with(['programEnrollment.program', 'programEnrollment.group'])->find($memberId);
         $data['member'] = $memberData;
-        processPendingPayments();
+
         $data['bodyView'] = view('member.dashboard', $data);
         return $this->renderView($data);
     }
