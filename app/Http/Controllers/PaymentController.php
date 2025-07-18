@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Constants\Constant;
 use App\Models\Member;
+use App\Models\MemberReceiptMaster;
 use App\Models\PaymentRequest;
 use App\Models\PaymentResponse;
 use Exception;
@@ -166,16 +167,40 @@ class PaymentController extends Controller
 
             if ($paymentStatus) {
                 $sessionData = json_decode($paymentRequestModel->payment_session_data, true);
+                $yearId = DB::table('financialyear')->where('is_active', 'Y')->orderByDesc('year_id')->first()->year_id;
 
-                pre($sessionData);exit;
+                $memberReceiptMasterModel = MemberReceiptMaster::updateOrCreate(
+                    ['reference_no' => $referenceNo, 'receipt_no' => $this->generateReceiptNo($referenceNo)],
+                    [
+                        'receipt_date' => now(),
+                        'no_of_months' => count($sessionData['month_id']),
+                        'total_amount' => array_sum($sessionData['amount']),
+                        'total_discount' => 0,
+                        'total_taxable_amount' => array_sum($sessionData['amount']),
+                        'total_cgst_amount' => 0,
+                        'total_sgst_amount' => 0,
+                        'total_gst_amount' => 0,
+                        'adjust_amount' => 0,
+                        'net_payble_amount' => array_sum($sessionData['amount']),
+                        'year_id' => $yearId,
+                        'company_id' => 1,
+                        'user_id' => 12,
+                        'entry_from' => 'M',
+                        'bill_type' => 'NONGST',
+                        'is_general_receipt' => 'N',
+                        'is_active' => 'Y',
+                        'is_wave_receipt' => 'N',
+                        'active_programme_group' => $sessionData['group_id']
+                    ]
+                );
             }
 
 
             DB::commit();
 
-            return redirect()->to('donation-payment')
-                ->with('message', $referenceNo)
-                ->with('status', $paymentStatus ? 'success' : 'error');
+            // return redirect()->to('donation-payment')
+            //     ->with('message', $referenceNo)
+            //     ->with('status', $paymentStatus ? 'success' : 'error');
 
         } catch (Exception $e) {
             DB::rollBack();
@@ -193,6 +218,55 @@ class PaymentController extends Controller
         $ciphertext = openssl_encrypt($plaintext, $cipher, $key, $options = 0, "");
         return $ciphertext;
     }
+
+    private function generateReceiptNo($transactionId)
+    {
+        $yearId = DB::table('financialyear')
+            ->where('is_active', 'Y')
+            ->orderByDesc('year_id')
+            ->first()
+            ->year_id;
+
+        $existingReceiptNo = DB::table('member_receipt_master')
+            ->where('reference_no', $transactionId)
+            ->value('receipt_no');
+
+        if ($existingReceiptNo) {
+            return $existingReceiptNo;
+        }
+
+        return DB::transaction(function () use ($yearId) {
+            do {
+                $serialMaster = DB::table('serialmaster')
+                    ->where('moduleTag', 'NGST')
+                    ->where('year_id', $yearId)
+                    ->lockForUpdate()
+                    ->first();
+
+                $receiptNo = $serialMaster->moduleTag . '/' . sprintf('%05d', $serialMaster->serial) . '/' . $serialMaster->year_tag;
+
+                $exists = DB::table('member_receipt_master')
+                    ->where('receipt_no', $receiptNo)
+                    ->exists();
+
+                if (!$exists) {
+                    DB::table('serialmaster')
+                        ->where('moduleTag', 'NGST')
+                        ->where('year_id', $yearId)
+                        ->update(['serial' => $serialMaster->serial + 1]);
+
+                    return $receiptNo;
+                } else {
+                    DB::table('serialmaster')
+                        ->where('moduleTag', 'NGST')
+                        ->where('year_id', $yearId)
+                        ->update(['serial' => $serialMaster->serial + 1]);
+                }
+
+            } while (true);
+        });
+    }
+
 
     private function getResponseMessage($code)
     {
