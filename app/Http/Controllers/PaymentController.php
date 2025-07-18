@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\Constant;
 use App\Models\Member;
+use App\Models\PaymentRequest;
+use App\Models\PaymentResponse;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
@@ -28,13 +32,13 @@ class PaymentController extends Controller
             'amount' => is_array($data['amount']) ? array_sum($data['amount']) : 0,
         ]);
 
-        $url = $this->initiatePayment($dataArray);
+        $encryptedUrl = $this->initiatePayment($dataArray);
 
-        return "
-            <script>
-                    window.location.href = '$url';
-            </script>
-        ";
+        $btaMemberData = session('btaMember');
+        Cookie::queue('bta_member_cookie', json_encode($btaMemberData), 20);
+
+
+        return response()->json(['status' => Constant::SUCCESS, 'encryptedUrl' => $encryptedUrl]);
     }
 
     public function initiatePayment($dataArray = [])
@@ -68,7 +72,7 @@ class PaymentController extends Controller
             // ✅ Encrypt each block
             $encryptedMandatoryFields = $this->aes128Encrypt(implode('|', $mandatoryFields), $aesKey);
             $encryptedOptionalFields = $this->aes128Encrypt(implode('|', $optionalFields), $aesKey);
-            $encryptedReturnUrl = $this->aes128Encrypt('https://members.btaportal.in/response', $aesKey);
+            $encryptedReturnUrl = $this->aes128Encrypt('https://members.btaportal.in/payment-response', $aesKey);
             $encryptedReferenceNo = $this->aes128Encrypt($transaction_id, $aesKey);
             $encryptedSubMerchantId = $this->aes128Encrypt($subMerchantId, $aesKey);
             $encryptedAmount = $this->aes128Encrypt($dataArray['amount'], $aesKey);
@@ -88,7 +92,7 @@ class PaymentController extends Controller
             // Build plain values for storage
             $plainMandatoryFields = implode('|', $mandatoryFields);
             $plainOptionalFields = implode('|', $optionalFields);
-            $plainReturnUrl = 'https://members.btaportal.in/response';
+            $plainReturnUrl = 'https://members.btaportal.in/payment-response';
             $plainReferenceNo = $transaction_id;
             $plainSubMerchantId = $subMerchantId;
             $plainAmount = $dataArray['amount'];
@@ -110,7 +114,7 @@ class PaymentController extends Controller
             DB::table('payment_request')->insert([
                 'transaction_id' => $transaction_id,
                 'order_id' => sha1($transaction_id),
-                'paymeny_for' => 'Donation',
+                'paymeny_for' => 'Fees Payments',
                 'payment_geteway' => 'Eazypay',
                 'amount' => $dataArray['amount'],
                 'enc_request' => $encryptedUrl,
@@ -132,10 +136,63 @@ class PaymentController extends Controller
     }
 
 
-    public function paymentResponse(Request $request, $response = NULL)
+    public function paymentResponse(Request $request)
     {
-        pre($request->all());
-        echo $this->getResponseMessage($request->get('Response_Code'));
+        try {
+            DB::beginTransaction();
+
+            $referenceNo = $request->post('ReferenceNo');
+            $bankRefNo = $request->post('Unique_Ref_Number');
+
+            $paymentRequestModel = PaymentRequest::where('transaction_id', $referenceNo)->first();
+
+            $paymentStatus = $request->post('Response_Code') === "E000" ? true : false;
+
+            $paymentResponseModel = PaymentResponse::updateOrCreate(
+                ['transaction_id' => $paymentRequestModel->id],
+                [
+                    'order_id' => $paymentRequestModel->order_id,
+                    'payment_status' => $paymentStatus ? "Y" : "N",
+                    'processing_date' => now(),
+                    'tracking_id' => $referenceNo,
+                    'bank_ref_no' => $bankRefNo,
+                    'payment_geteway' => 'Eazypay',
+                    'response_data' => json_encode($request->all()),
+                    'payment_message' => $this->getResponseMessage($request->post('Response_Code')),
+                ]
+            );
+
+            $paymentRequestModel->status = $paymentStatus ? 'Y' : 'N';
+            $paymentRequestModel->save();
+
+            if ($paymentStatus) {
+                $sessionData = json_decode($paymentRequestModel->payment_session_data, true);
+                processPayment($sessionData, $paymentRequestModel);
+            }
+
+            DB::commit();
+
+            return redirect()->to('member/response')
+                ->with('message', $referenceNo)
+                ->with('status', $paymentStatus ? 'success' : 'error');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            echo $e->getMessage();
+        }
+    }
+
+    public function response(Request $request)
+    {
+        $cookieData = $request->cookie('bta_member_cookie');
+
+        if ($cookieData) {
+            $btaMemberData = json_decode($cookieData, true);
+            session(['btaMember' => $btaMemberData]);
+        }
+
+        $data['bodyView'] = view('payment-response');
+        return $this->renderView($data);
     }
 
     public function aes128Encrypt($str, $key)

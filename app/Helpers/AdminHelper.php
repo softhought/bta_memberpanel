@@ -1,7 +1,15 @@
 <?php
 
 use App\Models\LogTable;
+use App\Models\MemberReceiptDetail;
+use App\Models\MemberReceiptMaster;
 use App\Models\Menu;
+use App\Models\PaymentDetails;
+use App\Models\PaymentMaster;
+use App\Models\PaymentMode;
+use App\Models\PaymentRequest;
+use App\Models\VoucherDetails;
+use App\Models\VoucherMaster;
 use Illuminate\Support\Facades\DB;
 use Jenssegers\Agent\Agent;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -343,3 +351,298 @@ if (!function_exists('getInitials')) {
     }
 }
 
+function processDailyCollectionData($paymentMstId)
+{
+    try {
+        // Step 1: Delete existing records
+        DB::table('daily_collection_report')->where('payment_master_id', $paymentMstId)->delete();
+
+        // Step 2: Retrieve payment data
+        $paymentMasterData = DB::table('payment_master')->where('payment_id', $paymentMstId)->get();
+
+        if ($paymentMasterData->isEmpty()) {
+            return false;
+        }
+
+        foreach ($paymentMasterData as $payment) {
+            // Step 3: Calculate payment amount
+            $paymentAmount = $payment->round_off_amount > 0
+                ? $payment->payment_amount - $payment->round_off_amount - $payment->total_bank_charges
+                : $payment->payment_amount + $payment->round_off_amount - $payment->total_bank_charges;
+
+            // Step 4: Fetch member receipt master
+            $memberReceiptMaster = DB::table('member_receipt_master')
+                ->where('receipt_id', $payment->receipt_master_id)
+                ->first();
+
+            if (!empty($memberReceiptMaster) && $memberReceiptMaster->adjust_amount > 0) {
+                DB::table('daily_collection_report')->insert([
+                    'payment_master_id' => $payment->payment_id,
+                    'component_id' => 42,
+                    'amount' => $memberReceiptMaster->adjust_amount,
+                    'is_adjust' => 'Y',
+                ]);
+
+                $paymentAmount -= $memberReceiptMaster->adjust_amount;
+            }
+
+            // Step 5: Fetch member receipt details
+            $memberReceiptDetails = DB::table('member_receipt_details')
+                ->select(DB::raw('SUM(net_amount) as net_amount, component_id'))
+                ->where('receipt_master_id', $payment->receipt_master_id)
+                ->groupBy('component_id')
+                ->get();
+
+            foreach ($memberReceiptDetails as $detail) {
+                if ($paymentAmount <= 0)
+                    break;
+
+                if ($paymentAmount <= $detail->net_amount) {
+                    DB::table('daily_collection_report')->insert([
+                        'payment_master_id' => $payment->payment_id,
+                        'component_id' => $detail->component_id,
+                        'amount' => $paymentAmount,
+                    ]);
+                    $paymentAmount = 0;
+                } else {
+                    DB::table('daily_collection_report')->insert([
+                        'payment_master_id' => $payment->payment_id,
+                        'component_id' => $detail->component_id,
+                        'amount' => $detail->net_amount,
+                    ]);
+                    $paymentAmount -= $detail->net_amount;
+                }
+            }
+
+            if ($paymentAmount > 0) {
+                DB::table('daily_collection_report')->insert([
+                    'payment_master_id' => $payment->payment_id,
+                    'component_id' => 42,
+                    'amount' => $paymentAmount,
+                ]);
+            }
+        }
+
+        return true;
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+
+function processPayment($sessionData, $paymentRequestModel)
+{
+    $yearId = DB::table('financialyear')->where('is_active', 'Y')->orderByDesc('year_id')->first()->year_id;
+
+    // Create Receipt Master
+    $memberReceiptMasterModel = MemberReceiptMaster::updateOrCreate(
+        ['reference_no' => $paymentRequestModel->id, 'receipt_no' => generateReceiptNo($paymentRequestModel->id)],
+        [
+            'receipt_date' => date('Y-m-d'),
+            'no_of_months' => count($sessionData['month_id']),
+            'total_amount' => array_sum($sessionData['payable']),
+            'total_discount' => 0,
+            'total_taxable_amount' => array_sum($sessionData['payable']),
+            'total_cgst_amount' => 0,
+            'total_sgst_amount' => 0,
+            'total_gst_amount' => 0,
+            'adjust_amount' => 0,
+            'net_payble_amount' => array_sum($sessionData['payable']),
+            'year_id' => $yearId,
+            'company_id' => 1,
+            'user_id' => 12,
+            'entry_from' => 'M',
+            'bill_type' => 'NONGST',
+            'is_general_receipt' => 'N',
+            'is_active' => 'Y',
+            'is_wave_receipt' => 'N',
+            'active_programme_group' => $sessionData['group_id']
+        ]
+    );
+
+    // Create Receipt Details
+    foreach ($sessionData['month_id'] as $key => $monthId) {
+        $crAccountId = DB::table('programme_commercial_component')
+            ->where('component_id', $sessionData['component_id'][$key])
+            ->value('account_id');
+
+        $memberReceiptDetailModel = MemberReceiptDetail::updateOrCreate(
+            [
+                'receipt_master_id' => $memberReceiptMasterModel->receipt_id,
+                'year' => date('Y'),
+                'month_id' => $monthId,
+            ],
+            [
+                'cr_ac_id' => $crAccountId,
+                'component_id' => $sessionData['component_id'][$key],
+                'item_amount' => $sessionData['payable'][$key],
+                'item_qty' => 1,
+                'amount' => $sessionData['payable'][$key],
+                'discount' => 0,
+                'taxable_amount' => $sessionData['payable'][$key],
+                'cgst_id' => 0,
+                'sgst_id' => 0,
+                'cgst_amount' => 0,
+                'sgst_amount' => 0,
+                'total_gst_amount' => 0,
+                'is_payment_due' => "N",
+                'due_amount' => 0,
+                'net_amount' => $sessionData['payable'][$key],
+                'is_waiver' => "N",
+            ]
+        );
+    }
+
+    // Create Voucher Master
+    $voucherMasterModel = VoucherMaster::updateOrCreate(
+        ['voucher_no' => $memberReceiptMasterModel->receipt_no],
+        [
+            'voucher_date' => date('Y-m-d'),
+            'tran_type' => 'ONLINE',
+            'narration' => "Payment From Student " . date("d/m/Y"),
+            'total_dr_amt' => $memberReceiptMasterModel->net_payble_amount,
+            'total_cr_amt' => $memberReceiptMasterModel->net_payble_amount,
+            'user_id' => 12,
+            'year_id' => $yearId,
+            'company_id' => 1,
+            'reference_no' => $paymentRequestModel->id
+        ]
+    );
+
+    // Create Voucher Details
+    $paymentModeDetails = PaymentMode::where('payment_mode', 'ICICI Payment Gateway')->first();
+
+    $voucherDetailCrModel = VoucherDetails::updateOrCreate(
+        ['voucher_master_id' => $voucherMasterModel->id, 'tran_tag' => 'Cr'],
+        [
+            'account_master_id' => $crAccountId,
+            'amount' => $memberReceiptMasterModel->net_payble_amount,
+            'srl_no' => 1
+        ]
+    );
+
+    $voucherDetailDrModel = VoucherDetails::updateOrCreate(
+        ['voucher_master_id' => $voucherMasterModel->id, 'tran_tag' => 'Dr'],
+        [
+            'account_master_id' => $paymentModeDetails->account_id,
+            'amount' => $memberReceiptMasterModel->net_payble_amount,
+        ]
+    );
+
+    // Create Payment Master
+    $paymentMasterModel = PaymentMaster::updateOrCreate(
+        ['receipt_master_id' => $memberReceiptMasterModel->receipt_id],
+        [
+            'member_id' => $sessionData['member_id'],
+            'enrollment_id' => $sessionData['enrollment_id'],
+            'voucher_id' => $voucherMasterModel->id,
+            'payment_no' => $memberReceiptMasterModel->receipt_no,
+            'payment_date' => date('Y-m-d'),
+            'total_payble_amount' => $memberReceiptMasterModel->net_payble_amount,
+            'payment_amount' => $memberReceiptMasterModel->net_payble_amount,
+            'short_excess_cr_ac_id' => 23,
+            'short_excess_amount' => 0,
+            'company_id' => 1,
+            'year_id' => $yearId,
+            'round_off_account_id' => 30,
+            'round_off_amount' => 0,
+            'is_gst_bill' => 'N',
+            'total_bank_charges' => 0,
+        ]
+    );
+
+    // Create Payment Detail
+    $paymentDetailModel = PaymentDetails::updateOrCreate(
+        [
+            'payment_master_id' => $paymentMasterModel->payment_id,
+            'payment_mode_id' => $paymentModeDetails->id
+        ],
+        [
+            'dr_account_id' => $paymentModeDetails->account_id,
+            'amount' => $memberReceiptMasterModel->net_payble_amount,
+            'cheque_date' => date('Y-m-d'),
+            'bank_charges' => 0,
+            'payment_ref' => $paymentRequestModel->id
+        ]
+    );
+
+    // Create Daily Collection Report
+    processDailyCollectionData($paymentMasterModel->payment_id);
+}
+
+function generateReceiptNo($transactionId)
+{
+    $yearId = DB::table('financialyear')
+        ->where('is_active', 'Y')
+        ->orderByDesc('year_id')
+        ->first()
+        ->year_id;
+
+    $existingReceiptNo = DB::table('member_receipt_master')
+        ->where('reference_no', $transactionId)
+        ->value('receipt_no');
+
+    if ($existingReceiptNo) {
+        return $existingReceiptNo;
+    }
+
+    return DB::transaction(function () use ($yearId) {
+        do {
+            $serialMaster = DB::table('serialmaster')
+                ->where('moduleTag', 'NGST')
+                ->where('year_id', $yearId)
+                ->lockForUpdate()
+                ->first();
+
+            $receiptNo = $serialMaster->moduleTag . '/' . sprintf('%05d', $serialMaster->serial) . '/' . $serialMaster->year_tag;
+
+            $exists = DB::table('member_receipt_master')
+                ->where('receipt_no', $receiptNo)
+                ->exists();
+
+            if (!$exists) {
+                DB::table('serialmaster')
+                    ->where('moduleTag', 'NGST')
+                    ->where('year_id', $yearId)
+                    ->update(['serial' => $serialMaster->serial + 1]);
+
+                return $receiptNo;
+            } else {
+                DB::table('serialmaster')
+                    ->where('moduleTag', 'NGST')
+                    ->where('year_id', $yearId)
+                    ->update(['serial' => $serialMaster->serial + 1]);
+            }
+
+        } while (true);
+    });
+}
+
+function checkEazypayTransaction($pgReferenceNo)
+{
+    $merchantId = '391678';
+
+    $url = "https://eazypay.icicibank.com/EazyPGVerify?merchantid={$merchantId}&pgreferenceno={$pgReferenceNo}";
+
+    $response = Http::get($url);
+    $result = [];
+    parse_str($response->body(), $result);
+
+    return $result;
+}
+
+function processPendingPayments()
+{
+    $pendingRequest = PaymentRequest::where('status', 'N')->where('is_checking', 'N')->get();
+
+    foreach ($pendingRequest as $value) {
+        $response = checkEazypayTransaction($value->transaction_id);
+
+        if ($response['status'] === "RIP" || $response['status'] === "SIP" || $response['status'] === "SUCCESS") {
+            $sessionData = json_decode($value->payment_session_data, true);
+            processPayment($sessionData, $value);
+        } else {
+            PaymentRequest::where('id', $value->id)->update(['is_checking' => 'Y']);
+        }
+    }
+}

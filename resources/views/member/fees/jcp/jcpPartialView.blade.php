@@ -18,6 +18,7 @@
     $lastMonthId = $lastMonth && isset($lastMonth->id) ? $lastMonth->id : 1;
     $lastYear = $receipt && isset($receipt->year) ? $receipt->year : '2020';
 @endphp
+
 <form method="POST" id="paymentForm">
     <input type="hidden" name="member_id" value="{{ $enrollment->member_id }}">
     <input type="hidden" name="enrollment_id" value="{{ $enrollment->enrollment_id }}">

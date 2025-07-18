@@ -50,8 +50,8 @@ class FeesPaymentsController extends Controller
                 })
                 ->select('PM.*')
                 ->groupBy('MRD.receipt_dtl_id')
-                ->orderBy('MRD.year')
-                ->orderBy('MRD.month_id')
+                ->orderByDesc('MRD.year')
+                ->orderByDesc('MRD.month_id')
                 ->first();
 
             $paymentMaster->receipt = MemberReceiptDetail::where('receipt_master_id', $paymentMaster->receipt_master_id)->orderByDesc('receipt_master_id')->first();
@@ -99,8 +99,8 @@ class FeesPaymentsController extends Controller
                 })
                 ->select('PM.*')
                 ->groupBy('MRD.receipt_dtl_id')
-                ->orderBy('MRD.year')
-                ->orderBy('MRD.month_id')
+                ->orderByDesc('MRD.year')
+                ->orderByDesc('MRD.month_id')
                 ->first();
 
             $paymentMaster->receipt = MemberReceiptDetail::where('receipt_master_id', $paymentMaster->receipt_master_id)->orderByDesc('receipt_master_id')->first();
@@ -148,12 +148,12 @@ class FeesPaymentsController extends Controller
                 })
                 ->select('PM.*')
                 ->groupBy('MRD.receipt_dtl_id')
-                ->orderBy('MRD.year')
-                ->orderBy('MRD.month_id')
+                ->orderByDesc('MRD.year')
+                ->orderByDesc('MRD.month_id')
                 ->first();
-                $paymentMaster->receipt = MemberReceiptDetail::where('receipt_master_id', $paymentMaster->receipt_master_id)->orderByDesc('receipt_master_id')->first();
-                $data['paymentMaster'] = $paymentMaster;
-            }
+            $paymentMaster->receipt = MemberReceiptDetail::where('receipt_master_id', $paymentMaster->receipt_master_id)->orderByDesc('receipt_master_id')->first();
+            $data['paymentMaster'] = $paymentMaster;
+        }
 
         $data['enrollment'] = $enrollment;
         $data['paymentMode'] = PaymentMode::all();
@@ -196,8 +196,8 @@ class FeesPaymentsController extends Controller
                 })
                 ->select('PM.*')
                 ->groupBy('MRD.receipt_dtl_id')
-                ->orderBy('MRD.year')
-                ->orderBy('MRD.month_id')
+                ->orderByDesc('MRD.year')
+                ->orderByDesc('MRD.month_id')
                 ->first();
 
             $paymentMaster->receipt = MemberReceiptDetail::where('receipt_master_id', $paymentMaster->receipt_master_id)->orderByDesc('receipt_master_id')->first();

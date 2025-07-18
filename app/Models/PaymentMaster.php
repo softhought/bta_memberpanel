@@ -9,6 +9,24 @@ class PaymentMaster extends BaseModel
 {
     use HasFactory;
     protected $table = 'payment_master';
+    protected $fillable = [
+        'receipt_master_id',
+        'member_id',
+        'enrollment_id',
+        'voucher_id',
+        'payment_no',
+        'payment_date',
+        'total_payble_amount',
+        'payment_amount',
+        'short_excess_cr_ac_id',
+        'short_excess_amount',
+        'company_id',
+        'year_id',
+        'round_off_account_id',
+        'round_off_amount',
+        'is_gst_bill',
+        'total_bank_charges',
+    ];
 
     public function receipt()
     {

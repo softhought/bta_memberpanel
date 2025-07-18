@@ -10,6 +10,7 @@ class BaseModel extends Model
 {
     protected $primaryKey = 'id';
     public $timestamps = false;
+    protected $fillable = [];
 
     public function __construct(array $attributes = [])
     {

@@ -9222,6 +9222,10 @@ a.list-group-item-dark:hover {
     height: 120px;
 }
 
+.nav-title{
+    color: green !important;
+}
+
 /** Fees */
 .summary-box {
     max-width: 350px;

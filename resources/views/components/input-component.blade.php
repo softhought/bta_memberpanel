@@ -5,7 +5,7 @@
             type="{{ $type }}"
             class="form-control {{ $class }}"
             id="{{ $id }}"
-            name="{{ $name }}"
+            name="{{ isset($name) ? $name : '' }}"
             placeholder="{{ isset($placeholder) ? $placeholder : '' }}"
             value="{{ $value }}"
             autocomplete="off"

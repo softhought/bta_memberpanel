@@ -36,8 +36,9 @@ Route::prefix('member')->middleware(['member_auth'])->group(function () {
     Route::request('profile', [MemberController::class, 'profile']);
     Route::request('profileAction', [MemberController::class, 'profileAction']);
 
-    /** Payments */
-    Route::post('ipayments', [PaymentController::class, 'payment']);
-    Route::post('/{response?}', [PaymentController::class, 'paymentResponse']);
 });
 
+/** Payments */
+Route::post('member/ipayments', [PaymentController::class, 'payment']);
+Route::post('payment-response', [PaymentController::class, 'paymentResponse']);
+Route::get('member/response', [PaymentController::class, 'response']);

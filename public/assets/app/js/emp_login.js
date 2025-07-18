@@ -69,7 +69,7 @@ $(document).ready(function () {
 
 
             var type = "POST";
-            var urlpath = base_url + '/member/auth';
+            var urlpath = base_url + '/auth';
 
             $("#errormsg").text('');
 
