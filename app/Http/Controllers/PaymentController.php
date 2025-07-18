@@ -165,7 +165,7 @@ class PaymentController extends Controller
             $paymentRequestModel->save();
 
             if ($paymentStatus) {
-                $sessionData = json_decode($paymentRequestModel->payment_session_data);
+                $sessionData = json_decode($paymentRequestModel->payment_session_data, true);
 
                 pre($sessionData);exit;
             }
