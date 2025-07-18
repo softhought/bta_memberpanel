@@ -1,57 +1,83 @@
 <style>
-    .innerbannersec .overshadowbox {
-        height: auto !important;
+    .contactformsec {
+        padding: 60px 0;
+        background: #f9f9f9;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .contactformsec .container {
-        max-width: 800px;
+        max-width: 600px;
+        background: #fff;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        border-radius: 12px;
+        text-align: center;
     }
 
-    .contactformsec .input-group-text {
-        background: none;
-        border: none;
-        border-radius: 0;
-        border-bottom: 1px solid #6c6c6c;
+    .contactformsec h2 {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .contactformsec p {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .contactformsec .success {
+        color: #28a745;
+        font-weight: 600;
+    }
+
+    .contactformsec .error {
+        color: #dc3545;
+        font-weight: 600;
+    }
+
+    .contactformsec .thankyou-icon {
+        font-size: 60px;
+        margin-bottom: 20px;
+    }
+
+    .thankyou-icon.success {
+        color: #28a745;
+    }
+
+    .thankyou-icon.error {
+        color: #dc3545;
     }
 </style>
 
+{{-- Redirect to home if no status --}}
 {{-- @if (!session()->has('status'))
     <script>
         window.location.href = "{{ url('/') }}";
     </script>
 @endif --}}
 
-<!-- contact form sec start -->
+<!-- Contact form section start -->
 <section class="contactformsec">
-
     <div class="container">
 
-        <div class="contactformsec_inner">
-
-            <div class="row">
-                {{-- <div class="col-md-3"></div> --}}
-                <div class="col-md-12">
-
-                    <div class="contact_form">
-                        <h2 class="text-center">Thank You</h2>
-
-                        @if (session('status') == 'success')
-                            <p class="text-center" style="color: green;">Transaction Successfully Completed</p>
-                        @else
-                            <p class="text-center" style="color: red;">Transaction Failed</p>
-                        @endif
-
-                        {{-- <p class="text-center">Your Reference Number: <strong>{{ session('message') }}</strong></p> --}}
-                    </div>
-
-                </div>
-
-
-
-            </div>
-
+        <div class="thankyou-icon {{ session('status') == 'success' ? 'success' : 'error' }}">
+            <i class="fas {{ session('status') == 'success' ? 'fa-check-circle' : 'fa-times-circle' }}"></i>
         </div>
 
-    </div>
+        <h2>Thank You</h2>
 
+        @if (session('status') == 'success')
+            <p class="success">Transaction Successfully Completed</p>
+        @else
+            <p class="error">Transaction Failed</p>
+        @endif
+
+        {{-- Optional reference number --}}
+        {{-- <p>Your Reference Number: <strong>{{ session('message') }}</strong></p> --}}
+
+    </div>
 </section>
+
+<!-- FontAwesome CDN (if not already included) -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
