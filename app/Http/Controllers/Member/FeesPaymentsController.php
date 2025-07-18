@@ -154,7 +154,7 @@ class FeesPaymentsController extends Controller
                 $paymentMaster->receipt = MemberReceiptDetail::where('receipt_master_id', $paymentMaster->receipt_master_id)->orderByDesc('receipt_master_id')->first();
                 $data['paymentMaster'] = $paymentMaster;
             }
-            pre($data['paymentMaster']);exit;
+
         $data['enrollment'] = $enrollment;
         $data['paymentMode'] = PaymentMode::all();
         $data['bank'] = Bank::all();
