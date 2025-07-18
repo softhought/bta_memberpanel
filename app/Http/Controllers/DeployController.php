@@ -8,7 +8,12 @@ class DeployController extends Controller
 {
     public function pullCode()
     {
-        $repoPath = base_path();
+        $repoPath = "/var/www/html/members-btaportal-in";
+        if (!is_dir($repoPath . '/.git')) {
+            echo "Error: Not a git repository at {$repoPath}";
+            return;
+        }
+
         $keyPath = storage_path('ssh/bta');
 
         $process = Process::fromShellCommandline(
