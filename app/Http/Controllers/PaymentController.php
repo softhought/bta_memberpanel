@@ -4,15 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Constants\Constant;
 use App\Models\Member;
-use App\Models\MemberReceiptDetail;
-use App\Models\MemberReceiptMaster;
-use App\Models\PaymentDetails;
-use App\Models\PaymentMaster;
-use App\Models\PaymentMode;
 use App\Models\PaymentRequest;
 use App\Models\PaymentResponse;
-use App\Models\VoucherDetails;
-use App\Models\VoucherMaster;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
@@ -53,10 +46,6 @@ class PaymentController extends Controller
         $aesKey = "3900341616701060";
         $subMerchantId = "45";
         $merchantId = "391678";
-
-        $dataArray['amount'] = 1;
-        $dataArray['email'] = "devsofthought@gmail.com";
-        $dataArray['mobile_no'] = "7003319369";
 
         try {
             DB::beginTransaction();
@@ -200,7 +189,6 @@ class PaymentController extends Controller
         if ($cookieData) {
             $btaMemberData = json_decode($cookieData, true);
             session(['btaMember' => $btaMemberData]);
-            // Cookie::queue(Cookie::forget('bta_member_cookie'));
         }
 
         $data['bodyView'] = view('payment-response');
