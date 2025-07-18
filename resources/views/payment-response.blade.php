@@ -48,6 +48,11 @@
     .thankyou-icon.error {
         color: #dc3545;
     }
+
+    #global-tab-loader {
+        display: none !important;
+        z-index: 0 !important;
+    }
 </style>
 
 {{-- Redirect to home if no status --}}
@@ -70,7 +75,9 @@
         @if (session('status') == 'success')
             <p class="success">Transaction Successfully Completed</p>
             {{-- Download Receipt Button --}}
-            <a href="http://btaportal.in/custom/report/taxinvoice/receiptpdf/{{ session('enrollment_id') }}/{{ session('receipt_id') }}/{{ session('payment_id') }}/1" class="btn btn-success" style="margin: 20px 0; display: inline-block; padding: 10px 24px; font-size: 18px; border-radius: 6px; background: #28a745; color: #fff; text-decoration: none;">
+            <a href="http://btaportal.in/custom/report/taxinvoice/receiptpdf/{{ session('enrollment_id') }}/{{ session('receipt_id') }}/{{ session('payment_id') }}/1"
+                class="btn btn-success" target="_blank"
+                style="margin: 10px 0; display: inline-block; padding: 10px 15px; font-size: 16px; border-radius: 6px; background: #28a745; color: #fff; text-decoration: none;">
                 <i class="fas fa-download" style="margin-right: 8px;"></i> Download Receipt
             </a>
         @else
