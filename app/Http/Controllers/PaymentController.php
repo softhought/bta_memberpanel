@@ -200,7 +200,7 @@ class PaymentController extends Controller
         if ($cookieData) {
             $btaMemberData = json_decode($cookieData, true);
             session(['btaMember' => $btaMemberData]);
-            Cookie::queue(Cookie::forget('bta_member_cookie'));
+            // Cookie::queue(Cookie::forget('bta_member_cookie'));
         }
 
         $data['bodyView'] = view('payment-response');
