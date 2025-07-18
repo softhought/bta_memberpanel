@@ -431,7 +431,6 @@ function processDailyCollectionData($paymentMstId)
 
 function processPayment($sessionData, $paymentRequestModel, $referenceNo, $bankRefNo)
 {
-    pre($paymentRequestModel);exit;
     $yearId = DB::table('financialyear')->where('is_active', 'Y')->orderByDesc('year_id')->first()->year_id;
 
     // Create Receipt Master
