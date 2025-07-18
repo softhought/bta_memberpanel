@@ -6,6 +6,7 @@ use App\Constants\Constant;
 use App\Models\Member;
 use App\Models\MemberReceiptDetail;
 use App\Models\MemberReceiptMaster;
+use App\Models\PaymentMaster;
 use App\Models\PaymentMode;
 use App\Models\PaymentRequest;
 use App\Models\PaymentResponse;
@@ -238,7 +239,7 @@ class PaymentController extends Controller
                     [
                         'voucher_date' => now(),
                         'tran_type' => 'ONLINE',
-                        'narration' => "Payment From Student " . date("d-m-Y"),
+                        'narration' => "Payment From Student " . date("d/m/Y"),
                         'total_dr_amt' => $memberReceiptMasterModel->net_payble_amount,
                         'total_cr_amt' => $memberReceiptMasterModel->net_payble_amount,
                         'user_id' => 12,
@@ -265,6 +266,28 @@ class PaymentController extends Controller
                     [
                         'account_master_id' => $paymentModeDetails->account_id,
                         'amount' => $memberReceiptMasterModel->net_payble_amount,
+                    ]
+                );
+
+                // Create Payment Master
+                $paymentMasterModel = PaymentMaster::updateOrCreate(
+                    ['receipt_master_id' => $memberReceiptMasterModel->receipt_id],
+                    [
+                        'member_id' => $sessionData['member_id'],
+                        'enrollment_id' => $sessionData['enrollment_id'],
+                        'voucher_id' => $voucherMasterModel->id,
+                        'payment_no' => $memberReceiptMasterModel->receipt_no,
+                        'payment_date' => now(),
+                        'total_payble_amount' => $memberReceiptMasterModel->net_payble_amount,
+                        'payment_amount' => $memberReceiptMasterModel->net_payble_amount,
+                        'short_excess_cr_ac_id' => 23,
+                        'short_excess_amount' => 0,
+                        'company_id' => 1,
+                        'year_id' => $yearId,
+                        'round_off_account_id' => 30,
+                        'round_off_amount' => 0,
+                        'is_gst_bill' => 'N',
+                        'total_bank_charges' => 0,
                     ]
                 );
             }
