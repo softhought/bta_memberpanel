@@ -7,6 +7,7 @@ use App\Models\Menu;
 use App\Models\PaymentDetails;
 use App\Models\PaymentMaster;
 use App\Models\PaymentMode;
+use App\Models\PaymentRequest;
 use App\Models\VoucherDetails;
 use App\Models\VoucherMaster;
 use Illuminate\Support\Facades\DB;
@@ -429,7 +430,7 @@ function processDailyCollectionData($paymentMstId)
 }
 
 
-function processPayment($sessionData, $paymentRequestModel, $bankRefNo)
+function processPayment($sessionData, $paymentRequestModel)
 {
     $yearId = DB::table('financialyear')->where('is_active', 'Y')->orderByDesc('year_id')->first()->year_id;
 
@@ -561,7 +562,7 @@ function processPayment($sessionData, $paymentRequestModel, $bankRefNo)
             'amount' => $memberReceiptMasterModel->net_payble_amount,
             'cheque_date' => date('Y-m-d'),
             'bank_charges' => 0,
-            'payment_ref' => $bankRefNo
+            'payment_ref' => $paymentRequestModel->id
         ]
     );
 
@@ -628,4 +629,20 @@ function checkEazypayTransaction($pgReferenceNo)
     parse_str($response->body(), $result);
 
     return $result;
+}
+
+function processPendingPayments()
+{
+    $pendingRequest = PaymentRequest::where('status', 'N')->where('is_checking', 'N')->get();
+
+    foreach ($pendingRequest as $value) {
+        $response = checkEazypayTransaction($value->transaction_id);
+
+        if ($response['status'] === "RIP" || $response['status'] === "SIP" || $response['status'] === "SUCCESS") {
+            $sessionData = json_decode($value->payment_session_data, true);
+            processPayment($sessionData, $value);
+        } else {
+            PaymentRequest::where('id', $value->id)->update(['is_checking' => 'Y']);
+        }
+    }
 }
