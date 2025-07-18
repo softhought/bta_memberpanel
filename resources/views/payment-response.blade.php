@@ -69,6 +69,10 @@
 
         @if (session('status') == 'success')
             <p class="success">Transaction Successfully Completed</p>
+            {{-- Download Receipt Button --}}
+            <a href="http://btaportal.in/custom/report/taxinvoice/receiptpdf/{{ session('enrollment_id') }}/{{ session('receipt_id') }}/{{ session('payment_id') }}/1" class="btn btn-success" style="margin: 20px 0; display: inline-block; padding: 10px 24px; font-size: 18px; border-radius: 6px; background: #28a745; color: #fff; text-decoration: none;">
+                <i class="fas fa-download" style="margin-right: 8px;"></i> Download Receipt
+            </a>
         @else
             <p class="error">Transaction Failed</p>
         @endif

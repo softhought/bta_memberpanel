@@ -568,6 +568,8 @@ function processPayment($sessionData, $paymentRequestModel)
 
     // Create Daily Collection Report
     processDailyCollectionData($paymentMasterModel->payment_id);
+
+    return ['receipt_id' => $memberReceiptMasterModel->receipt_id, 'payment_id' => $paymentMasterModel->payment_id];
 }
 
 function generateReceiptNo($transactionId)
