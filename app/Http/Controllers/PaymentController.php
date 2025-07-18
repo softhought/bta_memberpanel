@@ -15,6 +15,7 @@ use App\Models\VoucherDetails;
 use App\Models\VoucherMaster;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
@@ -39,6 +40,10 @@ class PaymentController extends Controller
         ]);
 
         $encryptedUrl = $this->initiatePayment($dataArray);
+
+        $btaMemberData = session('btaMember');
+        Cookie::queue('bta_member_cookie', json_encode($btaMemberData), 20);
+
 
         return response()->json(['status' => Constant::SUCCESS, 'encryptedUrl' => $encryptedUrl]);
     }
@@ -144,6 +149,14 @@ class PaymentController extends Controller
 
     public function paymentResponse(Request $request)
     {
+        $cookieData = $request->cookie('bta_member_cookie');
+
+        if ($cookieData) {
+            $btaMemberData = json_decode($cookieData, true);
+            session(['btaMember' => $btaMemberData]);
+            Cookie::queue(Cookie::forget('bta_member_cookie'));
+        }
+
         try {
             DB::beginTransaction();
 
@@ -178,7 +191,7 @@ class PaymentController extends Controller
 
             DB::commit();
 
-            return redirect()->to('response')
+            return redirect()->to('member/response')
                 ->with('message', $referenceNo)
                 ->with('status', $paymentStatus ? 'success' : 'error');
 
