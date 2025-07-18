@@ -149,14 +149,6 @@ class PaymentController extends Controller
 
     public function paymentResponse(Request $request)
     {
-        $cookieData = $request->cookie('bta_member_cookie');
-
-        if ($cookieData) {
-            $btaMemberData = json_decode($cookieData, true);
-            session(['btaMember' => $btaMemberData]);
-            Cookie::queue(Cookie::forget('bta_member_cookie'));
-        }
-
         try {
             DB::beginTransaction();
 
@@ -201,8 +193,16 @@ class PaymentController extends Controller
         }
     }
 
-    public function response()
+    public function response(Request $request)
     {
+        $cookieData = $request->cookie('bta_member_cookie');
+
+        if ($cookieData) {
+            $btaMemberData = json_decode($cookieData, true);
+            session(['btaMember' => $btaMemberData]);
+            Cookie::queue(Cookie::forget('bta_member_cookie'));
+        }
+
         $data['bodyView'] = view('payment-response');
         return $this->renderView($data);
     }
