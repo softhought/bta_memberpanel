@@ -168,7 +168,7 @@ class PaymentController extends Controller
             if ($paymentStatus) {
                 $sessionData = json_decode($paymentRequestModel->payment_session_data, true);
                 $yearId = DB::table('financialyear')->where('is_active', 'Y')->orderByDesc('year_id')->first()->year_id;
-
+                pre($sessionData);exit;
                 $memberReceiptMasterModel = MemberReceiptMaster::updateOrCreate(
                     ['reference_no' => $referenceNo, 'receipt_no' => $this->generateReceiptNo($referenceNo)],
                     [
@@ -193,6 +193,10 @@ class PaymentController extends Controller
                         'active_programme_group' => $sessionData['group_id']
                     ]
                 );
+
+                foreach ($sessionData[''] as $key => $value) {
+                    # code...
+                }
             }
 
 
