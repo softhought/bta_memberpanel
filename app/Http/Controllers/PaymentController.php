@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Constants\Constant;
 use App\Models\Member;
+use App\Models\MemberReceiptDetail;
 use App\Models\MemberReceiptMaster;
 use App\Models\PaymentRequest;
 use App\Models\PaymentResponse;
@@ -168,7 +169,7 @@ class PaymentController extends Controller
             if ($paymentStatus) {
                 $sessionData = json_decode($paymentRequestModel->payment_session_data, true);
                 $yearId = DB::table('financialyear')->where('is_active', 'Y')->orderByDesc('year_id')->first()->year_id;
-                pre($sessionData);exit;
+
                 $memberReceiptMasterModel = MemberReceiptMaster::updateOrCreate(
                     ['reference_no' => $referenceNo, 'receipt_no' => $this->generateReceiptNo($referenceNo)],
                     [
@@ -194,8 +195,36 @@ class PaymentController extends Controller
                     ]
                 );
 
-                foreach ($sessionData[''] as $key => $value) {
-                    # code...
+                foreach ($sessionData['month_id'] as $key => $monthId) {
+                    $crAccountId = DB::table('programme_commercial_component')
+                        ->where('component_id', $sessionData['component_id'][$key])
+                        ->value('account_id');
+
+                    $memberReceiptDetailModel = MemberReceiptDetail::updateOrCreate(
+                        [
+                            'receipt_master_id' => $memberReceiptMasterModel->receipt_id,
+                            'year' => date('Y'),
+                            'month_id' => $monthId,
+                        ],
+                        [
+                            'cr_ac_id' => $crAccountId,
+                            'component_id' => $sessionData['component_id'][$key],
+                            'item_amount' => $sessionData['payable'][$key],
+                            'item_qty' => 1,
+                            'amount' => $sessionData['payable'][$key],
+                            'discount' => 0,
+                            'taxable_amount' => $sessionData['payable'][$key],
+                            'cgst_id' => 0,
+                            'sgst_id' => 0,
+                            'cgst_amount' => 0,
+                            'sgst_amount' => 0,
+                            'total_gst_amount' => 0,
+                            'is_payment_due' => "N",
+                            'due_amount' => 0,
+                            'net_amount' => $sessionData['payable'][$key],
+                            'is_waiver' => "N",
+                        ]
+                    );
                 }
             }
 
