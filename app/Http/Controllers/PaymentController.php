@@ -47,9 +47,9 @@ class PaymentController extends Controller
         $subMerchantId = "45";
         $merchantId = "391678";
 
-        $dataArray['amount'] = 1;
-        $dataArray['mobile_no'] = "8944961893";
-        $dataArray['email'] = "sumanvar405@gmail.com";
+        // $dataArray['amount'] = 1;
+        // $dataArray['mobile_no'] = "8944961893";
+        // $dataArray['email'] = "sumanvar405@gmail.com";
 
         try {
             DB::beginTransaction();
