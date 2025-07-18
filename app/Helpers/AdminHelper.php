@@ -616,3 +616,16 @@ function generateReceiptNo($transactionId)
         } while (true);
     });
 }
+
+function checkEazypayTransaction($pgReferenceNo)
+{
+    $merchantId = '391678';
+
+    $url = "https://eazypay.icicibank.com/EazyPGVerify?merchantid={$merchantId}&pgreferenceno={$pgReferenceNo}";
+
+    $response = Http::get($url);
+    $result = [];
+    parse_str($response->body(), $result);
+
+    return $result;
+}
