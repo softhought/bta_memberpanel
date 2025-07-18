@@ -12,6 +12,15 @@
     @php return; @endphp
 @endif
 
+<div class="row mb-3">
+    <div class="col-md-12" style="text-align: center;">
+        <a href="http://btaportal.in/custom/report/otherreport/printpdfenrolment/{{ $enrollment->enrollment_id }}" target="_blank"
+           style="background-color: #28a745; color: #fff; padding: 6px 14px; font-size: 14px; border-radius: 8px; text-decoration: none; display: inline-block;">
+            <i class="fas fa-download"></i> Download Receipt
+        </a>
+    </div>
+</div>
+
 <div class="payment-container">
     <!-- Admission & Others -->
     <div class="section-card">

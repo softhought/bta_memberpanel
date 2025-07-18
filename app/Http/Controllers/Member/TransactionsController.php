@@ -35,6 +35,8 @@ class TransactionsController extends Controller
         $data['enrollmentReceiptSecurityGST'] = null;
         $data['enrollmentReceiptMonthly'] = null;
 
+        $data['enrollment'] = $enrollment;
+
         if ($enrollment) {
             $data['enrollmentReceiptGST'] = PaymentMaster::GetEnrollmentReceiptGSTByEnrollment($enrollment->enrollment_id);
             $data['enrollmentReceiptSecurityGST'] = PaymentMaster::GetEnrollmentReceiptSecurityByEntrollment($enrollment->enrollment_id, $enrollment->programme_id);
