@@ -47,6 +47,10 @@ class PaymentController extends Controller
         $subMerchantId = "45";
         $merchantId = "391678";
 
+        $dataArray['amount'] = 1;
+        $dataArray['mobile_no'] = "8944961893";
+        $dataArray['email'] = "sumanvar405@gmail.com";
+
         try {
             DB::beginTransaction();
 
@@ -165,16 +169,25 @@ class PaymentController extends Controller
             $paymentRequestModel->status = $paymentStatus ? 'Y' : 'N';
             $paymentRequestModel->save();
 
+            $sessionData = json_decode($paymentRequestModel->payment_session_data, true);
+            $receipt_id = null;
+            $payment_id = null;
+
             if ($paymentStatus) {
-                $sessionData = json_decode($paymentRequestModel->payment_session_data, true);
-                processPayment($sessionData, $paymentRequestModel);
+                $response = processPayment($sessionData, $paymentRequestModel);
+
+                $receipt_id = $response['receipt_id'];
+                $payment_id = $response['payment_id'];
             }
 
             DB::commit();
 
             return redirect()->to('member/response')
                 ->with('message', $referenceNo)
-                ->with('status', $paymentStatus ? 'success' : 'error');
+                ->with('status', $paymentStatus ? 'success' : 'error')
+                ->with('enrollment_id', $sessionData['enrollment_id'])
+                ->with('receipt_id', $receipt_id)
+                ->with('payment_id', $payment_id);
 
         } catch (Exception $e) {
             DB::rollBack();
