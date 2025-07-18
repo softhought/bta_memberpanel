@@ -19,7 +19,7 @@ class Kernel extends ConsoleKernel
     ];
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('app:process-pending-payments')->everyMinute();
+        $schedule->command('app:process-pending-payments')->hourly();
     }
 
     /**
