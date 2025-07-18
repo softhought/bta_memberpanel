@@ -135,8 +135,57 @@ class PaymentController extends Controller
 
     public function paymentResponse(Request $request)
     {
-        pre($request->all());
-        echo $this->getResponseMessage($request->get('Response_Code'));
+        pre($request->all());exit;
+        try {
+            DB::beginTransaction();
+
+            $referenceNo = $request->post('ReferenceNo');
+            $bankRefNo = $request->post('Unique_Ref_Number');
+
+            $paymentRequest = DB::table('payment_request')
+                ->where('transaction_id', $referenceNo)->first();
+
+            $paymentStatus = $request->post('Response_Code') === "E000" ? true : false;
+
+            $insertData = [
+                'transaction_id' => $paymentRequest->id,
+                'order_id' => $paymentRequest->order_id,
+                'payment_status' => $paymentStatus ? "Y" : "N",
+                'processing_date' => now(),
+                'tracking_id' => $referenceNo,
+                'bank_ref_no' => $bankRefNo,
+                'payment_geteway' => 'Eazypay',
+                'response_data' => json_encode($request->all()),
+                'payment_message' => $this->getResponseMessage($request->post('Response_Code')),
+            ];
+
+            $paymentResponse = DB::table('payment_response')->where('transaction_id', $paymentRequest->id)->exists();
+            if ($paymentResponse) {
+                DB::table('payment_response')
+                    ->where('transaction_id', $paymentRequest->id)
+                    ->update($insertData);
+            } else {
+                DB::table('payment_response')->insert($insertData);
+            }
+
+            DB::table('payment_request')
+                ->where('id', $paymentRequest->id)
+                ->update(['status' => $paymentStatus ? 'Y' : 'F']);
+
+            DB::table('donations')
+                ->where('request_id', $paymentRequest->order_id)
+                ->update(['payment_status' => $paymentStatus ? 'DONE' : 'FAIL']);
+
+            DB::commit();
+
+            return redirect()->to('donation-payment')
+                ->with('message', $referenceNo)
+                ->with('status', $paymentStatus ? 'success' : 'error');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            echo $e->getMessage();
+        }
     }
 
     public function aes128Encrypt($str, $key)
