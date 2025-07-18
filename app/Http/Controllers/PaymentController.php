@@ -6,8 +6,11 @@ use App\Constants\Constant;
 use App\Models\Member;
 use App\Models\MemberReceiptDetail;
 use App\Models\MemberReceiptMaster;
+use App\Models\PaymentMode;
 use App\Models\PaymentRequest;
 use App\Models\PaymentResponse;
+use App\Models\VoucherDetails;
+use App\Models\VoucherMaster;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -170,8 +173,9 @@ class PaymentController extends Controller
                 $sessionData = json_decode($paymentRequestModel->payment_session_data, true);
                 $yearId = DB::table('financialyear')->where('is_active', 'Y')->orderByDesc('year_id')->first()->year_id;
 
+                // Create Receipt Master
                 $memberReceiptMasterModel = MemberReceiptMaster::updateOrCreate(
-                    ['reference_no' => $referenceNo, 'receipt_no' => $this->generateReceiptNo($referenceNo)],
+                    ['reference_no' => $paymentRequestModel->id, 'receipt_no' => $this->generateReceiptNo($referenceNo)],
                     [
                         'receipt_date' => now(),
                         'no_of_months' => count($sessionData['month_id']),
@@ -195,6 +199,7 @@ class PaymentController extends Controller
                     ]
                 );
 
+                // Create Receipt Details
                 foreach ($sessionData['month_id'] as $key => $monthId) {
                     $crAccountId = DB::table('programme_commercial_component')
                         ->where('component_id', $sessionData['component_id'][$key])
@@ -226,6 +231,42 @@ class PaymentController extends Controller
                         ]
                     );
                 }
+
+                // Create Voucher Master
+                $voucherMasterModel = VoucherMaster::updateOrCreate(
+                    ['voucher_no' => $memberReceiptMasterModel->receipt_no],
+                    [
+                        'voucher_date' => now(),
+                        'tran_type' => 'ONLINE',
+                        'narration' => "Payment From Student " . date("d-m-Y"),
+                        'total_dr_amt' => $memberReceiptMasterModel->net_payble_amount,
+                        'total_cr_amt' => $memberReceiptMasterModel->net_payble_amount,
+                        'user_id' => 12,
+                        'year_id' => $yearId,
+                        'company_id' => 1,
+                        'reference_no' => $paymentRequestModel->id
+                    ]
+                );
+
+                // Create Voucher Details
+                $paymentModeDetails = PaymentMode::where('payment_mode', 'ICICI Payment Gateway')->first();
+
+                $voucherDetailCrModel = VoucherDetails::updateOrCreate(
+                    ['voucher_master_id' => $voucherMasterModel->id, 'tran_tag' => 'Cr'],
+                    [
+                        'account_master_id' => $crAccountId,
+                        'amount' => $memberReceiptMasterModel->net_payble_amount,
+                        'srl_no' => 1
+                    ]
+                );
+
+                $voucherDetailDrModel = VoucherDetails::updateOrCreate(
+                    ['voucher_master_id' => $voucherMasterModel->id, 'tran_tag' => 'Dr'],
+                    [
+                        'account_master_id' => $paymentModeDetails->account_id,
+                        'amount' => $memberReceiptMasterModel->net_payble_amount,
+                    ]
+                );
             }
 
 

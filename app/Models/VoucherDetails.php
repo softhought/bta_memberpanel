@@ -9,4 +9,12 @@ class VoucherDetails extends BaseModel
 {
     use HasFactory;
     protected $table = 'voucher_detail';
+
+    protected $fillable = [
+        'voucher_master_id',
+        'tran_tag',
+        'account_master_id',
+        'amount',
+        'srl_no',
+    ];
 }
