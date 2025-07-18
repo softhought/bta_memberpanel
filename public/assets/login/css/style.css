@@ -12087,3 +12087,7 @@ h5,
     background: #fff;
     color: #000;
 }
+
+.nav-title{
+    color: green !important;
+}
