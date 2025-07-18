@@ -20,8 +20,6 @@ class MemberController extends Controller
         $memberData = Member::with(['programEnrollment.program', 'programEnrollment.group'])->find($memberId);
         $data['member'] = $memberData;
 
-        pre(checkEazypayTransaction('TR00024'));exit;
-
         $data['bodyView'] = view('member.dashboard', $data);
         return $this->renderView($data);
     }
