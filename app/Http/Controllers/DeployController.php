@@ -9,6 +9,7 @@ class DeployController extends Controller
     public function pullCode()
     {
         $repoPath = base_path();
+        echo $repoPath;exit;
         $keyPath = storage_path('ssh/bta');
 
         $process = Process::fromShellCommandline(
