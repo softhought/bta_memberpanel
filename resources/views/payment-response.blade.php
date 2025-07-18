@@ -67,11 +67,11 @@
 
         <h2>Thank You</h2>
 
-        @if (session('status') == 'success')
+        {{-- @if (session('status') == 'success') --}}
             <p class="success">Transaction Successfully Completed</p>
-        @else
+        {{-- @else
             <p class="error">Transaction Failed</p>
-        @endif
+        @endif --}}
 
         {{-- Optional reference number --}}
         {{-- <p>Your Reference Number: <strong>{{ session('message') }}</strong></p> --}}
