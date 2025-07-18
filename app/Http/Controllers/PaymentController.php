@@ -178,9 +178,9 @@ class PaymentController extends Controller
 
             DB::commit();
 
-            // return redirect()->to('response')
-            //     ->with('message', $referenceNo)
-            //     ->with('status', $paymentStatus ? 'success' : 'error');
+            return redirect()->to('response')
+                ->with('message', $referenceNo)
+                ->with('status', $paymentStatus ? 'success' : 'error');
 
         } catch (Exception $e) {
             DB::rollBack();
