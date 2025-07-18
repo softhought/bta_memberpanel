@@ -178,7 +178,7 @@ class PaymentController extends Controller
 
             DB::commit();
 
-            // return redirect()->to('donation-payment')
+            // return redirect()->to('response')
             //     ->with('message', $referenceNo)
             //     ->with('status', $paymentStatus ? 'success' : 'error');
 
@@ -186,6 +186,12 @@ class PaymentController extends Controller
             DB::rollBack();
             echo $e->getMessage();
         }
+    }
+
+    public function response()
+    {
+        $data['bodyView'] = view('payment-response');
+        return $this->renderView($data);
     }
 
     public function aes128Encrypt($str, $key)
