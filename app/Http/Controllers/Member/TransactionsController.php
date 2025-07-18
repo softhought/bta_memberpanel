@@ -15,6 +15,7 @@ class TransactionsController extends Controller
     {
         $btaAdmin = session()->get('btaMember');
         $memberId = $btaAdmin['memberId'];
+        $yearId = $btaAdmin['yearId'];
 
         $program = $request->post('program');
 
@@ -36,6 +37,7 @@ class TransactionsController extends Controller
         $data['enrollmentReceiptMonthly'] = null;
 
         $data['enrollment'] = $enrollment;
+        $data['yearId'] = $yearId;
 
         if ($enrollment) {
             $data['enrollmentReceiptGST'] = PaymentMaster::GetEnrollmentReceiptGSTByEnrollment($enrollment->enrollment_id);

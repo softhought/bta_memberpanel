@@ -104,6 +104,9 @@ class PaymentMaster extends BaseModel
 
     public function scopeGetEnrollmentReceiptByEnrollment($query, $enrollmentId, $programId)
     {
+        $btaAdmin = session()->get('btaMember');
+        $yearId = $btaAdmin['yearId'];
+
         return DB::table('payment_master AS PM')
             ->select(
                 'PM.*',
@@ -129,6 +132,7 @@ class PaymentMaster extends BaseModel
             ->leftJoin('users', 'users.id', '=', 'MRM.inactive_by')
             ->where('PM.enrollment_id', $enrollmentId)
             ->where('PM.is_gst_bill', 'N')
+            ->where('PM.year_id', $yearId)
             ->whereNotIn('PCC.component_id', function ($query) use ($programId) {
                 $query->select('component_id')
                     ->from('programme_commercial_component')

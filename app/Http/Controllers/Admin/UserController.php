@@ -7,6 +7,7 @@ use App\Models\Member;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -123,7 +124,10 @@ class UserController extends Controller
                 $role = $roleModel ? $roleModel->role : '';
                 $roleId = $roleModel ? $roleModel->id : null;
 
+                $yearId = DB::table('financialyear')->where('is_active', 'Y')->orderByDesc('year_id')->first()->year_id;
+
                 $sessionData = [
+                    'yearId' => $yearId,
                     'memberId' => $memberId,
                     'userName' => $userName,
                     'role' => $role,
