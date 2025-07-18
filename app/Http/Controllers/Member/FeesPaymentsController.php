@@ -52,7 +52,7 @@ class FeesPaymentsController extends Controller
                 ->groupBy('MRD.receipt_dtl_id')
                 ->orderBy('MRD.year')
                 ->orderBy('MRD.month_id')
-                ->first();
+                ->last();
 
             $paymentMaster->receipt = MemberReceiptDetail::where('receipt_master_id', $paymentMaster->receipt_master_id)->orderByDesc('receipt_master_id')->first();
             $data['paymentMaster'] = $paymentMaster;
@@ -101,7 +101,7 @@ class FeesPaymentsController extends Controller
                 ->groupBy('MRD.receipt_dtl_id')
                 ->orderBy('MRD.year')
                 ->orderBy('MRD.month_id')
-                ->first();
+                ->last();
 
             $paymentMaster->receipt = MemberReceiptDetail::where('receipt_master_id', $paymentMaster->receipt_master_id)->orderByDesc('receipt_master_id')->first();
             $data['paymentMaster'] = $paymentMaster;
@@ -150,7 +150,7 @@ class FeesPaymentsController extends Controller
                 ->groupBy('MRD.receipt_dtl_id')
                 ->orderBy('MRD.year')
                 ->orderBy('MRD.month_id')
-                ->first();
+                ->last();
                 $paymentMaster->receipt = MemberReceiptDetail::where('receipt_master_id', $paymentMaster->receipt_master_id)->orderByDesc('receipt_master_id')->first();
                 $data['paymentMaster'] = $paymentMaster;
             }
@@ -198,7 +198,7 @@ class FeesPaymentsController extends Controller
                 ->groupBy('MRD.receipt_dtl_id')
                 ->orderBy('MRD.year')
                 ->orderBy('MRD.month_id')
-                ->first();
+                ->last();
 
             $paymentMaster->receipt = MemberReceiptDetail::where('receipt_master_id', $paymentMaster->receipt_master_id)->orderByDesc('receipt_master_id')->first();
             $data['paymentMaster'] = $paymentMaster;
