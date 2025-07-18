@@ -15,11 +15,11 @@
     }
 </style>
 
-@if (!session()->has('status'))
+{{-- @if (!session()->has('status'))
     <script>
         window.location.href = "{{ url('/') }}";
     </script>
-@endif
+@endif --}}
 
 <!-- contact form sec start -->
 <section class="contactformsec">
@@ -41,7 +41,7 @@
                             <p class="text-center" style="color: red;">Transaction Failed</p>
                         @endif
 
-                        <p class="text-center">Your Reference Number: <strong>{{ session('message') }}</strong></p>
+                        {{-- <p class="text-center">Your Reference Number: <strong>{{ session('message') }}</strong></p> --}}
                     </div>
 
                 </div>
