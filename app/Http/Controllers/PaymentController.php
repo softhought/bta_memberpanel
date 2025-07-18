@@ -173,7 +173,7 @@ class PaymentController extends Controller
 
             if ($paymentStatus) {
                 $sessionData = json_decode($paymentRequestModel->payment_session_data, true);
-                processPayment($sessionData, $paymentRequestModel, $referenceNo, $bankRefNo);
+                processPayment($sessionData, $paymentRequestModel, $bankRefNo);
             }
 
             DB::commit();

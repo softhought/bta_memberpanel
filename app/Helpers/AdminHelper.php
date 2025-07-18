@@ -429,13 +429,13 @@ function processDailyCollectionData($paymentMstId)
 }
 
 
-function processPayment($sessionData, $paymentRequestModel, $referenceNo, $bankRefNo)
+function processPayment($sessionData, $paymentRequestModel, $bankRefNo)
 {
     $yearId = DB::table('financialyear')->where('is_active', 'Y')->orderByDesc('year_id')->first()->year_id;
 
     // Create Receipt Master
     $memberReceiptMasterModel = MemberReceiptMaster::updateOrCreate(
-        ['reference_no' => $paymentRequestModel->id, 'receipt_no' => generateReceiptNo($referenceNo)],
+        ['reference_no' => $paymentRequestModel->id, 'receipt_no' => generateReceiptNo($paymentRequestModel->id)],
         [
             'receipt_date' => date('Y-m-d'),
             'no_of_months' => count($sessionData['month_id']),
