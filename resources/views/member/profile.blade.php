@@ -21,21 +21,26 @@
                                         id="email" class="custom-input-class" placeholder="Enter Email"
                                         value="" readonly="{{ $member->primary_email }}" />
 
-                                    <x-textarea-component column="col-md-12" type="text" label="Address" name="address"
-                                        id="address" cols="" rows="2" class="custom-input-class" placeholder="Enter Address"
+                                    <x-textarea-component column="col-md-12" type="text" label="Address"
+                                        name="address" id="address" cols="" rows="2"
+                                        class="custom-input-class" placeholder="Enter Address"
                                         value="{{ $member->address_one }}" />
 
-                                    <div class="col-md-7"></div>
+                                    <div class="col-md-12 mt-3">
+                                        <div
+                                            class="d-flex flex-wrap justify-content-center justify-content-md-end gap-2">
+                                            <a href="{{ url('/') }}" class="btn btn-sm btn-primary"
+                                                style="width: 8rem; height: 2rem; padding-top: 6px;">
+                                                Close
+                                            </a>
 
-                                    <div class="col-md-2 text-center close-btn">
-                                        <a href="{{ url('/') }}" style="width: 8rem; padding-top: 6px; height: 2rem; margin-left: 2.5rem; color: white;"
-                                            class="btn btn-sm btn-primary">Close</a>
+                                            <button type="submit" id="savebtn" class="btn btn-sm btn-primary"
+                                                style="width: 8rem; height: 2rem; margin-left: 1rem;">
+                                                Update
+                                            </button>
+                                        </div>
                                     </div>
 
-                                    <div class="col-md-2 text-center password-btn">
-                                        <button type="submit" id="savebtn" style="width: 8rem;height: 2rem;"
-                                            class="btn btn-sm btn-primary">Update</button>
-                                    </div>
                                 </div>
                             </form>
                         </div>
