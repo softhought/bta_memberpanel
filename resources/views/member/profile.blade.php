@@ -7,7 +7,7 @@
             </div>
 
             <div class="card-body">
-                <div class="row">
+                <div class="row" style="zoom: 90%">
                     <div class="col-md-12">
                         <div class="card p-4">
                             <form name="profileForm" id="profileForm" enctype="multipart/form-data" method="POST">
