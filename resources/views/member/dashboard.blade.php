@@ -67,7 +67,7 @@
     .section-title {
         font-size: 1.2rem;
         font-weight: 600;
-        color: #1a8811;
+        /* color: #1a8811; */
         margin-bottom: 20px;
         padding-bottom: 10px;
         border-bottom: 1px solid #e0e0e0;
@@ -217,13 +217,16 @@
 
         <div class="profile-info">
             <h1 class="profile-name">{{ ucwords(strtolower($member->member_fname . ' ' . $member->member_lname)) }}</h1>
-            <p class="profile-subtitle">Student at {{ $member->address_one }}</p>
+            <p class="profile-subtitle">{{ $member->address_one }}</p>
             <div class="member-code">{{ $member->member_code }}</div>
         </div>
     </div>
 
-    <div class="profile-details">
-        <h3 class="section-title">Personal Information</h3>
+    <div class="profile-details position-relative">
+        <h3 class="section-title d-flex justify-content-between align-items-center">
+            Personal Information
+            <a href="{{ url("member/profile") }}" class="edit-icon-top" style="color: white;"><i class="fas fa-edit"></i></a>
+        </h3>
         <div class="detail-grid">
             <div class="detail-card">
                 <div class="detail-icon"><i class="fas fa-birthday-cake"></i></div>
@@ -256,6 +259,7 @@
         </div>
     </div>
 
+
     <div class="programs-section">
         <h3 class="section-title">Program Enrollments</h3>
         <div class="program-grid">
@@ -272,8 +276,7 @@
                     <div class="program-title">{{ $programName }}</div>
                     <div class="program-group">Group: {{ $groupName }}</div>
                     <div class="program-meta">
-                        <span>From: {{ $startDate }}</span>
-                        <span>To: {{ $endDate }}</span>
+                        <span>Valid Upto: {{ $endDate }}</span>
                     </div>
                     <div class="program-status {{ $statusClass }}">{{ $statusText }}</div>
                 </div>

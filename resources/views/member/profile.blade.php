@@ -25,7 +25,13 @@
                                         id="address" cols="" rows="2" class="custom-input-class" placeholder="Enter Address"
                                         value="{{ $member->address_one }}" />
 
-                                    <div class="col-md-9"></div>
+                                    <div class="col-md-7"></div>
+
+                                    <div class="col-md-2 text-center close-btn">
+                                        <a href="{{ url('/') }}" style="width: 8rem; padding-top: 6px; height: 2rem; margin-left: 2.5rem; color: white;"
+                                            class="btn btn-sm btn-primary">Close</a>
+                                    </div>
+
                                     <div class="col-md-2 text-center password-btn">
                                         <button type="submit" id="savebtn" style="width: 8rem;height: 2rem;"
                                             class="btn btn-sm btn-primary">Update</button>

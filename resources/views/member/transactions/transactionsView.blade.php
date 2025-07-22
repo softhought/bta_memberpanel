@@ -14,9 +14,10 @@
 
 <div class="row mb-3">
     <div class="col-md-12" style="text-align: center;">
-        <a href="http://btaportal.in/custom/report/otherreport/printpdfenrolment/{{ $enrollment->enrollment_id }}/{{ $yearId }}" target="_blank"
-           style="background-color: #28a745; color: #fff; padding: 6px 14px; font-size: 14px; border-radius: 8px; text-decoration: none; display: inline-block;">
-            <i class="fas fa-download"></i> Download Receipt
+        <a href="http://btaportal.in/custom/report/otherreport/printpdfenrolment/{{ $enrollment->enrollment_id }}/{{ $yearId }}"
+            target="_blank"
+            style="background-color: #28a745; color: #fff; padding: 6px 14px; font-size: 14px; border-radius: 8px; text-decoration: none; display: inline-block;">
+            <i class="fas fa-download"></i> Download Transaction History
         </a>
     </div>
 </div>
@@ -146,6 +147,7 @@
                         {{-- <th>CGST</th>
                         <th>SGST</th> --}}
                         <th>Pay Amt.</th>
+                        <th>Receipt</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -162,6 +164,12 @@
                                 {{-- <td>{{ number_format($list->cgst_amount, 2) }}</td>
                                 <td>{{ number_format($list->sgst_amount, 2) }}</td> --}}
                                 <td>{{ number_format($list->taxable_amount + $list->cgst_amount + $list->sgst_amount, 2) }}
+                                </td>
+                                <td>
+                                    <a href="http://btaportal.in/custom/report/taxinvoice/receiptpdf/{{ $list->enrollment_id }}/{{ $list->receipt_master_id }}/{{ $list->payment_id }}/1"
+                                        target="_blank" title="View PDF Receipt">
+                                        <i class="fas fa-file-pdf fa-lg currency"></i>
+                                    </a>
                                 </td>
                             </tr>
                         @endforeach
