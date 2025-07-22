@@ -13,7 +13,9 @@
         margin-bottom: 20px;
     }
 
+    /* Container to trigger hover */
     .profile-img-container {
+        position: relative;
         width: 120px;
         height: 120px;
         border-radius: 50%;
@@ -23,10 +25,43 @@
         flex-shrink: 0;
     }
 
+    /* Profile image */
     .profile-img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        display: block;
+    }
+
+    /* Hide file input */
+    #profileInput {
+        display: none;
+    }
+
+    /* Initially hidden camera icon */
+    .change-image-btn {
+        position: absolute;
+        bottom: 6px;
+        left: 50%;
+        transform: translateX(-50%) scale(0);
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: 2px solid #fff;
+        opacity: 0;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    /* Show icon on hover */
+    .profile-img-container:hover .change-image-btn {
+        opacity: 1;
+        transform: translateX(-50%) scale(1.15);
     }
 
     .profile-info {
@@ -206,13 +241,21 @@
     <div class="profile-header">
         @php
             $profileUrl = 'https://www.stephan-academy.com/content/avatars/avatar_lg.png';
-            if (!empty($member->profile_picture)) {
-                $profileUrl = "http://btaportal.in/backend/app/uploads/profile/{$member->profile_picture}";
+            if (!empty($member->member_portal_profile_picture)) {
+                $profileUrl = asset($member->member_portal_profile_picture);
+            } else if (!empty($member->profile_picture)) {
+                $profileUrl = "https://btaportal.in/backend/app/uploads/profile/{$member->profile_picture}";
             }
         @endphp
 
         <div class="profile-img-container">
-            <img src="{{ $profileUrl }}" class="profile-img" alt="{{ $member->profile_pictur }}">
+            <img src="{{ $profileUrl }}" class="profile-img" alt="{{ $member->profile_picture }}">
+            <form method="POST" enctype="multipart/form-data" id="profileImageForm">
+                @csrf
+                <input type="file" name="profile_picture" id="profileInput" accept="image/*">
+
+                <label for="profileInput" class="change-image-btn"><i class="fas fa-camera"></i></label>
+            </form>
         </div>
 
         <div class="profile-info">
@@ -225,7 +268,8 @@
     <div class="profile-details position-relative">
         <h3 class="section-title d-flex justify-content-between align-items-center">
             Personal Information
-            <a href="{{ url("member/profile") }}" class="edit-icon-top" style="color: white;"><i class="fas fa-edit"></i></a>
+            <a href="{{ url('member/profile') }}" class="edit-icon-top" style="color: white;"><i
+                    class="fas fa-edit"></i></a>
         </h3>
         <div class="detail-grid">
             <div class="detail-card">
@@ -284,3 +328,23 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        $('#profileInput').on('change', function() {
+            $('#profileImageForm').trigger('submit');
+        });
+
+        ajaxCall('profileImageForm', 'profileUpload', function(response) {
+            if (response.message !== 'Profile picture updated successfully.') {
+                showToast(response.message, 'error');
+                return;
+            }
+
+            showToast(response.message);
+            setTimeout(function() {
+                location.reload();
+            }, 1500);
+        });
+    });
+</script>

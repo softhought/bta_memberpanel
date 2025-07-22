@@ -314,4 +314,55 @@ class MemberController extends Controller
         $domain = substr($parts[1], 0, 1) . str_repeat("x", max(0, strpos($parts[1], '.') - 1)) . substr($parts[1], strpos($parts[1], '.'));
         return "{$name}@$domain";
     }
+
+    /** Profile Upload */
+    public function profileUpload(Request $request)
+    {
+        $btaAdmin = session()->get('btaMember');
+        $memberId = $btaAdmin['memberId'] ?? null;
+
+        if (!$memberId) {
+            return response()->json([
+                'status' => Constant::SUCCESS,
+                'message' => 'Unauthorized access.'
+            ]);
+        }
+
+        $request->validate([
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $member = Member::find($memberId);
+
+        if (!$member) {
+            return response()->json([
+                'status' => Constant::SUCCESS,
+                'message' => 'Member not found.'
+            ]);
+        }
+
+        if ($request->hasFile('profile_picture')) {
+            $file = $request->file('profile_picture');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $filePath = 'uploads/profile_pictures/' . $filename;
+
+            $file->move(public_path('uploads/profile_pictures'), $filename);
+
+            // Update profile picture
+            $member->member_portal_profile_picture = $filePath;
+            $member->save();
+
+            return response()->json([
+                'status' => Constant::SUCCESS,
+                'message' => 'Profile picture updated successfully.',
+                'profile_picture' => asset($filePath)
+            ]);
+        }
+
+        return response()->json([
+            'status' => Constant::SUCCESS,
+            'message' => 'No file uploaded.'
+        ]);
+    }
+
 }

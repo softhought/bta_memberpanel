@@ -36,6 +36,9 @@ Route::prefix('member')->middleware(['member_auth'])->group(function () {
     Route::request('profile', [MemberController::class, 'profile']);
     Route::request('profileAction', [MemberController::class, 'profileAction']);
 
+    /** Profile Upload */
+    Route::request('profileUpload', [MemberController::class, 'profileUpload']);
+
 });
 
 /** Member Login */
