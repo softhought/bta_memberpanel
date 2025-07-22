@@ -24,6 +24,8 @@ class Controller extends BaseController
             $data['forceChangePassword'] = true;
         }
 
+        processPendingPayments();
+
         return view('layout', $data);
     }
 }
