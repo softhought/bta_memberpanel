@@ -11836,6 +11836,7 @@ h5,
     position: relative;
     background: #fff;
     border-radius: 10px 0 0 10px;
+    height: 35rem;
 }
 
 .login-wrap h3 {
@@ -12087,5 +12088,3 @@ h5,
     background: #fff;
     color: #000;
 }
-
-

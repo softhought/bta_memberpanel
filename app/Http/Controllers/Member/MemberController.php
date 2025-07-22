@@ -8,6 +8,7 @@ use App\Models\Enquiry;
 use App\Models\Member;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
 class MemberController extends Controller
@@ -230,5 +231,87 @@ class MemberController extends Controller
 
             return response()->json(['status' => Constant::SUCCESS, 'message' => 'Profile successfully updated.']);
         }
+    }
+
+    /** Reset Password */
+    public function sendOtp(Request $request)
+    {
+        $request->validate([
+            'member_code' => 'required|string'
+        ]);
+
+        $member = Member::where('member_code', $request->post('member_code'))->first();
+
+        if (!$member) {
+            return response()->json(['status' => 'error', 'message' => 'Registration number not found.']);
+        }
+
+        $email = $member->primary_email;
+
+        if (empty($email)) {
+            return response()->json(['status' => 'error', 'message' => 'No email associated with this account.']);
+        }
+
+        $otp = rand(100000, 999999);
+        Session::put('otp_' . $request->post('member_code'), $otp);
+
+        $subject = 'Your OTP for Password Reset';
+        $data = ['otp' => $otp, 'member_code' => $member->member_code, 'name' => "{$member->member_fname} {$member->member_lname}"];
+        $view = view('emails.otp_template', $data);
+
+        $result = sendEmail($email, $subject, $view);
+
+        if ($result !== true) {
+            return response()->json(['status' => 'error', 'message' => "Failed to send email."]);
+        }
+
+        $maskedEmail = $this->maskEmail($email);
+
+        return response()->json(['status' => 'success', 'email_masked' => $maskedEmail]);
+    }
+
+
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'member_code' => 'required',
+            'otp' => 'required'
+        ]);
+
+        $sessionOtp = Session::get('otp_' . $request->post('member_code'));
+
+        if ($sessionOtp && $sessionOtp == $request->post('otp')) {
+            return response()->json(['status' => 'success']);
+        }
+
+        return response()->json(['status' => 'error', 'message' => 'Invalid OTP']);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'member_code' => 'required',
+            'password' => 'required|min:6'
+        ]);
+
+        $member = Member::where('member_code', $request->post('member_code'))->first();
+
+        if (!$member) {
+            return response()->json(['status' => 'error', 'message' => 'User not found.']);
+        }
+
+        $member->password = Hash::make($request->post('password'));
+        $member->save();
+
+        Session::forget('otp_' . $request->post('member_code'));
+        return response()->json(['status' => 'success']);
+    }
+
+    private function maskEmail($email)
+    {
+        $parts = explode("@", $email);
+        $name = substr($parts[0], 0, 3) . str_repeat("x", max(0, strlen($parts[0]) - 5)) . substr($parts[0], -1);
+        $domain = substr($parts[1], 0, 1) . str_repeat("x", max(0, strpos($parts[1], '.') - 1)) . substr($parts[1], strpos($parts[1], '.'));
+        return "{$name}@$domain";
     }
 }

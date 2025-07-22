@@ -15,7 +15,7 @@ class MemberAuth
 
         }else{
             session()->flash('error','Access Denied');
-            return redirect('employee');
+            return redirect('/');
         }
         return $next($request);
     }
