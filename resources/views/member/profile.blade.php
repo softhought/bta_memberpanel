@@ -3,7 +3,7 @@
     <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8">
         <div class="card custom-bdr">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <div>Profile</div>
+                <div>Profile Edit</div>
             </div>
 
             <div class="card-body">
