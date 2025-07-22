@@ -9222,7 +9222,7 @@ a.list-group-item-dark:hover {
     height: 120px;
 }
 
-.nav-title{
+.nav-title {
     color: green !important;
 }
 
@@ -9800,6 +9800,11 @@ hr {
     margin-left: 2rem;
 }
 
+.close-btn {
+    margin-top: 1.7rem;
+    margin-left: 2rem;
+}
+
 @media (max-width: 768px) {
     .payment-container {
         padding: 0 15px;
@@ -9845,6 +9850,11 @@ hr {
     .password-btn {
         margin-top: 1.7rem;
         margin-left: 0rem;
+    }
+
+    .close-btn {
+        margin-top: 1.7rem;
+        margin-left: -1.3rem;
     }
 }
 
