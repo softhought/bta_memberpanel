@@ -262,7 +262,7 @@ class MemberController extends Controller
         $result = sendEmail($email, $subject, $view);
 
         if ($result !== true) {
-            return response()->json(['status' => 'error', 'message' => "Failed to send email."]);
+            return response()->json(['status' => 'error', 'message' => "Failed to send email.", 'error' => $result]);
         }
 
         $maskedEmail = $this->maskEmail($email);
