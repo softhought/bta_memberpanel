@@ -38,6 +38,11 @@ Route::prefix('member')->middleware(['member_auth'])->group(function () {
 
 });
 
+/** Member Login */
+Route::post('/ajax/send-otp', [MemberController::class, 'sendOtp']);
+Route::post('/ajax/verify-otp', [MemberController::class, 'verifyOtp']);
+Route::post('/ajax/reset-password', [MemberController::class, 'resetPassword']);
+
 /** Payments */
 Route::post('member/ipayments', [PaymentController::class, 'payment']);
 Route::post('payment-response', [PaymentController::class, 'paymentResponse']);

@@ -140,11 +140,6 @@ if (!function_exists('expiryDate')) {
 if (!function_exists('sendEmail')) {
     function sendEmail($to, $subject, $content, $data = [], $cc = [], $bcc = [], $attachments = [])
     {
-        $development = DB::table('test')->where(['id' => 1, 'is_production' => 'N'])->first();
-        if ($development) {
-            $to = $development->email;
-        }
-
         try {
             // Render the view content to a string if necessary
             if ($content instanceof Illuminate\View\View) {
