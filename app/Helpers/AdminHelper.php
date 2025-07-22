@@ -640,7 +640,8 @@ function processPendingPayments()
     foreach ($pendingRequest as $value) {
         $response = checkEazypayTransaction($value->transaction_id);
 
-        if ($response['status'] === "RIP" || $response['status'] === "SIP" || $response['status'] === "SUCCESS") {
+        $status = strtolower(trim($response['status']));
+        if (in_array($status, ['rip', 'sip', 'success'])) {
             $sessionData = json_decode($value->payment_session_data, true);
             processPayment($sessionData, $value);
         } else {
