@@ -63,7 +63,7 @@ if (!function_exists('date_dmy_dp')) {
 if (!function_exists('date_dmy_to_ymd')) {
     function date_dmy_to_ymd($date)
     {
-        if ($date != "") {
+        if($date != ""){
             $dateEx = explode('/', $date);
             $month = $dateEx[1];
             $day = $dateEx[0];
@@ -71,15 +71,14 @@ if (!function_exists('date_dmy_to_ymd')) {
             $stringDate = $day . "-" . $month . "-" . $year;
             $formated_date = date("Y-m-d", strtotime($stringDate));
             return $formated_date;
-        } else {
+        }else{
             return NULL;
         }
 
     }
 }
 
-function customReturn($p)
-{
+function customReturn($p) {
     // Check if $p is an integer or has decimal places
     if ($p != "" && (is_int($p) || $p == floor($p))) {
         // Return the integer part
@@ -124,7 +123,7 @@ function getSubMonthsNewDate($startMonth, $months)
 }
 
 if (!function_exists('expiryDate')) {
-    function expiryDate($date, $months)
+    function expiryDate($date,$months)
     {
         if ($date != "" && $months != "") {
             $date = new DateTime($date);
@@ -154,7 +153,7 @@ if (!function_exists('sendEmail')) {
                     ->subject($subject);
 
                 // Set the body content as HTML
-                $message->setBody($content, 'text/html'); // <-- Fix applied here
+                $message->html($content); // For HTML content
 
                 // Add CC recipients if any
                 if (!empty($cc)) {
@@ -171,18 +170,16 @@ if (!function_exists('sendEmail')) {
                     $message->attach($attachment);
                 }
             });
-
+           // CommonDataModel::insertNotificationLogData('E', strip_tags($subject), $to);
             return true;
         } catch (\Exception $e) {
             return $e->getMessage(); // Return the exception message for debugging
         }
     }
-
 }
 
 if (!function_exists('vasset')) {
-    function vasset($path)
-    {
+    function vasset($path) {
         $file = public_path($path);
 
         if (file_exists($file)) {
@@ -196,8 +193,7 @@ if (!function_exists('vasset')) {
 
 
 if (!function_exists('getTimeFromDate')) {
-    function getTimeFromDate($date)
-    {
+    function getTimeFromDate($date) {
         return Carbon::parse($date)->format('h:i A');
     }
 }
