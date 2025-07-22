@@ -13,7 +13,6 @@
         margin-bottom: 20px;
     }
 
-    /* Container to trigger hover */
     .profile-img-container {
         position: relative;
         width: 120px;
@@ -25,20 +24,27 @@
         flex-shrink: 0;
     }
 
-    /* Profile image */
+    /* Make the image a label target */
+    .profile-img-label {
+        display: block;
+        width: 100%;
+        height: 100%;
+        position: relative;
+        cursor: pointer;
+    }
+
     .profile-img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         display: block;
+        pointer-events: none;
     }
 
-    /* Hide file input */
     #profileInput {
         display: none;
     }
 
-    /* Initially hidden camera icon */
     .change-image-btn {
         position: absolute;
         bottom: 6px;
@@ -52,17 +58,18 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        cursor: pointer;
         border: 2px solid #fff;
         opacity: 0;
         transition: transform 0.3s ease, opacity 0.3s ease;
+        pointer-events: none;
+        /* Prevent icon from blocking click */
     }
 
-    /* Show icon on hover */
-    .profile-img-container:hover .change-image-btn {
+    .profile-img-label:hover .change-image-btn {
         opacity: 1;
         transform: translateX(-50%) scale(1.15);
     }
+
 
     .profile-info {
         flex-grow: 1;
@@ -243,18 +250,19 @@
             $profileUrl = 'https://www.stephan-academy.com/content/avatars/avatar_lg.png';
             if (!empty($member->member_portal_profile_picture)) {
                 $profileUrl = asset($member->member_portal_profile_picture);
-            } else if (!empty($member->profile_picture)) {
+            } elseif (!empty($member->profile_picture)) {
                 $profileUrl = "https://btaportal.in/backend/app/uploads/profile/{$member->profile_picture}";
             }
         @endphp
 
         <div class="profile-img-container">
-            <img src="{{ $profileUrl }}" class="profile-img" alt="{{ $member->profile_picture }}">
+            <label for="profileInput" class="profile-img-label">
+                <img src="{{ $profileUrl }}" class="profile-img" alt="{{ $member->profile_picture }}">
+                <div class="change-image-btn"><i class="fas fa-camera"></i></div>
+            </label>
             <form method="POST" enctype="multipart/form-data" id="profileImageForm">
                 @csrf
                 <input type="file" name="profile_picture" id="profileInput" accept="image/*">
-
-                <label for="profileInput" class="change-image-btn"><i class="fas fa-camera"></i></label>
             </form>
         </div>
 
