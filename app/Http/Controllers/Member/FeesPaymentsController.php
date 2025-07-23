@@ -163,7 +163,7 @@ class FeesPaymentsController extends Controller
         $data['isExists'] = $enrolmentModel->exists();
 
         $enrollment = $enrolmentModel->first();
-
+        pre($enrollment);exit;
         $data['paymentMaster'] = null;
         if ($enrollment) {
             $paymentMaster = DB::table('member_receipt_details as MRD')
@@ -180,12 +180,10 @@ class FeesPaymentsController extends Controller
                         ->where('PEM.programme_id', $enrollment->programme_id)
                         ->where('PCC.component_type', 'MONTHLY');
                 })
-                // ->join('member_receipt_master', 'member_receipt_master.receipt_id', '=', 'MRD.receipt_master_id')
-                // ->join('payment_master as PM', 'PM.receipt_master_id', '=', 'member_receipt_master.receipt_id')
-                ->select('MRD.*')
+                ->join('member_receipt_master', 'member_receipt_master.receipt_id', '=', 'MRD.receipt_master_id')
+                ->join('payment_master as PM', 'PM.receipt_master_id', '=', 'member_receipt_master.receipt_id')
+                ->select('PM.*')
                 ->first();
-
-                pre($paymentMaster);exit;
 
             // $paymentMaster = PaymentMaster::query()
             //     ->from('payment_master as PM')
