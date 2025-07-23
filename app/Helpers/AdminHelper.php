@@ -662,6 +662,7 @@ function processPendingPayments()
                 );
 
                 $value->status = 'Y';
+                $value->is_checking = 'Y';
                 $value->save();
 
                 $sessionData = json_decode($value->payment_session_data, true);
