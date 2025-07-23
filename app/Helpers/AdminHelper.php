@@ -11,6 +11,7 @@ use App\Models\PaymentRequest;
 use App\Models\VoucherDetails;
 use App\Models\VoucherMaster;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Jenssegers\Agent\Agent;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -638,14 +639,40 @@ function processPendingPayments()
     $pendingRequest = PaymentRequest::where('status', 'N')->where('is_checking', 'N')->get();
 
     foreach ($pendingRequest as $value) {
-        $response = checkEazypayTransaction($value->transaction_id);
+        DB::beginTransaction();
 
-        if ($response['status'] === "RIP" || $response['status'] === "SIP" || $response['status'] === "SUCCESS") {
+        try {
+            $response = checkEazypayTransaction($value->transaction_id);
 
-            $sessionData = json_decode($value->payment_session_data, true);
-            processPayment($sessionData, $value);
-        } else {
-            PaymentRequest::where('id', $value->id)->update(['is_checking' => 'Y']);
+            if ($response['status'] === "RIP" || $response['status'] === "SIP" || $response['status'] === "SUCCESS") {
+
+                $paymentResponseModel = PaymentResponse::updateOrCreate(
+                    ['transaction_id' => $value->id],
+                    [
+                        'order_id' => $value->order_id,
+                        'payment_status' => "Y",
+                        'processing_date' => now(),
+                        'tracking_id' => $value->transaction_id,
+                        'bank_ref_no' => $response['ezpaytranid'],
+                        'payment_geteway' => 'Eazypay',
+                        'response_data' => json_encode($response),
+                        'payment_message' => "Payment Successful",
+                    ]
+                );
+
+                $sessionData = json_decode($value->payment_session_data, true);
+                processPayment($sessionData, $value);
+            } else {
+                PaymentRequest::where('id', $value->id)->update(['is_checking' => 'Y']);
+            }
+            DB::commit();
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error("Payment processing failed for transaction_id: {$value->transaction_id}", [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 }
