@@ -248,6 +248,7 @@
     <div class="profile-header">
         @php
             $profileUrl = 'https://www.stephan-academy.com/content/avatars/avatar_lg.png';
+            $defaultAvatar = 'https://www.stephan-academy.com/content/avatars/avatar_lg.png';
             if (!empty($member->member_portal_profile_picture)) {
                 $profileUrl = asset($member->member_portal_profile_picture);
             } elseif (!empty($member->profile_picture)) {
