@@ -163,27 +163,33 @@ class FeesPaymentsController extends Controller
         $data['isExists'] = $enrolmentModel->exists();
 
         $enrollment = $enrolmentModel->first();
-        pre($enrollment);exit;
+
         $data['paymentMaster'] = null;
         if ($enrollment) {
-            $paymentMaster = DB::table('member_receipt_details as MRD')
-                ->join('month_master as MNM', 'MRD.month_id', '=', 'MNM.id')
-                ->whereIn('MRD.receipt_dtl_id', function ($query) use ($enrollment, $memberId) {
-                    $query->select(DB::raw('MAX(MRD.receipt_dtl_id)'))
-                        ->from('payment_master as PM')
-                        ->join('programme_enrollment_master as PEM', 'PM.enrollment_id', '=', 'PEM.enrollment_id')
-                        ->join('member_receipt_master as MRM', 'PM.receipt_master_id', '=', 'MRM.receipt_id')
-                        ->join('member_receipt_details as MRD', 'MRM.receipt_id', '=', 'MRD.receipt_master_id')
-                        ->join('programme_commercial_component as PCC', 'MRD.component_id', '=', 'PCC.component_id')
-                        ->where('PM.member_id', $enrollment->memberId)
-                        ->where('PM.enrollment_id', $enrollment->enrollment_id)
-                        ->where('PEM.programme_id', $enrollment->programme_id)
-                        ->where('PCC.component_type', 'MONTHLY');
-                })
-                ->join('member_receipt_master', 'member_receipt_master.receipt_id', '=', 'MRD.receipt_master_id')
-                ->join('payment_master as PM', 'PM.receipt_master_id', '=', 'member_receipt_master.receipt_id')
-                ->select('PM.*')
-                ->first();
+            $paymentMaster = DB::selectOne("
+                    SELECT PM.*
+                    FROM member_receipt_details AS MRD
+                    INNER JOIN month_master AS MNM ON MRD.month_id = MNM.id
+                    INNER JOIN member_receipt_master ON member_receipt_master.receipt_id = MRD.receipt_master_id
+                    INNER JOIN payment_master AS PM ON PM.receipt_master_id = member_receipt_master.receipt_id
+                    WHERE MRD.receipt_dtl_id IN (
+                        SELECT MAX(MRD.receipt_dtl_id)
+                        FROM payment_master AS PM
+                        INNER JOIN programme_enrollment_master AS PEM ON PM.enrollment_id = PEM.enrollment_id
+                        INNER JOIN member_receipt_master AS MRM ON PM.receipt_master_id = MRM.receipt_id
+                        INNER JOIN member_receipt_details AS MRD ON MRM.receipt_id = MRD.receipt_master_id
+                        INNER JOIN programme_commercial_component AS PCC ON MRD.component_id = PCC.component_id
+                        WHERE PM.member_id = :member_id
+                        AND PM.enrollment_id = :enrollment_id
+                        AND PEM.programme_id = :programme_id
+                        AND PCC.component_type = 'MONTHLY'
+                    )
+                    LIMIT 1
+                ", [
+                'member_id' => $memberId,
+                'enrollment_id' => $enrollment->enrollment_id,
+                'programme_id' => $enrollment->programme_id,
+            ]);
 
             // $paymentMaster = PaymentMaster::query()
             //     ->from('payment_master as PM')
