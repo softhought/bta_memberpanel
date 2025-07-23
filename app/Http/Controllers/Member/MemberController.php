@@ -298,12 +298,11 @@ class MemberController extends Controller
             }
         }
 
-        if (!empty($email)) {
-            $masked = $this->maskEmail($email);
-        } else{
+        if (!empty($mobile)) {
             $masked = str_repeat('x', max(0, strlen($member->primary_mobile) - 4)) . substr($member->primary_mobile, -4);
+        } else{
+            $masked = $this->maskEmail($email);
         }
-
 
         return response()->json(['status' => 'success', 'email_masked' => $masked]);
     }
