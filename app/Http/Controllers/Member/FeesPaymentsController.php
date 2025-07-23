@@ -185,6 +185,8 @@ class FeesPaymentsController extends Controller
                 ->select('PM.*')
                 ->first();
 
+                pre($paymentMaster);exit;
+
             // $paymentMaster = PaymentMaster::query()
             //     ->from('payment_master as PM')
             //     ->leftJoin('payment_details as PD', 'PD.payment_master_id', '=', 'PM.payment_id')
