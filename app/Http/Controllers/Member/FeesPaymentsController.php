@@ -180,9 +180,9 @@ class FeesPaymentsController extends Controller
                         ->where('PEM.programme_id', $enrollment->programme_id)
                         ->where('PCC.component_type', 'MONTHLY');
                 })
-                ->join('member_receipt_master', 'member_receipt_master.receipt_id', '=', 'MRD.receipt_master_id')
-                ->join('payment_master as PM', 'PM.receipt_master_id', '=', 'member_receipt_master.receipt_id')
-                ->select('PM.*')
+                // ->join('member_receipt_master', 'member_receipt_master.receipt_id', '=', 'MRD.receipt_master_id')
+                // ->join('payment_master as PM', 'PM.receipt_master_id', '=', 'member_receipt_master.receipt_id')
+                ->select('MRD.*')
                 ->first();
 
                 pre($paymentMaster);exit;
