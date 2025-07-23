@@ -644,7 +644,8 @@ function processPendingPayments()
         try {
             $response = checkEazypayTransaction($value->transaction_id);
 
-            if ($response['status'] === "RIP" || $response['status'] === "SIP" || $response['status'] === "SUCCESS") {
+            $status = strtolower(trim($response['status']));
+            if (in_array($status, ['rip', 'sip', 'success'])) {
 
                 $paymentResponseModel = PaymentResponse::updateOrCreate(
                     ['transaction_id' => $value->id],
@@ -659,6 +660,9 @@ function processPendingPayments()
                         'payment_message' => "Payment Successful",
                     ]
                 );
+
+                $value->status = 'Y';
+                $value->save();
 
                 $sessionData = json_decode($value->payment_session_data, true);
                 processPayment($sessionData, $value);
