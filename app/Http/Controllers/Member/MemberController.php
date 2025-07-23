@@ -301,7 +301,7 @@ class MemberController extends Controller
         if (!empty($email)) {
             $masked = $this->maskEmail($email);
         } else{
-            $masked = $member->primary_mobile;
+            $masked = str_repeat('x', max(0, strlen($member->primary_mobile) - 4)) . substr($member->primary_mobile, -4);
         }
 
 
