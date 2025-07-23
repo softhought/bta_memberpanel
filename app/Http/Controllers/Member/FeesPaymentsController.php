@@ -44,6 +44,8 @@ class FeesPaymentsController extends Controller
                         ->where('PEM.programme_id', $enrollment->programme_id)
                         ->where('PCC.component_type', 'MONTHLY');
                 })
+                ->join('member_receipt_master', 'member_receipt_master.receipt_id', '=', 'MRD.receipt_master_id')
+                ->join('payment_master as PM', 'PM.receipt_master_id', '=', 'member_receipt_master.receipt_id')
                 ->select('PM.*')
                 ->first();
 
@@ -110,6 +112,8 @@ class FeesPaymentsController extends Controller
                         ->where('PEM.programme_id', $enrollment->programme_id)
                         ->where('PCC.component_type', 'MONTHLY');
                 })
+                ->join('member_receipt_master', 'member_receipt_master.receipt_id', '=', 'MRD.receipt_master_id')
+                ->join('payment_master as PM', 'PM.receipt_master_id', '=', 'member_receipt_master.receipt_id')
                 ->select('PM.*')
                 ->first();
 
@@ -162,7 +166,7 @@ class FeesPaymentsController extends Controller
 
         $data['paymentMaster'] = null;
         if ($enrollment) {
-           $paymentMaster = DB::table('member_receipt_details as MRD')
+            $paymentMaster = DB::table('member_receipt_details as MRD')
                 ->join('month_master as MNM', 'MRD.month_id', '=', 'MNM.id')
                 ->whereIn('MRD.receipt_dtl_id', function ($query) use ($enrollment, $memberId) {
                     $query->select(DB::raw('MAX(MRD.receipt_dtl_id)'))
@@ -176,6 +180,8 @@ class FeesPaymentsController extends Controller
                         ->where('PEM.programme_id', $enrollment->programme_id)
                         ->where('PCC.component_type', 'MONTHLY');
                 })
+                ->join('member_receipt_master', 'member_receipt_master.receipt_id', '=', 'MRD.receipt_master_id')
+                ->join('payment_master as PM', 'PM.receipt_master_id', '=', 'member_receipt_master.receipt_id')
                 ->select('PM.*')
                 ->first();
 
@@ -227,7 +233,7 @@ class FeesPaymentsController extends Controller
 
         $data['paymentMaster'] = null;
         if ($enrollment) {
-           $paymentMaster = DB::table('member_receipt_details as MRD')
+            $paymentMaster = DB::table('member_receipt_details as MRD')
                 ->join('month_master as MNM', 'MRD.month_id', '=', 'MNM.id')
                 ->whereIn('MRD.receipt_dtl_id', function ($query) use ($enrollment, $memberId) {
                     $query->select(DB::raw('MAX(MRD.receipt_dtl_id)'))
@@ -241,6 +247,8 @@ class FeesPaymentsController extends Controller
                         ->where('PEM.programme_id', $enrollment->programme_id)
                         ->where('PCC.component_type', 'MONTHLY');
                 })
+                ->join('member_receipt_master', 'member_receipt_master.receipt_id', '=', 'MRD.receipt_master_id')
+                ->join('payment_master as PM', 'PM.receipt_master_id', '=', 'member_receipt_master.receipt_id')
                 ->select('PM.*')
                 ->first();
 
