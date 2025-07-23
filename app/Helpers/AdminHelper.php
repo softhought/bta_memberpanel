@@ -431,7 +431,7 @@ function processDailyCollectionData($paymentMstId)
 }
 
 
-function processPayment($sessionData, $paymentRequestModel)
+function processPayment($sessionData, $paymentRequestModel, $bankCharges = 0)
 {
     $yearId = DB::table('financialyear')->where('is_active', 'Y')->orderByDesc('year_id')->first()->year_id;
 
@@ -539,8 +539,8 @@ function processPayment($sessionData, $paymentRequestModel)
             'voucher_id' => $voucherMasterModel->id,
             'payment_no' => $memberReceiptMasterModel->receipt_no,
             'payment_date' => date('Y-m-d'),
-            'total_payble_amount' => $memberReceiptMasterModel->net_payble_amount,
-            'payment_amount' => $memberReceiptMasterModel->net_payble_amount,
+            'total_payble_amount' => $memberReceiptMasterModel->net_payble_amount + $bankCharges,
+            'payment_amount' => $memberReceiptMasterModel->net_payble_amount + $bankCharges,
             'short_excess_cr_ac_id' => 23,
             'short_excess_amount' => 0,
             'company_id' => 1,
@@ -548,7 +548,7 @@ function processPayment($sessionData, $paymentRequestModel)
             'round_off_account_id' => 30,
             'round_off_amount' => 0,
             'is_gst_bill' => 'N',
-            'total_bank_charges' => 0,
+            'total_bank_charges' => $bankCharges,
         ]
     );
 
@@ -560,9 +560,9 @@ function processPayment($sessionData, $paymentRequestModel)
         ],
         [
             'dr_account_id' => $paymentModeDetails->account_id,
-            'amount' => $memberReceiptMasterModel->net_payble_amount,
+            'amount' => $memberReceiptMasterModel->net_payble_amount + $bankCharges,
             'cheque_date' => date('Y-m-d'),
-            'bank_charges' => 0,
+            'bank_charges' => $bankCharges,
             'payment_ref' => $paymentRequestModel->id
         ]
     );
@@ -666,7 +666,9 @@ function processPendingPayments()
                 $value->save();
 
                 $sessionData = json_decode($value->payment_session_data, true);
-                processPayment($sessionData, $value);
+
+                $bankCharges = $response['amount'] - $sessionData['payable'];
+                processPayment($sessionData, $value, $bankCharges);
             } else {
                 PaymentRequest::where('id', $value->id)->update(['is_checking' => 'Y']);
             }
