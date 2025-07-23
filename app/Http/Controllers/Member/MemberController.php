@@ -298,9 +298,14 @@ class MemberController extends Controller
             }
         }
 
-        $maskedEmail = $this->maskEmail($email);
+        if (!empty($email)) {
+            $masked = $this->maskEmail($email);
+        } else{
+            $masked = $member->primary_mobile;
+        }
 
-        return response()->json(['status' => 'success', 'email_masked' => $maskedEmail]);
+
+        return response()->json(['status' => 'success', 'email_masked' => $masked]);
     }
 
 
