@@ -23,6 +23,22 @@ class MemberController extends Controller
         $memberData = Member::with(['programEnrollment.program', 'programEnrollment.group'])->find($memberId);
         $data['member'] = $memberData;
 
+        $profileUrl = "http://btaportal.in/backend/app/uploads/profile/{$memberData->profile_picture}";
+
+        $imageBase64 = null;
+        try {
+            $response = Http::get($profileUrl);
+            if ($response->ok()) {
+                $mime = $response->header('Content-Type');
+                $imageData = base64_encode($response->body());
+                $imageBase64 = "data:$mime;base64,$imageData";
+            }
+        } catch (Exception $e) {
+            logger()->error("Image download failed: " . $e->getMessage());
+        }
+
+        $data['profile_image'] = $imageBase64;
+
         $data['bodyView'] = view('member.dashboard', $data);
         return $this->renderView($data);
     }
@@ -198,29 +214,11 @@ class MemberController extends Controller
         $btaAdmin = session()->get('btaMember');
         $memberId = $btaAdmin['memberId'];
 
-        $member = Member::find($memberId);
+        $data['member'] = Member::find($memberId);
 
-        $profileUrl = "http://btaportal.in/backend/app/uploads/profile/{$member->profile_picture}";
-
-        $imageBase64 = null;
-        try {
-            $response = Http::get($profileUrl);
-            if ($response->ok()) {
-                $mime = $response->header('Content-Type');
-                $imageData = base64_encode($response->body());
-                $imageBase64 = "data:$mime;base64,$imageData";
-            }
-        } catch (Exception $e) {
-            logger()->error("Image download failed: " . $e->getMessage());
-        }
-
-        $data['member'] = $member;
-        $data['profile_image'] = $imageBase64;
         $data['bodyView'] = view('member.profile', $data);
-
         return $this->renderView($data);
     }
-
 
     public function profileAction(Request $request)
     {
