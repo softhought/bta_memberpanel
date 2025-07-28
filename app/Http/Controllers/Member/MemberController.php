@@ -198,11 +198,29 @@ class MemberController extends Controller
         $btaAdmin = session()->get('btaMember');
         $memberId = $btaAdmin['memberId'];
 
-        $data['member'] = Member::find($memberId);
+        $member = Member::find($memberId);
 
+        $profileUrl = "http://btaportal.in/backend/app/uploads/profile/{$member->profile_picture}";
+
+        $imageBase64 = null;
+        try {
+            $response = Http::get($profileUrl);
+            if ($response->ok()) {
+                $mime = $response->header('Content-Type');
+                $imageData = base64_encode($response->body());
+                $imageBase64 = "data:$mime;base64,$imageData";
+            }
+        } catch (Exception $e) {
+            logger()->error("Image download failed: " . $e->getMessage());
+        }
+
+        $data['member'] = $member;
+        $data['profile_image'] = $imageBase64;
         $data['bodyView'] = view('member.profile', $data);
+
         return $this->renderView($data);
     }
+
 
     public function profileAction(Request $request)
     {
@@ -300,7 +318,7 @@ class MemberController extends Controller
 
         if (!empty($mobile)) {
             $masked = str_repeat('x', max(0, strlen($member->primary_mobile) - 4)) . substr($member->primary_mobile, -4);
-        } else{
+        } else {
             $masked = $this->maskEmail($email);
         }
 

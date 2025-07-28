@@ -252,14 +252,14 @@
             if (!empty($member->member_portal_profile_picture)) {
                 $profileUrl = asset($member->member_portal_profile_picture);
             } elseif (!empty($member->profile_picture)) {
-                $profileUrl = "http://btaportal.in/backend/app/uploads/profile/{$member->profile_picture}";
+                $profileUrl = $profile_image;
             }
         @endphp
 
         <div class="profile-img-container">
             <label for="profileInput" class="profile-img-label">
                 <img src="{{ $profileUrl }}" class="profile-img" alt="{{ $member->profile_picture }}"
-                    >
+                    onerror="this.onerror=null; this.src='{{ $defaultAvatar }}';">
 
                 <div class="change-image-btn"><i class="fas fa-camera"></i></div>
             </label>
