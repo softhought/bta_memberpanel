@@ -252,7 +252,7 @@
             if (!empty($member->member_portal_profile_picture)) {
                 $profileUrl = asset($member->member_portal_profile_picture);
             } elseif (!empty($member->profile_picture)) {
-                $profileUrl = "https://btaportal.in/backend/app/uploads/profile/{$member->profile_picture}";
+                $profileUrl = "http://btaportal.in/backend/app/uploads/profile/{$member->profile_picture}";
             }
         @endphp
 
