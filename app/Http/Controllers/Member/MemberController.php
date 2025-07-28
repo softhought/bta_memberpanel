@@ -6,8 +6,10 @@ use App\Constants\Constant;
 use App\Http\Controllers\Controller;
 use App\Models\Enquiry;
 use App\Models\Member;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
@@ -20,6 +22,22 @@ class MemberController extends Controller
 
         $memberData = Member::with(['programEnrollment.program', 'programEnrollment.group'])->find($memberId);
         $data['member'] = $memberData;
+
+        $profileUrl = "http://btaportal.in/backend/app/uploads/profile/{$memberData->profile_picture}";
+
+        $imageBase64 = null;
+        try {
+            $response = Http::get($profileUrl);
+            if ($response->ok()) {
+                $mime = $response->header('Content-Type');
+                $imageData = base64_encode($response->body());
+                $imageBase64 = "data:$mime;base64,$imageData";
+            }
+        } catch (Exception $e) {
+            logger()->error("Image download failed: " . $e->getMessage());
+        }
+
+        $data['profile_image'] = $imageBase64;
 
         $data['bodyView'] = view('member.dashboard', $data);
         return $this->renderView($data);
@@ -247,27 +265,62 @@ class MemberController extends Controller
         }
 
         $email = $member->primary_email;
+        $mobile = $member->primary_mobile;
 
-        if (empty($email)) {
-            return response()->json(['status' => 'error', 'message' => 'No email associated with this account.']);
+        if (empty($email) && empty($mobile)) {
+            return response()->json(['status' => 'error', 'message' => 'No email or mobile associated with this account.']);
         }
 
         $otp = rand(100000, 999999);
         Session::put('otp_' . $request->post('member_code'), $otp);
 
-        $subject = 'Your OTP for Password Reset';
-        $data = ['otp' => $otp, 'member_code' => $member->member_code, 'name' => "{$member->member_fname} {$member->member_lname}"];
-        $view = view('emails.otp_template', $data);
+        // --- Email Sending ---
+        if (!empty($email)) {
+            $subject = 'Your OTP for Password Reset';
+            $data = ['otp' => $otp, 'member_code' => $member->member_code, 'name' => "{$member->member_fname} {$member->member_lname}"];
+            $view = view('emails.otp_template', $data);
 
-        $result = sendEmail($email, $subject, $view);
+            $result = sendEmail($email, $subject, $view);
 
-        if ($result !== true) {
-            return response()->json(['status' => 'error', 'message' => "Failed to send email.", 'error' => $result]);
+            if ($result !== true) {
+                return response()->json(['status' => 'error', 'message' => "Failed to send email.", 'error' => $result]);
+            }
         }
 
-        $maskedEmail = $this->maskEmail($email);
+        // --- SMS Sending ---
+        $smsResult = null;
+        if (!empty($mobile)) {
+            $smsMessage = "Dear {$member->member_fname} {$member->member_lname}, Your OTP for password reset is {$otp}. Valid for 10 minutes. Do not share it with anyone. Bengal Tennis Association";
 
-        return response()->json(['status' => 'success', 'email_masked' => $maskedEmail]);
+            $smsPayload = [
+                "api_key" => "67ed0ad1d0300512e4fb2b6a96f4c262",
+                "msg" => $smsMessage,
+                "senderid" => "BTASTD",
+                "templateID" => "1707175326898380804",
+                "coding" => "1",
+                "to" => $mobile,
+                "callbackData" => "cb"
+            ];
+
+            try {
+                $smsResponse = Http::withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Key 67ed0ad1d0300512e4fb2b6a96f4c262',
+                ])->post('https://smscannon.com/api/api.php', $smsPayload);
+
+                $smsResult = $smsResponse->json();
+            } catch (Exception $e) {
+                return response()->json(['status' => 'error', 'message' => 'Failed to send SMS.', 'error' => $e->getMessage()]);
+            }
+        }
+
+        if (!empty($mobile)) {
+            $masked = str_repeat('x', max(0, strlen($member->primary_mobile) - 4)) . substr($member->primary_mobile, -4);
+        } else {
+            $masked = $this->maskEmail($email);
+        }
+
+        return response()->json(['status' => 'success', 'email_masked' => $masked]);
     }
 
 

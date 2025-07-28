@@ -123,6 +123,10 @@ class PaymentController extends Controller
                 'amount' => $dataArray['amount'],
                 'enc_request' => $encryptedUrl,
                 'plain_request' => $plainUrl,
+                'member_id' => $dataArray['member_id'],
+                'enrollment_id' => $dataArray['enrollment_id'],
+                'programme_id' => $dataArray['programme_id'],
+                'group_id' => $dataArray['group_id'],
                 'payment_session_data' => json_encode($dataArray),
             ]);
 
@@ -147,6 +151,7 @@ class PaymentController extends Controller
 
             $referenceNo = $request->post('ReferenceNo');
             $bankRefNo = $request->post('Unique_Ref_Number');
+            $totalAmount = $request->post('Total_Amount');
 
             $paymentRequestModel = PaymentRequest::where('transaction_id', $referenceNo)->first();
 
@@ -174,7 +179,8 @@ class PaymentController extends Controller
             $payment_id = null;
 
             if ($paymentStatus) {
-                $response = processPayment($sessionData, $paymentRequestModel);
+                $backCharges = $totalAmount - $sessionData['payable'];
+                $response = processPayment($sessionData, $paymentRequestModel, $backCharges);
 
                 $receipt_id = $response['receipt_id'];
                 $payment_id = $response['payment_id'];

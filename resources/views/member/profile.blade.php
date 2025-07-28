@@ -19,7 +19,7 @@
 
                                     <x-input-component column="col-md-6" type="text" label="Email" name="email"
                                         id="email" class="custom-input-class" placeholder="Enter Email"
-                                        value="" readonly="{{ $member->primary_email }}" />
+                                        value="{{ $member->primary_email }}" readonly="" />
 
                                     <x-textarea-component column="col-md-12" type="text" label="Address"
                                         name="address" id="address" cols="" rows="2"
