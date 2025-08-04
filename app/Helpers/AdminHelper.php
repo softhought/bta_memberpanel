@@ -566,7 +566,7 @@ function processPayment($sessionData, $paymentRequestModel, $bankCharges = 0, $p
             'cheque_date' => date('Y-m-d'),
             'bank_charges' => $bankCharges,
             'payment_ref' => $paymentRequestModel->id,
-            'discription' => $paymentMode,
+            'discription' => !empty($paymentMode) ? $paymentMode : "",
         ]
     );
 
