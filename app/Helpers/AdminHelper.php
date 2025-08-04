@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\LogTable;
+use App\Models\Member;
 use App\Models\MemberReceiptDetail;
 use App\Models\MemberReceiptMaster;
 use App\Models\Menu;
@@ -569,6 +570,33 @@ function processPayment($sessionData, $paymentRequestModel, $bankCharges = 0)
 
     // Create Daily Collection Report
     processDailyCollectionData($paymentMasterModel->payment_id);
+
+    // --- SMS Sending ---
+    $member = Member::find($sessionData['member_id']);
+    if (!empty($member->primary_mobile)) {
+        $smsMessage = "Received Fees payment of Rs. {$paymentMasterModel->payment_amount} from Student's Name {$member->member_fname} {$member->member_lname} on date {$paymentMasterModel->payment_date}. Bengal Tennis Association";
+
+        $smsPayload = [
+            "api_key" => "67ed0ad1d0300512e4fb2b6a96f4c262",
+            "msg" => $smsMessage,
+            "senderid" => "BTASTD",
+            "templateID" => "1707175411804178921",
+            "coding" => "1",
+            "to" => $member->primary_mobile,
+            "callbackData" => "cb"
+        ];
+
+        try {
+            $smsResponse = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Key 67ed0ad1d0300512e4fb2b6a96f4c262',
+            ])->post('https://smscannon.com/api/api.php', $smsPayload);
+
+            $smsResult = $smsResponse->json();
+        } catch (Exception $e) {
+
+        }
+    }
 
     return ['receipt_id' => $memberReceiptMasterModel->receipt_id, 'payment_id' => $paymentMasterModel->payment_id];
 }
