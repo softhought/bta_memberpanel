@@ -70,7 +70,7 @@ class PaymentController extends Controller
                 $dataArray['mobile_no'],
                 $dataArray['email'],
                 $dataArray['programme_code'],
-                $dataArray['group_code'],
+                !empty($dataArray['group_code']) ? $dataArray['group_code'] : 0,
             ];
 
             // ✅ Encrypt each block
