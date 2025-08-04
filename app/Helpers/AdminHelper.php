@@ -433,7 +433,7 @@ function processDailyCollectionData($paymentMstId)
 }
 
 
-function processPayment($sessionData, $paymentRequestModel, $bankCharges = 0)
+function processPayment($sessionData, $paymentRequestModel, $bankCharges = 0, $paymentMode = "")
 {
     $yearId = DB::table('financialyear')->where('is_active', 'Y')->orderByDesc('year_id')->first()->year_id;
 
@@ -565,7 +565,8 @@ function processPayment($sessionData, $paymentRequestModel, $bankCharges = 0)
             'amount' => $memberReceiptMasterModel->net_payble_amount + $bankCharges,
             'cheque_date' => date('Y-m-d'),
             'bank_charges' => $bankCharges,
-            'payment_ref' => $paymentRequestModel->id
+            'payment_ref' => $paymentRequestModel->id,
+            'discription' => $paymentMode,
         ]
     );
 
@@ -697,7 +698,9 @@ function processPendingPayments()
                 $sessionData = json_decode($value->payment_session_data, true);
 
                 $bankCharges = (float) $response['amount'] - (float) array_sum($sessionData['payable']);
-                processPayment($sessionData, $value, $bankCharges);
+
+                $paymentMode = !empty($response['PaymentMode']) ? $response['PaymentMode'] : $response['Payment_Mode'];
+                processPayment($sessionData, $value, $bankCharges, $paymentMode);
             } else {
                 PaymentRequest::where('id', $value->id)->update(['is_checking' => 'Y']);
             }

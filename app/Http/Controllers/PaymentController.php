@@ -152,6 +152,7 @@ class PaymentController extends Controller
             $referenceNo = $request->post('ReferenceNo');
             $bankRefNo = $request->post('Unique_Ref_Number');
             $totalAmount = $request->post('Total_Amount');
+            $paymentMode = $request->post('Payment_Mode');
 
             $paymentRequestModel = PaymentRequest::where('transaction_id', $referenceNo)->first();
 
@@ -179,8 +180,9 @@ class PaymentController extends Controller
             $payment_id = null;
 
             if ($paymentStatus) {
-                $backCharges = $totalAmount - $sessionData['payable'];
-                $response = processPayment($sessionData, $paymentRequestModel, $backCharges);
+                $backCharges = $totalAmount - array_sum($sessionData['payable']);
+
+                $response = processPayment($sessionData, $paymentRequestModel, $backCharges, $paymentMode);
 
                 $receipt_id = $response['receipt_id'];
                 $payment_id = $response['payment_id'];
