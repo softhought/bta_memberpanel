@@ -9,6 +9,7 @@ use App\Models\PaymentDetails;
 use App\Models\PaymentMaster;
 use App\Models\PaymentMode;
 use App\Models\PaymentRequest;
+use App\Models\PaymentResponse;
 use App\Models\VoucherDetails;
 use App\Models\VoucherMaster;
 use Illuminate\Support\Facades\DB;
