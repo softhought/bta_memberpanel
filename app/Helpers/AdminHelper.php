@@ -697,6 +697,7 @@ function processPendingPayments()
                 $sessionData = json_decode($value->payment_session_data, true);
 
                 $bankCharges = (float) $response['amount'] - (float) $sessionData['payable'];
+                echo $bankCharges;exit;
                 processPayment($sessionData, $value, $bankCharges);
             } else {
                 PaymentRequest::where('id', $value->id)->update(['is_checking' => 'Y']);
