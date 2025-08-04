@@ -275,17 +275,17 @@ class MemberController extends Controller
         Session::put('otp_' . $request->post('member_code'), $otp);
 
         // --- Email Sending ---
-        if (!empty($email)) {
-            $subject = 'Your OTP for Password Reset';
-            $data = ['otp' => $otp, 'member_code' => $member->member_code, 'name' => "{$member->member_fname} {$member->member_lname}"];
-            $view = view('emails.otp_template', $data);
+        // if (!empty($email)) {
+        //     $subject = 'Your OTP for Password Reset';
+        //     $data = ['otp' => $otp, 'member_code' => $member->member_code, 'name' => "{$member->member_fname} {$member->member_lname}"];
+        //     $view = view('emails.otp_template', $data);
 
-            $result = sendEmail($email, $subject, $view);
+        //     $result = sendEmail($email, $subject, $view);
 
-            if ($result !== true) {
-                return response()->json(['status' => 'error', 'message' => "Failed to send email.", 'error' => $result]);
-            }
-        }
+        //     if ($result !== true) {
+        //         return response()->json(['status' => 'error', 'message' => "Failed to send email.", 'error' => $result]);
+        //     }
+        // }
 
         // --- SMS Sending ---
         $smsResult = null;
@@ -295,7 +295,7 @@ class MemberController extends Controller
             $smsPayload = [
                 "api_key" => "67ed0ad1d0300512e4fb2b6a96f4c262",
                 "msg" => $smsMessage,
-                "senderid" => "BTASTD",
+                "senderid" => "BTASMS",
                 "templateID" => "1707175326898380804",
                 "coding" => "1",
                 "to" => $mobile,
