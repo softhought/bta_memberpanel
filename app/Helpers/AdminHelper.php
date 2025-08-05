@@ -459,7 +459,7 @@ function processPayment($sessionData, $paymentRequestModel, $bankCharges = 0, $p
             'is_general_receipt' => 'N',
             'is_active' => 'Y',
             'is_wave_receipt' => 'N',
-            'active_programme_group' => $sessionData['group_id']
+            'active_programme_group' => !empty($sessionData['group_id']) ? $sessionData['group_id'] : 0
         ]
     );
 

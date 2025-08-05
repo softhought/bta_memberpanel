@@ -28,7 +28,7 @@ class PaymentController extends Controller
             'mobile_no' => $mobileNo,
             'email' => $email,
             'programme_code' => $data['programme_id'],
-            'group_code' => $data['group_id'],
+            'group_code' => !empty($data['group_id']) ? $data['group_id'] : 0,
             'amount' => is_array($data['amount']) ? array_sum($data['amount']) : 0,
         ]);
 
@@ -126,7 +126,7 @@ class PaymentController extends Controller
                 'member_id' => $dataArray['member_id'],
                 'enrollment_id' => $dataArray['enrollment_id'],
                 'programme_id' => $dataArray['programme_id'],
-                'group_id' => $dataArray['group_id'],
+                'group_id' => !empty($dataArray['group_id']) ?  $dataArray['group_id'] : 0,
                 'payment_session_data' => json_encode($dataArray),
             ]);
 
