@@ -667,10 +667,10 @@ function checkEazypayTransaction($pgReferenceNo)
 function processPendingPayments()
 {
     $pendingRequest = PaymentRequest::where('status', 'N')
-        ->whereNotIn('id', function ($query) {
-            $query->select('transaction_id')
-                ->from('payment_response');
-        })
+        // ->whereNotIn('id', function ($query) {
+        //     $query->select('transaction_id')
+        //         ->from('payment_response');
+        // })
         ->get();
 
 
@@ -717,7 +717,7 @@ function processPendingPayments()
                         'payment_status' => "N",
                         'processing_date' => now(),
                         'tracking_id' => $value->transaction_id,
-                        'bank_ref_no' => $response['ezpaytranid'],
+                        'bank_ref_no' => $response['ezpaytranid'] === "NA" ? NULL : $response['ezpaytranid'],
                         'payment_geteway' => 'Eazypay',
                         'response_data' => json_encode($response),
                         'payment_message' => "Payment Failed",
