@@ -709,6 +709,20 @@ function processPendingPayments()
                 processPayment($sessionData, $value, $bankCharges, $paymentMode);
             } else {
                 PaymentRequest::where('id', $value->id)->update(['is_checking' => 'Y']);
+
+                $paymentResponseModel = PaymentResponse::updateOrCreate(
+                    ['transaction_id' => $value->id],
+                    [
+                        'order_id' => $value->order_id,
+                        'payment_status' => "N",
+                        'processing_date' => now(),
+                        'tracking_id' => $value->transaction_id,
+                        'bank_ref_no' => $response['ezpaytranid'],
+                        'payment_geteway' => 'Eazypay',
+                        'response_data' => json_encode($response),
+                        'payment_message' => "Payment Failed",
+                    ]
+                );
             }
             DB::commit();
 
