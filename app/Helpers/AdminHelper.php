@@ -667,10 +667,10 @@ function checkEazypayTransaction($pgReferenceNo)
 function processPendingPayments()
 {
     $pendingRequest = PaymentRequest::where('status', 'N')
-        // ->whereNotIn('id', function ($query) {
-        //     $query->select('transaction_id')
-        //         ->from('payment_response');
-        // })
+        ->whereNotIn('id', function ($query) {
+            $query->select('transaction_id')
+                ->from('payment_response');
+        })
         ->get();
 
 
