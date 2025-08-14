@@ -432,6 +432,39 @@ function processDailyCollectionData($paymentMstId)
     }
 }
 
+function lastMonthPaid($memberId, $enrollmentId, $programmeId)
+{
+    $paymentMaster = DB::selectOne("
+                    SELECT PM.*
+                    FROM member_receipt_details AS MRD
+                    INNER JOIN month_master AS MNM ON MRD.month_id = MNM.id
+                    INNER JOIN member_receipt_master ON member_receipt_master.receipt_id = MRD.receipt_master_id
+                    INNER JOIN payment_master AS PM ON PM.receipt_master_id = member_receipt_master.receipt_id
+                    WHERE MRD.receipt_dtl_id IN (
+                        SELECT MAX(MRD.receipt_dtl_id)
+                        FROM payment_master AS PM
+                        INNER JOIN programme_enrollment_master AS PEM ON PM.enrollment_id = PEM.enrollment_id
+                        INNER JOIN member_receipt_master AS MRM ON PM.receipt_master_id = MRM.receipt_id
+                        INNER JOIN member_receipt_details AS MRD ON MRM.receipt_id = MRD.receipt_master_id
+                        INNER JOIN programme_commercial_component AS PCC ON MRD.component_id = PCC.component_id
+                        WHERE PM.member_id = :member_id
+                        AND PM.enrollment_id = :enrollment_id
+                        AND PEM.programme_id = :programme_id
+                        AND PCC.component_type = 'MONTHLY'
+                    )
+                    LIMIT 1
+                ", [
+        'member_id' => $memberId,
+        'enrollment_id' => $enrollmentId,
+        'programme_id' => $programmeId,
+    ]);
+
+    $paymentMaster->receipt = MemberReceiptDetail::where('receipt_master_id', $paymentMaster->receipt_master_id)->orderByDesc('receipt_dtl_id')->first();
+    $receipt = isset($paymentMaster) && $paymentMaster->receipt ? $paymentMaster->receipt : null;
+    $lastMonth = $receipt && $receipt->month ? $receipt->month : null;
+    return $lastMonth && isset($lastMonth->id) ? $lastMonth->id : 1;
+}
+
 
 function processPayment($sessionData, $paymentRequestModel, $bankCharges = 0, $paymentMode = "")
 {
@@ -441,7 +474,7 @@ function processPayment($sessionData, $paymentRequestModel, $bankCharges = 0, $p
     $memberReceiptMasterModel = MemberReceiptMaster::updateOrCreate(
         ['reference_no' => $paymentRequestModel->id, 'receipt_no' => generateReceiptNo($paymentRequestModel->id)],
         [
-            'receipt_date' => date('Y-m-d'),
+            'receipt_date' => date('Y-m-d', strtotime($paymentRequestModel->processing_date)),
             'no_of_months' => count($sessionData['month_id']),
             'total_amount' => array_sum($sessionData['payable']),
             'total_discount' => 0,
@@ -500,7 +533,7 @@ function processPayment($sessionData, $paymentRequestModel, $bankCharges = 0, $p
     $voucherMasterModel = VoucherMaster::updateOrCreate(
         ['voucher_no' => $memberReceiptMasterModel->receipt_no],
         [
-            'voucher_date' => date('Y-m-d'),
+            'voucher_date' => date('Y-m-d', strtotime($paymentRequestModel->processing_date)),
             'tran_type' => 'ONLINE',
             'narration' => "Payment From Student " . date("d/m/Y"),
             'total_dr_amt' => $memberReceiptMasterModel->net_payble_amount,
@@ -540,17 +573,16 @@ function processPayment($sessionData, $paymentRequestModel, $bankCharges = 0, $p
             'enrollment_id' => $sessionData['enrollment_id'],
             'voucher_id' => $voucherMasterModel->id,
             'payment_no' => $memberReceiptMasterModel->receipt_no,
-            'payment_date' => date('Y-m-d'),
-            'total_payble_amount' => $memberReceiptMasterModel->net_payble_amount + $bankCharges,
-            'payment_amount' => $memberReceiptMasterModel->net_payble_amount + $bankCharges,
+            'payment_date' => date('Y-m-d', strtotime($paymentRequestModel->processing_date)),
+            'total_payble_amount' => $memberReceiptMasterModel->net_payble_amount,
+            'payment_amount' => $memberReceiptMasterModel->net_payble_amount,
             'short_excess_cr_ac_id' => 23,
             'short_excess_amount' => 0,
             'company_id' => 1,
             'year_id' => $yearId,
             'round_off_account_id' => 30,
             'round_off_amount' => 0,
-            'is_gst_bill' => 'N',
-            'total_bank_charges' => $bankCharges,
+            'is_gst_bill' => 'N'
         ]
     );
 
@@ -562,9 +594,9 @@ function processPayment($sessionData, $paymentRequestModel, $bankCharges = 0, $p
         ],
         [
             'dr_account_id' => $paymentModeDetails->account_id,
-            'amount' => $memberReceiptMasterModel->net_payble_amount + $bankCharges,
-            'cheque_date' => date('Y-m-d'),
-            'bank_charges' => $bankCharges,
+            'amount' => $memberReceiptMasterModel->net_payble_amount,
+            'cheque_date' => date('Y-m-d', strtotime($paymentRequestModel->processing_date)),
+            'icici_charges' => $bankCharges,
             'payment_ref' => $paymentRequestModel->id,
             'discription' => !empty($paymentMode) ? $paymentMode : "",
         ]
