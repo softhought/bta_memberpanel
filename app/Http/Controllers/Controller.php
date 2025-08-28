@@ -14,6 +14,7 @@ class Controller extends BaseController
     public static function renderView($data = [])
     {
         $data['forceChangePassword'] = false;
+        $data['forceProfileChange'] = false;
 
         $btaAdmin = session()->get('btaMember');
         $memberId = !empty($btaAdmin['memberId']) ? $btaAdmin['memberId'] : 0;
