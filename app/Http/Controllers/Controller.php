@@ -24,6 +24,10 @@ class Controller extends BaseController
             $data['forceChangePassword'] = true;
         }
 
+        if (empty($memberData->primary_mobile) || empty($memberData->primary_email)) {
+            return redirect('member/profile');
+        }
+
         processPendingPayments();
 
         return view('layout', $data);
