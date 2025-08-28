@@ -14,6 +14,7 @@ class Controller extends BaseController
     public static function renderView($data = [])
     {
         $data['forceChangePassword'] = false;
+        $data['forceProfileChange'] = false;
 
         $btaAdmin = session()->get('btaMember');
         $memberId = !empty($btaAdmin['memberId']) ? $btaAdmin['memberId'] : 0;
@@ -22,6 +23,10 @@ class Controller extends BaseController
 
         if ($memberData && Hash::check('123456', $memberData->password)) {
             $data['forceChangePassword'] = true;
+        }
+
+        if (empty($memberData->primary_mobile) || empty($memberData->primary_email)) {
+            $data['forceProfileChange'] = true;
         }
 
         processPendingPayments();

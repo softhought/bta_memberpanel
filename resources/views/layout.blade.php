@@ -337,6 +337,16 @@
                 @endif
 
 
+                @if ($forceProfileChange)
+                    <script>
+                        $(document).ready(function() {
+                            var targetUrl = "{{ url('member/profile') }}";
+                            if (window.location.href !== targetUrl) {
+                                window.location.href = targetUrl;
+                            }
+                        });
+                    </script>
+                @endif
             </div>
 
             <div style="height: 200px"></div>

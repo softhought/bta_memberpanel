@@ -18,5 +18,7 @@ class PaymentDetails extends BaseModel
         'cheque_date',
         'bank_charges',
         'payment_ref',
+        'discription',
+        'icici_charges'
     ];
 }

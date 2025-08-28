@@ -28,7 +28,7 @@ class PaymentController extends Controller
             'mobile_no' => $mobileNo,
             'email' => $email,
             'programme_code' => $data['programme_id'],
-            'group_code' => $data['group_id'],
+            'group_code' => !empty($data['group_id']) ? $data['group_id'] : 0,
             'amount' => is_array($data['amount']) ? array_sum($data['amount']) : 0,
         ]);
 
@@ -70,7 +70,7 @@ class PaymentController extends Controller
                 $dataArray['mobile_no'],
                 $dataArray['email'],
                 $dataArray['programme_code'],
-                $dataArray['group_code'],
+                !empty($dataArray['group_code']) ? $dataArray['group_code'] : 0,
             ];
 
             // ✅ Encrypt each block
@@ -126,7 +126,7 @@ class PaymentController extends Controller
                 'member_id' => $dataArray['member_id'],
                 'enrollment_id' => $dataArray['enrollment_id'],
                 'programme_id' => $dataArray['programme_id'],
-                'group_id' => $dataArray['group_id'],
+                'group_id' => !empty($dataArray['group_id']) ?  $dataArray['group_id'] : 0,
                 'payment_session_data' => json_encode($dataArray),
             ]);
 
@@ -152,6 +152,7 @@ class PaymentController extends Controller
             $referenceNo = $request->post('ReferenceNo');
             $bankRefNo = $request->post('Unique_Ref_Number');
             $totalAmount = $request->post('Total_Amount');
+            $paymentMode = $request->post('Payment_Mode');
 
             $paymentRequestModel = PaymentRequest::where('transaction_id', $referenceNo)->first();
 
@@ -179,8 +180,9 @@ class PaymentController extends Controller
             $payment_id = null;
 
             if ($paymentStatus) {
-                $backCharges = $totalAmount - $sessionData['payable'];
-                $response = processPayment($sessionData, $paymentRequestModel, $backCharges);
+                $backCharges = $totalAmount - array_sum($sessionData['payable']);
+
+                $response = processPayment($sessionData, $paymentRequestModel, $backCharges, $paymentMode);
 
                 $receipt_id = $response['receipt_id'];
                 $payment_id = $response['payment_id'];
