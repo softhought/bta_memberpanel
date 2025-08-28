@@ -6,6 +6,12 @@
                 <div>Profile Edit</div>
             </div>
 
+            @if (empty($member->primary_mobile) || empty($member->primary_email))
+                <div class="alert alert-danger m-3" role="alert">
+                    <strong>Warning! - Please update your primary mobile number and email address before continue.</strong>
+                </div>
+            @endif
+
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-12">
