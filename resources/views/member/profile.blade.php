@@ -8,7 +8,7 @@
 
             @if (empty($member->primary_mobile) || empty($member->primary_email))
                 <div class="alert alert-danger m-3" role="alert">
-                    <strong>Warning! - Please update your primary mobile number and email address before continue.</strong>
+                    <strong>Warning : Mobile number and email address are mandatory for online payments. Please ensure these fields are filled in.</strong>
                 </div>
             @endif
 
