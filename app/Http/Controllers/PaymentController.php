@@ -126,7 +126,7 @@ class PaymentController extends Controller
                 'member_id' => $dataArray['member_id'],
                 'enrollment_id' => $dataArray['enrollment_id'],
                 'programme_id' => $dataArray['programme_id'],
-                'group_id' => !empty($dataArray['group_id']) ?  $dataArray['group_id'] : 0,
+                'group_id' => !empty($dataArray['group_id']) ? $dataArray['group_id'] : 0,
                 'payment_session_data' => json_encode($dataArray),
             ]);
 
@@ -150,11 +150,23 @@ class PaymentController extends Controller
             DB::beginTransaction();
 
             $referenceNo = $request->post('ReferenceNo');
+            $paymentRequestModel = PaymentRequest::where('transaction_id', $referenceNo)->first();
+
+            if ($request->post('Response_Code') === "E006") {
+                $response = processPendingPayments();
+
+                return redirect()->to('member/response')
+                    ->with('message', $referenceNo)
+                    ->with('status', 'success')
+                    ->with('enrollment_id', $paymentRequestModel->enrollment_id)
+                    ->with('receipt_id', $response['receipt_id'])
+                    ->with('payment_id', $response['payment_id']);
+            }
+
+
             $bankRefNo = $request->post('Unique_Ref_Number');
             $totalAmount = $request->post('Total_Amount');
             $paymentMode = $request->post('Payment_Mode');
-
-            $paymentRequestModel = PaymentRequest::where('transaction_id', $referenceNo)->first();
 
             $paymentStatus = $request->post('Response_Code') === "E000" ? true : false;
 

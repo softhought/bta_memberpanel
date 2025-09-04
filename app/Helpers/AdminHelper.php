@@ -713,6 +713,10 @@ function processPendingPayments()
             $response = checkEazypayTransaction($value->transaction_id);
 
             $status = strtolower(trim($response['status']));
+
+            $receipt_id = null;
+            $payment_id = null;
+
             if (in_array($status, ['rip', 'sip', 'success'])) {
 
                 $paymentResponseModel = PaymentResponse::updateOrCreate(
@@ -738,7 +742,10 @@ function processPendingPayments()
                 $bankCharges = (float) $response['amount'] - (float) array_sum($sessionData['payable']);
 
                 $paymentMode = !empty($response['PaymentMode']) ? $response['PaymentMode'] : $response['Payment_Mode'];
-                processPayment($sessionData, $value, $bankCharges, $paymentMode);
+                $response = processPayment($sessionData, $value, $bankCharges, $paymentMode);
+
+                $receipt_id = $response['receipt_id'];
+                $payment_id = $response['payment_id'];
             } else {
                 PaymentRequest::where('id', $value->id)->update(['is_checking' => 'Y']);
 
@@ -758,6 +765,7 @@ function processPendingPayments()
             }
             DB::commit();
 
+            return ['receipt_id' => $receipt_id, 'payment_id' => $payment_id];
         } catch (Exception $e) {
             DB::rollBack();
             Log::error("Payment processing failed for transaction_id: {$value->transaction_id}", [
