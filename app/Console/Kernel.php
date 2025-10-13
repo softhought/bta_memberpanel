@@ -22,7 +22,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('app:process-pending-payments')->hourly();
-        $schedule->command('app:process-pending-payments-all')->everyMinute();
+        $schedule->command('app:process-pending-payments-all')->dailyAt('23:50');
     }
 
     /**
