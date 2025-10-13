@@ -26,7 +26,7 @@ class ProcessPendingPaymentsAll extends Command
      */
     public function handle()
     {
-        Log::channel('payment')->info('Running hourly processPendingPaymentsAll...');
+        Log::channel('payment')->info('Running processPendingPaymentsAll...');
 
         processPendingPaymentsAll();
 
