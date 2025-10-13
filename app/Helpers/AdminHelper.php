@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\LogTable;
+use App\Models\Member;
 use App\Models\MemberReceiptDetail;
 use App\Models\MemberReceiptMaster;
 use App\Models\Menu;
@@ -8,9 +9,11 @@ use App\Models\PaymentDetails;
 use App\Models\PaymentMaster;
 use App\Models\PaymentMode;
 use App\Models\PaymentRequest;
+use App\Models\PaymentResponse;
 use App\Models\VoucherDetails;
 use App\Models\VoucherMaster;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Jenssegers\Agent\Agent;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -429,8 +432,41 @@ function processDailyCollectionData($paymentMstId)
     }
 }
 
+function lastMonthPaid($memberId, $enrollmentId, $programmeId)
+{
+    $paymentMaster = DB::selectOne("
+                    SELECT PM.*
+                    FROM member_receipt_details AS MRD
+                    INNER JOIN month_master AS MNM ON MRD.month_id = MNM.id
+                    INNER JOIN member_receipt_master ON member_receipt_master.receipt_id = MRD.receipt_master_id
+                    INNER JOIN payment_master AS PM ON PM.receipt_master_id = member_receipt_master.receipt_id
+                    WHERE MRD.receipt_dtl_id IN (
+                        SELECT MAX(MRD.receipt_dtl_id)
+                        FROM payment_master AS PM
+                        INNER JOIN programme_enrollment_master AS PEM ON PM.enrollment_id = PEM.enrollment_id
+                        INNER JOIN member_receipt_master AS MRM ON PM.receipt_master_id = MRM.receipt_id
+                        INNER JOIN member_receipt_details AS MRD ON MRM.receipt_id = MRD.receipt_master_id
+                        INNER JOIN programme_commercial_component AS PCC ON MRD.component_id = PCC.component_id
+                        WHERE PM.member_id = :member_id
+                        AND PM.enrollment_id = :enrollment_id
+                        AND PEM.programme_id = :programme_id
+                        AND PCC.component_type = 'MONTHLY'
+                    )
+                    LIMIT 1
+                ", [
+        'member_id' => $memberId,
+        'enrollment_id' => $enrollmentId,
+        'programme_id' => $programmeId,
+    ]);
 
-function processPayment($sessionData, $paymentRequestModel)
+    $paymentMaster->receipt = MemberReceiptDetail::where('receipt_master_id', $paymentMaster->receipt_master_id)->orderByDesc('receipt_dtl_id')->first();
+    $receipt = isset($paymentMaster) && $paymentMaster->receipt ? $paymentMaster->receipt : null;
+    $lastMonth = $receipt && $receipt->month ? $receipt->month : null;
+    return $lastMonth && isset($lastMonth->id) ? $lastMonth->id : 1;
+}
+
+
+function processPayment($sessionData, $paymentRequestModel, $bankCharges = 0, $paymentMode = "")
 {
     $yearId = DB::table('financialyear')->where('is_active', 'Y')->orderByDesc('year_id')->first()->year_id;
 
@@ -438,7 +474,7 @@ function processPayment($sessionData, $paymentRequestModel)
     $memberReceiptMasterModel = MemberReceiptMaster::updateOrCreate(
         ['reference_no' => $paymentRequestModel->id, 'receipt_no' => generateReceiptNo($paymentRequestModel->id)],
         [
-            'receipt_date' => date('Y-m-d'),
+            'receipt_date' => date('Y-m-d', strtotime($paymentRequestModel->processing_date)),
             'no_of_months' => count($sessionData['month_id']),
             'total_amount' => array_sum($sessionData['payable']),
             'total_discount' => 0,
@@ -456,7 +492,7 @@ function processPayment($sessionData, $paymentRequestModel)
             'is_general_receipt' => 'N',
             'is_active' => 'Y',
             'is_wave_receipt' => 'N',
-            'active_programme_group' => $sessionData['group_id']
+            'active_programme_group' => !empty($sessionData['group_id']) ? $sessionData['group_id'] : 0
         ]
     );
 
@@ -497,7 +533,7 @@ function processPayment($sessionData, $paymentRequestModel)
     $voucherMasterModel = VoucherMaster::updateOrCreate(
         ['voucher_no' => $memberReceiptMasterModel->receipt_no],
         [
-            'voucher_date' => date('Y-m-d'),
+            'voucher_date' => date('Y-m-d', strtotime($paymentRequestModel->processing_date)),
             'tran_type' => 'ONLINE',
             'narration' => "Payment From Student " . date("d/m/Y"),
             'total_dr_amt' => $memberReceiptMasterModel->net_payble_amount,
@@ -537,7 +573,7 @@ function processPayment($sessionData, $paymentRequestModel)
             'enrollment_id' => $sessionData['enrollment_id'],
             'voucher_id' => $voucherMasterModel->id,
             'payment_no' => $memberReceiptMasterModel->receipt_no,
-            'payment_date' => date('Y-m-d'),
+            'payment_date' => date('Y-m-d', strtotime($paymentRequestModel->processing_date)),
             'total_payble_amount' => $memberReceiptMasterModel->net_payble_amount,
             'payment_amount' => $memberReceiptMasterModel->net_payble_amount,
             'short_excess_cr_ac_id' => 23,
@@ -546,8 +582,7 @@ function processPayment($sessionData, $paymentRequestModel)
             'year_id' => $yearId,
             'round_off_account_id' => 30,
             'round_off_amount' => 0,
-            'is_gst_bill' => 'N',
-            'total_bank_charges' => 0,
+            'is_gst_bill' => 'N'
         ]
     );
 
@@ -560,14 +595,42 @@ function processPayment($sessionData, $paymentRequestModel)
         [
             'dr_account_id' => $paymentModeDetails->account_id,
             'amount' => $memberReceiptMasterModel->net_payble_amount,
-            'cheque_date' => date('Y-m-d'),
-            'bank_charges' => 0,
-            'payment_ref' => $paymentRequestModel->id
+            'cheque_date' => date('Y-m-d', strtotime($paymentRequestModel->processing_date)),
+            'icici_charges' => $bankCharges,
+            'payment_ref' => $paymentRequestModel->id,
+            'discription' => !empty($paymentMode) ? $paymentMode : "",
         ]
     );
 
     // Create Daily Collection Report
     processDailyCollectionData($paymentMasterModel->payment_id);
+
+    // --- SMS Sending ---
+    $member = Member::find($sessionData['member_id']);
+    if (!empty($member->primary_mobile)) {
+        $smsMessage = "Received Fees payment of Rs. {$paymentMasterModel->payment_amount} from Student's Name {$member->member_fname} {$member->member_lname} on date {$paymentMasterModel->payment_date}. Bengal Tennis Association";
+
+        $smsPayload = [
+            "api_key" => "67ed0ad1d0300512e4fb2b6a96f4c262",
+            "msg" => $smsMessage,
+            "senderid" => "BTASMS",
+            "templateID" => "1707175411804178921",
+            "coding" => "1",
+            "to" => $member->primary_mobile,
+            "callbackData" => "cb"
+        ];
+
+        try {
+            $smsResponse = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Key 67ed0ad1d0300512e4fb2b6a96f4c262',
+            ])->post('https://smscannon.com/api/api.php', $smsPayload);
+
+            $smsResult = $smsResponse->json();
+        } catch (Exception $e) {
+
+        }
+    }
 
     return ['receipt_id' => $memberReceiptMasterModel->receipt_id, 'payment_id' => $paymentMasterModel->payment_id];
 }
@@ -635,17 +698,80 @@ function checkEazypayTransaction($pgReferenceNo)
 
 function processPendingPayments()
 {
-    $pendingRequest = PaymentRequest::where('status', 'N')->where('is_checking', 'N')->get();
+    $pendingRequest = PaymentRequest::where('status', 'N')
+        ->whereNotIn('id', function ($query) {
+            $query->select('transaction_id')
+                ->from('payment_response');
+        })
+        ->get();
+
 
     foreach ($pendingRequest as $value) {
-        $response = checkEazypayTransaction($value->transaction_id);
+        DB::beginTransaction();
 
-        $status = strtolower(trim($response['status']));
-        if (in_array($status, ['rip', 'sip', 'success'])) {
-            $sessionData = json_decode($value->payment_session_data, true);
-            processPayment($sessionData, $value);
-        } else {
-            PaymentRequest::where('id', $value->id)->update(['is_checking' => 'Y']);
+        try {
+            $response = checkEazypayTransaction($value->transaction_id);
+
+            $status = strtolower(trim($response['status']));
+
+            $receipt_id = null;
+            $payment_id = null;
+
+            if (in_array($status, ['rip', 'sip', 'success'])) {
+
+                $paymentResponseModel = PaymentResponse::updateOrCreate(
+                    ['transaction_id' => $value->id],
+                    [
+                        'order_id' => $value->order_id,
+                        'payment_status' => "Y",
+                        'processing_date' => now(),
+                        'tracking_id' => $value->transaction_id,
+                        'bank_ref_no' => $response['ezpaytranid'],
+                        'payment_geteway' => 'Eazypay',
+                        'response_data' => json_encode($response),
+                        'payment_message' => "Payment Successful",
+                    ]
+                );
+
+                $value->status = 'Y';
+                $value->is_checking = 'Y';
+                $value->save();
+
+                $sessionData = json_decode($value->payment_session_data, true);
+
+                $bankCharges = (float) $response['amount'] - (float) array_sum($sessionData['payable']);
+
+                $paymentMode = !empty($response['PaymentMode']) ? $response['PaymentMode'] : $response['Payment_Mode'];
+                $response = processPayment($sessionData, $value, $bankCharges, $paymentMode);
+
+                $receipt_id = $response['receipt_id'];
+                $payment_id = $response['payment_id'];
+            } else {
+                PaymentRequest::where('id', $value->id)->update(['is_checking' => 'Y']);
+
+                $paymentResponseModel = PaymentResponse::updateOrCreate(
+                    ['transaction_id' => $value->id],
+                    [
+                        'order_id' => $value->order_id,
+                        'payment_status' => "N",
+                        'processing_date' => now(),
+                        'tracking_id' => $value->transaction_id,
+                        'bank_ref_no' => $response['ezpaytranid'] === "NA" ? NULL : $response['ezpaytranid'],
+                        'payment_geteway' => 'Eazypay',
+                        'response_data' => json_encode($response),
+                        'payment_message' => "Payment Failed",
+                    ]
+                );
+            }
+            DB::commit();
+
+            return ['receipt_id' => $receipt_id, 'payment_id' => $payment_id];
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error("Payment processing failed for transaction_id: {$value->transaction_id}", [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 }
