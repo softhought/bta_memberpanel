@@ -50,7 +50,6 @@ if (!function_exists('getBadgeColor')) {
             default:
                 return 'level-default';   // Default for Level 10 or deeper
         }
-
     }
 }
 
@@ -108,7 +107,6 @@ if (!function_exists('getUserBrowserName')) {
         $agent = new Agent();
         $browserName = $agent->browser();
         return $browserName;
-
     }
 }
 
@@ -118,7 +116,6 @@ if (!function_exists('getUserPlatform')) {
         $agent = new Agent();
         $platform = $agent->platform();
         return $platform;
-
     }
 }
 
@@ -128,7 +125,6 @@ if (!function_exists('getUserIPAddress')) {
         $agent = new Agent();
         $ipAddress = request()->ip();
         return $ipAddress;
-
     }
 }
 
@@ -183,7 +179,6 @@ function getEditDate($mode, $arrayData, $filled)
     $value = "";
     if ($mode == "Edit" && !empty($arrayData)) {
         $value = date_dmy_dp($arrayData->$filled);
-
     }
     return $value;
 }
@@ -277,7 +272,6 @@ if (!function_exists('validateData')) {
 
         return $errorArray;
     }
-
 }
 
 
@@ -628,7 +622,6 @@ function processPayment($sessionData, $paymentRequestModel, $bankCharges = 0, $p
 
             $smsResult = $smsResponse->json();
         } catch (Exception $e) {
-
         }
     }
 
@@ -678,7 +671,6 @@ function generateReceiptNo($transactionId)
                     ->where('year_id', $yearId)
                     ->update(['serial' => $serialMaster->serial + 1]);
             }
-
         } while (true);
     });
 }
@@ -778,7 +770,12 @@ function processPendingPayments()
 
 function processPendingPaymentsAll()
 {
-    $pendingRequest = PaymentRequest::where('status', 'N')->get();
+    $today = now()->format('Y-m-d');
+    $sevenDaysAgo = now()->subDays(7)->format('Y-m-d');
+
+    $pendingRequest = PaymentRequest::where('status', 'N')
+        ->whereBetween(DB::raw('DATE(processing_date)'), [$sevenDaysAgo, $today])
+        ->get();
 
     foreach ($pendingRequest as $value) {
         DB::beginTransaction();
