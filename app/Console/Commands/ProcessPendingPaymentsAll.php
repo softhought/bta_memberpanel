@@ -5,14 +5,14 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Log;
 
-class ProcessPendingPayments extends Command
+class ProcessPendingPaymentsAll extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'app:process-pending-payments';
+    protected $signature = 'app:process-pending-payments-all';
 
     /**
      * The console command description.
@@ -26,10 +26,10 @@ class ProcessPendingPayments extends Command
      */
     public function handle()
     {
-        Log::channel('payment')->info("Running hourly processPendingPayments...");
+        Log::channel('payment')->info('Running processPendingPaymentsAll...');
 
-        processPendingPayments();
+        processPendingPaymentsAll();
 
-        Log::channel('payment')->info("Finished processing.");
+        Log::channel('payment')->info('Finished processing.');
     }
 }

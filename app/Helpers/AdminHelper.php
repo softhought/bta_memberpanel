@@ -50,7 +50,6 @@ if (!function_exists('getBadgeColor')) {
             default:
                 return 'level-default';   // Default for Level 10 or deeper
         }
-
     }
 }
 
@@ -108,7 +107,6 @@ if (!function_exists('getUserBrowserName')) {
         $agent = new Agent();
         $browserName = $agent->browser();
         return $browserName;
-
     }
 }
 
@@ -118,7 +116,6 @@ if (!function_exists('getUserPlatform')) {
         $agent = new Agent();
         $platform = $agent->platform();
         return $platform;
-
     }
 }
 
@@ -128,7 +125,6 @@ if (!function_exists('getUserIPAddress')) {
         $agent = new Agent();
         $ipAddress = request()->ip();
         return $ipAddress;
-
     }
 }
 
@@ -183,7 +179,6 @@ function getEditDate($mode, $arrayData, $filled)
     $value = "";
     if ($mode == "Edit" && !empty($arrayData)) {
         $value = date_dmy_dp($arrayData->$filled);
-
     }
     return $value;
 }
@@ -277,7 +272,6 @@ if (!function_exists('validateData')) {
 
         return $errorArray;
     }
-
 }
 
 
@@ -628,7 +622,6 @@ function processPayment($sessionData, $paymentRequestModel, $bankCharges = 0, $p
 
             $smsResult = $smsResponse->json();
         } catch (Exception $e) {
-
         }
     }
 
@@ -678,7 +671,6 @@ function generateReceiptNo($transactionId)
                     ->where('year_id', $yearId)
                     ->update(['serial' => $serialMaster->serial + 1]);
             }
-
         } while (true);
     });
 }
@@ -705,6 +697,85 @@ function processPendingPayments()
         })
         ->get();
 
+
+    foreach ($pendingRequest as $value) {
+        DB::beginTransaction();
+
+        try {
+            $response = checkEazypayTransaction($value->transaction_id);
+
+            $status = strtolower(trim($response['status']));
+
+            $receipt_id = null;
+            $payment_id = null;
+
+            if (in_array($status, ['rip', 'sip', 'success'])) {
+
+                $paymentResponseModel = PaymentResponse::updateOrCreate(
+                    ['transaction_id' => $value->id],
+                    [
+                        'order_id' => $value->order_id,
+                        'payment_status' => "Y",
+                        'processing_date' => now(),
+                        'tracking_id' => $value->transaction_id,
+                        'bank_ref_no' => $response['ezpaytranid'],
+                        'payment_geteway' => 'Eazypay',
+                        'response_data' => json_encode($response),
+                        'payment_message' => "Payment Successful",
+                    ]
+                );
+
+                $value->status = 'Y';
+                $value->is_checking = 'Y';
+                $value->save();
+
+                $sessionData = json_decode($value->payment_session_data, true);
+
+                $bankCharges = (float) $response['amount'] - (float) array_sum($sessionData['payable']);
+
+                $paymentMode = !empty($response['PaymentMode']) ? $response['PaymentMode'] : $response['Payment_Mode'];
+                $response = processPayment($sessionData, $value, $bankCharges, $paymentMode);
+
+                $receipt_id = $response['receipt_id'];
+                $payment_id = $response['payment_id'];
+            } else {
+                PaymentRequest::where('id', $value->id)->update(['is_checking' => 'Y']);
+
+                $paymentResponseModel = PaymentResponse::updateOrCreate(
+                    ['transaction_id' => $value->id],
+                    [
+                        'order_id' => $value->order_id,
+                        'payment_status' => "N",
+                        'processing_date' => now(),
+                        'tracking_id' => $value->transaction_id,
+                        'bank_ref_no' => $response['ezpaytranid'] === "NA" ? NULL : $response['ezpaytranid'],
+                        'payment_geteway' => 'Eazypay',
+                        'response_data' => json_encode($response),
+                        'payment_message' => "Payment Failed",
+                    ]
+                );
+            }
+            DB::commit();
+
+            return ['receipt_id' => $receipt_id, 'payment_id' => $payment_id];
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error("Payment processing failed for transaction_id: {$value->transaction_id}", [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+        }
+    }
+}
+
+function processPendingPaymentsAll()
+{
+    $today = now()->format('Y-m-d');
+    $sevenDaysAgo = now()->subDays(7)->format('Y-m-d');
+
+    $pendingRequest = PaymentRequest::where('status', 'N')
+        ->whereBetween(DB::raw('DATE(processing_date)'), [$sevenDaysAgo, $today])
+        ->get();
 
     foreach ($pendingRequest as $value) {
         DB::beginTransaction();
