@@ -16,10 +16,13 @@ class Kernel extends ConsoleKernel
 
     protected $commands = [
         \App\Console\Commands\ProcessPendingPayments::class,
+        \App\Console\Commands\ProcessPendingPaymentsAll::class,
     ];
+
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('app:process-pending-payments')->hourly();
+        $schedule->command('app:process-pending-payments-all')->everyMinute();
     }
 
     /**

@@ -775,3 +775,77 @@ function processPendingPayments()
         }
     }
 }
+
+function processPendingPaymentsAll()
+{
+    $pendingRequest = PaymentRequest::where('status', 'N')->get();
+
+    foreach ($pendingRequest as $value) {
+        DB::beginTransaction();
+
+        try {
+            $response = checkEazypayTransaction($value->transaction_id);
+
+            $status = strtolower(trim($response['status']));
+
+            $receipt_id = null;
+            $payment_id = null;
+
+            if (in_array($status, ['rip', 'sip', 'success'])) {
+
+                $paymentResponseModel = PaymentResponse::updateOrCreate(
+                    ['transaction_id' => $value->id],
+                    [
+                        'order_id' => $value->order_id,
+                        'payment_status' => "Y",
+                        'processing_date' => now(),
+                        'tracking_id' => $value->transaction_id,
+                        'bank_ref_no' => $response['ezpaytranid'],
+                        'payment_geteway' => 'Eazypay',
+                        'response_data' => json_encode($response),
+                        'payment_message' => "Payment Successful",
+                    ]
+                );
+
+                $value->status = 'Y';
+                $value->is_checking = 'Y';
+                $value->save();
+
+                $sessionData = json_decode($value->payment_session_data, true);
+
+                $bankCharges = (float) $response['amount'] - (float) array_sum($sessionData['payable']);
+
+                $paymentMode = !empty($response['PaymentMode']) ? $response['PaymentMode'] : $response['Payment_Mode'];
+                $response = processPayment($sessionData, $value, $bankCharges, $paymentMode);
+
+                $receipt_id = $response['receipt_id'];
+                $payment_id = $response['payment_id'];
+            } else {
+                PaymentRequest::where('id', $value->id)->update(['is_checking' => 'Y']);
+
+                $paymentResponseModel = PaymentResponse::updateOrCreate(
+                    ['transaction_id' => $value->id],
+                    [
+                        'order_id' => $value->order_id,
+                        'payment_status' => "N",
+                        'processing_date' => now(),
+                        'tracking_id' => $value->transaction_id,
+                        'bank_ref_no' => $response['ezpaytranid'] === "NA" ? NULL : $response['ezpaytranid'],
+                        'payment_geteway' => 'Eazypay',
+                        'response_data' => json_encode($response),
+                        'payment_message' => "Payment Failed",
+                    ]
+                );
+            }
+            DB::commit();
+
+            return ['receipt_id' => $receipt_id, 'payment_id' => $payment_id];
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error("Payment processing failed for transaction_id: {$value->transaction_id}", [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+        }
+    }
+}
