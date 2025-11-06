@@ -499,7 +499,7 @@ function processPayment($sessionData, $paymentRequestModel, $bankCharges = 0, $p
         $memberReceiptDetailModel = MemberReceiptDetail::updateOrCreate(
             [
                 'receipt_master_id' => $memberReceiptMasterModel->receipt_id,
-                'year' => date('Y'),
+                'year' => explode(" ", $sessionData['description'][$key])[1],
                 'month_id' => $monthId,
             ],
             [
