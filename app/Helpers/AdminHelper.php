@@ -777,7 +777,6 @@ function processPendingPaymentsAll()
         ->whereBetween(DB::raw('DATE(processing_date)'), [$fiftenDaysAgo, $today])
         ->get();
 
-        pre($pendingRequest);exit;
     foreach ($pendingRequest as $value) {
         DB::beginTransaction();
 
