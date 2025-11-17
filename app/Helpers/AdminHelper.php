@@ -13,7 +13,7 @@ use App\Models\PaymentResponse;
 use App\Models\VoucherDetails;
 use App\Models\VoucherMaster;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Log;
 use Jenssegers\Agent\Agent;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
