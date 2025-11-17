@@ -771,10 +771,10 @@ function processPendingPayments()
 function processPendingPaymentsAll()
 {
     $today = now()->format('Y-m-d');
-    $fiftenDaysAgo = now()->subDays(15)->format('Y-m-d');
+    $sevenDaysAgo = now()->subDays(7)->format('Y-m-d');
 
     $pendingRequest = PaymentRequest::where('status', 'N')
-        ->whereBetween(DB::raw('DATE(processing_date)'), [$fiftenDaysAgo, $today])
+        ->whereBetween(DB::raw('DATE(processing_date)'), [$sevenDaysAgo, $today])
         ->get();
 
     foreach ($pendingRequest as $value) {
@@ -837,7 +837,6 @@ function processPendingPaymentsAll()
             }
             DB::commit();
 
-            return ['receipt_id' => $receipt_id, 'payment_id' => $payment_id];
         } catch (Exception $e) {
             DB::rollBack();
             Log::error("Payment processing failed for transaction_id: {$value->transaction_id}", [
