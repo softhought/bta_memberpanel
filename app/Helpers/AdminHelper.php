@@ -782,7 +782,7 @@ function processPendingPaymentsAll()
 
         try {
             $response = checkEazypayTransaction($value->transaction_id);
-            // Log::channel('payment')->info("Eazypay transaction check response for transaction_id: {$value->transaction_id}: " . json_encode($response));
+            Log::channel('payment')->info("Eazypay transaction check response for transaction_id: {$value->transaction_id}: " . json_encode($response));
 
             $status = strtolower(trim($response['status']));
 
