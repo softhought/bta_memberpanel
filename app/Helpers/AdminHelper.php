@@ -13,7 +13,7 @@ use App\Models\PaymentResponse;
 use App\Models\VoucherDetails;
 use App\Models\VoucherMaster;
 use Illuminate\Support\Facades\DB;
-use Log;
+use Illuminate\Support\Facades\Log;
 use Jenssegers\Agent\Agent;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -782,7 +782,7 @@ function processPendingPaymentsAll()
 
         try {
             $response = checkEazypayTransaction($value->transaction_id);
-            Log::channel('payment')->info("Eazypay transaction check response for transaction_id: {$value->transaction_id}: " . json_encode($response));
+            // Log::channel('payment')->info("Eazypay transaction check response for transaction_id: {$value->transaction_id}: " . json_encode($response));
 
             $status = strtolower(trim($response['status']));
 
