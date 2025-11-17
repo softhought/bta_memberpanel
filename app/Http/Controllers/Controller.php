@@ -30,7 +30,6 @@ class Controller extends BaseController
         }
 
         processPendingPayments();
-        processPendingPaymentsAll();
 
         return view('layout', $data);
     }

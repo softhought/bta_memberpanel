@@ -774,7 +774,7 @@ function processPendingPaymentsAll()
     $sevenDaysAgo = now()->subDays(7)->format('Y-m-d');
 
     $pendingRequest = PaymentRequest::where('status', 'N')
-        // ->whereBetween(DB::raw('DATE(processing_date)'), [$sevenDaysAgo, $today])
+        ->whereBetween(DB::raw('DATE(processing_date)'), [$sevenDaysAgo, $today])
         ->get();
 
     foreach ($pendingRequest as $value) {
