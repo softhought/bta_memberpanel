@@ -46,7 +46,7 @@ class FeesPaymentsController extends Controller
                         WHERE PM.member_id = :member_id
                         AND PM.enrollment_id = :enrollment_id
                         AND PEM.programme_id = :programme_id
-                        AND PCC.component_type = 'MONTHLY'
+                        AND PCC.component_type IN ('MONTHLY', 'ADMISSION')
                     )
                     LIMIT 1
                 ", [
@@ -96,7 +96,7 @@ class FeesPaymentsController extends Controller
                         WHERE PM.member_id = :member_id
                         AND PM.enrollment_id = :enrollment_id
                         AND PEM.programme_id = :programme_id
-                        AND PCC.component_type = 'MONTHLY'
+                        AND PCC.component_type IN ('MONTHLY', 'ADMISSION')
                     )
                     LIMIT 1
                 ", [
@@ -146,7 +146,7 @@ class FeesPaymentsController extends Controller
                         WHERE PM.member_id = :member_id
                         AND PM.enrollment_id = :enrollment_id
                         AND PEM.programme_id = :programme_id
-                        AND PCC.component_type = 'MONTHLY'
+                        AND PCC.component_type IN ('MONTHLY', 'ADMISSION')
                     )
                     LIMIT 1
                 ", [
@@ -196,7 +196,7 @@ class FeesPaymentsController extends Controller
                         WHERE PM.member_id = :member_id
                         AND PM.enrollment_id = :enrollment_id
                         AND PEM.programme_id = :programme_id
-                        AND PCC.component_type = 'MONTHLY'
+                        AND PCC.component_type IN ('MONTHLY', 'ADMISSION')
                     )
                     LIMIT 1
                 ", [

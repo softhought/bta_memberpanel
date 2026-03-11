@@ -499,7 +499,7 @@ function processPayment($sessionData, $paymentRequestModel, $bankCharges = 0, $p
         $memberReceiptDetailModel = MemberReceiptDetail::updateOrCreate(
             [
                 'receipt_master_id' => $memberReceiptMasterModel->receipt_id,
-                'year' => explode(" ", $sessionData['description'][$key])[1] ?? date('Y'),
+                'year' => date('Y'),
                 'month_id' => $monthId,
             ],
             [
@@ -782,7 +782,6 @@ function processPendingPaymentsAll()
 
         try {
             $response = checkEazypayTransaction($value->transaction_id);
-            Log::channel('payment')->info("Eazypay transaction check response for transaction_id: {$value->transaction_id}: " . json_encode($response));
 
             $status = strtolower(trim($response['status']));
 
@@ -837,6 +836,7 @@ function processPendingPaymentsAll()
             }
             DB::commit();
 
+            return ['receipt_id' => $receipt_id, 'payment_id' => $payment_id];
         } catch (Exception $e) {
             DB::rollBack();
             Log::error("Payment processing failed for transaction_id: {$value->transaction_id}", [
