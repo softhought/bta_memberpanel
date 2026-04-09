@@ -835,8 +835,6 @@ function processPendingPaymentsAll()
                 );
             }
             DB::commit();
-
-            return ['receipt_id' => $receipt_id, 'payment_id' => $payment_id];
         } catch (Exception $e) {
             DB::rollBack();
             Log::error("Payment processing failed for transaction_id: {$value->transaction_id}", [
