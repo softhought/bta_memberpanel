@@ -104,7 +104,12 @@
 
     <!-- About Section -->
     <div class="container about-section">
-        <h2 class="text-center">Refund Policy</h2>
+        <h2 class="text-center">Refund & Cancellation Policy</h2>
+        <p><strong>Refund Policy</strong><br>
+            Once paid and credited into our account there is no options for refund or return. Any excess amount received
+            will be settled with future outstanding amount at the BTA office.
+        </p>
+
         <p><strong>Cancellation Policy</strong><br>
             There will be no refund in case of any cancelled transactions. Any payment discrepancy will be settled at
             the BTA office.

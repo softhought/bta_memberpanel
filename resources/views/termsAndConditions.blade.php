@@ -105,15 +105,23 @@
     <!-- About Section -->
     <div class="container about-section">
         <h2 class="text-center">Terms & Conditions</h2>
-        <p><strong>Refund Policy</strong><br>
-            Once paid and credited into our account there is no options for refund or return. Any excess amount received
-            will be settled with future outstanding amount at the BTA office.
-        </p>
 
-        <p><strong>Cancellation Policy</strong><br>
-            There will be no refund in case of any cancelled transactions. Any payment discrepancy will be settled at
-            the BTA office.
-        </p>
+        <p><strong>Welcome to BENGAL TENNIS ASSOCIATION!</strong></p>
+
+        <p><strong>Cookies</strong><br>We employ the use of cookies. By accessing BENGAL TENNIS ASSOCIATION. , you agreed to use cookies in agreement with the BENGAL TENNIS ASSOCIATION Privacy Policy.</p>
+        <p>Most interactive websites use cookies to let us retrieve the user’s details for each visit. Cookies are used by our website to enable the functionality of certain areas to make it easier for people visiting our website. Some of our affiliate/advertising partners may also use cookies.</p>
+        <p><strong>License</strong><br>Unless otherwise stated, BENGAL TENNIS ASSOCIATION. and/or its licensors own the intellectual property rights for all material on BENGAL TENNIS ASSOCIATION. All intellectual property rights are reserved. You may access this from BENGAL TENNIS ASSOCIATION. for your own personal use subjected to restrictions set in these terms and conditions.</p>
+        <p>Parts of this website offer an opportunity for users to post and exchange opinions and information in certain areas of the website. BENGAL TENNIS ASSOCIATION does not filter, edit, publish or review Comments prior to their presence on the website. Comments do not reflect the views and opinions of BENGAL TENNIS ASSOCIATION, its agents and/or affiliates. Comments reflect the views and opinions of the person who post their views and opinions. To the extent permitted by applicable laws, BENGAL TENNIS ASSOCIATION. shall not be liable for the Comments or for any liability, damages or expenses caused and/or suffered as a result of any use of and/or posting of and/or appearance of the Comments on this website.</p>
+        <p>You hereby grant BENGAL TENNIS ASSOCIATION. a non-exclusive license to use, reproduce, edit and authorize others to use, reproduce and edit any of your Comments in any and all forms, formats or media.</p>
+
+        <p><strong>Hyperlinking to our Content</strong><br>The following organizations may link to our Website without prior written approval:</p>
+
+        <ul>
+            <li>Search engines;</li>
+            <li>News organizations;</li>
+        </ul>
+
+        <p>Online directory distributors may link to our Website in the same manner as they hyperlink to the Websites of other listed businesses; and These organizations may link to our home page, to publications or to other Website information so long as the link: (a) is not in any way deceptive; (b) does not falsely imply sponsorship, endorsement or approval of the linking party and its products and/or services; and (c) fits within the context of the linking party’s site. No use of BENGAL TENNIS ASSOCIATION. ‘s logo or other artwork will be allowed for linking absent a trademark license agreement. iFrames Without prior approval and written permission, you may not create frames around our Webpages that alter in any way the visual presentation or appearance of our Website.</p>
     </div>
 
     <!-- Bootstrap JS -->

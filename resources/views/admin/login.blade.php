@@ -85,8 +85,9 @@
                         <a href="{{ url('/privacy-policy') }}" class="mx-2 footer-text" target="_blank">Privacy
                             Policy</a> |
                         <a href="{{ url('/terms-and-conditions') }}" class="mx-2 footer-text" target="_blank">Terms &
-                            Conditions</a>
-                        {{-- <a href="{{ url('/refund-policy') }}" class="mx-2 footer-text" target="_blank">Refund Policy</a> --}}
+                            Conditions</a> |
+                        <a href="{{ url('/refund-policy') }}" class="mx-2 footer-text" target="_blank">Refund &
+                            Cancellation Policy</a>
                     </p>
                     <p class="mb-0 footer-text">Legal Name: <strong>Bengal Tennis Association</strong></p>
                     <p class="footer-text">Yuba Bharati Krirangan, Street Number 2, beside Gate, JB Block, Sector 3,
