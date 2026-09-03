@@ -33,7 +33,7 @@ class FeesPaymentsController extends Controller
             $paymentMaster = DB::selectOne("
                     SELECT PM.*
                     FROM member_receipt_details AS MRD
-                    LEFT JOIN month_master AS MNM ON MRD.month_id = MNM.id
+                    INNER JOIN month_master AS MNM ON MRD.month_id = MNM.id
                     INNER JOIN member_receipt_master ON member_receipt_master.receipt_id = MRD.receipt_master_id
                     INNER JOIN payment_master AS PM ON PM.receipt_master_id = member_receipt_master.receipt_id
                     WHERE MRD.receipt_dtl_id IN (
@@ -83,7 +83,7 @@ class FeesPaymentsController extends Controller
             $paymentMaster = DB::selectOne("
                     SELECT PM.*
                     FROM member_receipt_details AS MRD
-                    LEFT JOIN month_master AS MNM ON MRD.month_id = MNM.id
+                    INNER JOIN month_master AS MNM ON MRD.month_id = MNM.id
                     INNER JOIN member_receipt_master ON member_receipt_master.receipt_id = MRD.receipt_master_id
                     INNER JOIN payment_master AS PM ON PM.receipt_master_id = member_receipt_master.receipt_id
                     WHERE MRD.receipt_dtl_id IN (
@@ -133,7 +133,7 @@ class FeesPaymentsController extends Controller
             $paymentMaster = DB::selectOne("
                     SELECT PM.*
                     FROM member_receipt_details AS MRD
-                    LEFT JOIN month_master AS MNM ON MRD.month_id = MNM.id
+                    INNER JOIN month_master AS MNM ON MRD.month_id = MNM.id
                     INNER JOIN member_receipt_master ON member_receipt_master.receipt_id = MRD.receipt_master_id
                     INNER JOIN payment_master AS PM ON PM.receipt_master_id = member_receipt_master.receipt_id
                     WHERE MRD.receipt_dtl_id IN (
@@ -183,7 +183,7 @@ class FeesPaymentsController extends Controller
             $paymentMaster = DB::selectOne("
                     SELECT PM.*
                     FROM member_receipt_details AS MRD
-                    LEFT JOIN month_master AS MNM ON MRD.month_id = MNM.id
+                    INNER JOIN month_master AS MNM ON MRD.month_id = MNM.id
                     INNER JOIN member_receipt_master ON member_receipt_master.receipt_id = MRD.receipt_master_id
                     INNER JOIN payment_master AS PM ON PM.receipt_master_id = member_receipt_master.receipt_id
                     WHERE MRD.receipt_dtl_id IN (

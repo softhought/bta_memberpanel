@@ -15,8 +15,8 @@
 @php
     $receipt = isset($paymentMaster) && $paymentMaster->receipt ? $paymentMaster->receipt : null;
     $lastMonth = $receipt && $receipt->month ? $receipt->month : null;
-    $lastMonthId = $lastMonth && isset($lastMonth->id) ? $lastMonth->id : date('m', strtotime($enrollment->last_paid_month));
-    $lastYear = $receipt && isset($receipt->year) && $receipt->year != 0 ? $receipt->year : date('Y', strtotime($enrollment->last_paid_month));
+    $lastMonthId = $lastMonth && isset($lastMonth->id) ? $lastMonth->id : 1;
+    $lastYear = $receipt && isset($receipt->year) ? $receipt->year : '2020';
 @endphp
 
 <form method="POST" id="paymentForm">
