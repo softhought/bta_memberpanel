@@ -431,7 +431,7 @@
                     <div class="contact-details">
                         <h5>BENGAL TENNIS ASSOCIATION</h5>
                         <p><i class="fas fa-location-dot"></i> Yuba Bharati Krirangan, Street Number 2, beside Gate, JB
-                            Block, Sector 3, Bidhannagar, Kolkata, West Bengal 700106</p>
+                            Block, Sector 3, Bidhannagar, Kolkata, West Bengal 700098</p>
                         <p><i class="fas fa-phone"></i> +91 33 2335 5198 / 0506 / 1006 9500</p>
                         <p><i class="fas fa-envelope"></i> <a
                                 href="mailto:bengaltennis1@gmail.com">bengaltennis1@gmail.com</a></p>
