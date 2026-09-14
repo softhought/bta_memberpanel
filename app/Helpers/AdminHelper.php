@@ -12,6 +12,7 @@ use App\Models\PaymentRequest;
 use App\Models\PaymentResponse;
 use App\Models\VoucherDetails;
 use App\Models\VoucherMaster;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Jenssegers\Agent\Agent;
@@ -675,53 +676,68 @@ function generateReceiptNo($transactionId)
     });
 }
 
-function checkEazypayTransaction($pgReferenceNo)
+function checkPgpayTransaction($merchantTxnNo, $amount = null)
 {
-    $merchantId = '391678';
-
-    $url = "https://eazypay.icicibank.com/EazyPGVerify?merchantid={$merchantId}&pgreferenceno={$pgReferenceNo}";
-
-    $response = Http::get($url);
-    $result = [];
-    parse_str($response->body(), $result);
-
-    return $result;
+    if ($amount === null) {
+        $paymentReq = PaymentRequest::where('transaction_id', $merchantTxnNo)->first();
+        $amount = $paymentReq ? $paymentReq->amount : 0;
+    }
+    return PaymentController::checkIciciPaymentStatus($merchantTxnNo, $amount);
 }
 
-function processPendingPayments()
+function checkEazypayTransaction($pgReferenceNo, $amount = null)
 {
-    $pendingRequest = PaymentRequest::where('status', 'N')
-        ->whereNotIn('id', function ($query) {
-            $query->select('transaction_id')
-                ->from('payment_response');
-        })
-        ->get();
+    return checkPgpayTransaction($pgReferenceNo, $amount);
+}
 
+function processPendingPayments($targetTxnId = null)
+{
+    $query = PaymentRequest::where('status', 'N');
+
+    if ($targetTxnId !== null) {
+        $pendingRequest = $query->where('transaction_id', $targetTxnId)->get();
+    } else {
+        $pendingRequest = $query->whereNotIn('id', function ($q) {
+            $q->select('transaction_id')
+                ->from('payment_response');
+        })->get();
+    }
+
+    $lastResult = ['receipt_id' => null, 'payment_id' => null];
 
     foreach ($pendingRequest as $value) {
         DB::beginTransaction();
 
         try {
-            $response = checkEazypayTransaction($value->transaction_id);
+            $statusResponse = PaymentController::checkIciciPaymentStatus($value->transaction_id, $value->amount);
 
-            $status = strtolower(trim($response['status']));
+            if (!$statusResponse['success']) {
+                DB::rollBack();
+                continue;
+            }
+
+            $data = $statusResponse['data'];
+            $respCode = isset($data['responseCode']) ? (string)$data['responseCode'] : '';
+            $txnRespCode = isset($data['txnResponseCode']) ? (string)$data['txnResponseCode'] : '';
+            $txnStatus = isset($data['txnStatus']) ? strtoupper((string)$data['txnStatus']) : '';
+
+            $isSuccess = ($respCode === '000' || $respCode === '0000' || $txnRespCode === '0000' || $txnStatus === 'SUC');
 
             $receipt_id = null;
             $payment_id = null;
 
-            if (in_array($status, ['rip', 'sip', 'success'])) {
-
+            if ($isSuccess) {
                 $paymentResponseModel = PaymentResponse::updateOrCreate(
                     ['transaction_id' => $value->id],
                     [
-                        'order_id' => $value->order_id,
-                        'payment_status' => "Y",
+                        'order_id'        => $value->order_id,
+                        'payment_status'  => 'Y',
                         'processing_date' => now(),
-                        'tracking_id' => $value->transaction_id,
-                        'bank_ref_no' => $response['ezpaytranid'],
-                        'payment_geteway' => 'Eazypay',
-                        'response_data' => json_encode($response),
-                        'payment_message' => "Payment Successful",
+                        'tracking_id'     => $value->transaction_id,
+                        'bank_ref_no'     => isset($data['txnID']) ? $data['txnID'] : null,
+                        'payment_geteway' => 'PGPay',
+                        'response_data'   => json_encode($data),
+                        'payment_message' => isset($data['txnRespDescription']) ? $data['txnRespDescription'] : (isset($data['respDescription']) ? $data['respDescription'] : 'Payment Successful'),
                     ]
                 );
 
@@ -730,42 +746,50 @@ function processPendingPayments()
                 $value->save();
 
                 $sessionData = json_decode($value->payment_session_data, true);
+                $resAmount = isset($data['amount']) ? (float)$data['amount'] : (float)$value->amount;
+                $payableSum = is_array($sessionData['payable']) ? array_sum($sessionData['payable']) : (float)$sessionData['payable'];
+                $bankCharges = $resAmount - (float)$payableSum;
 
-                $bankCharges = (float) $response['amount'] - (float) array_sum($sessionData['payable']);
-
-                $paymentMode = !empty($response['PaymentMode']) ? $response['PaymentMode'] : $response['Payment_Mode'];
+                $paymentMode = isset($data['paymentMode']) ? $data['paymentMode'] : '';
                 $response = processPayment($sessionData, $value, $bankCharges, $paymentMode);
 
-                $receipt_id = $response['receipt_id'];
-                $payment_id = $response['payment_id'];
+                $receipt_id = isset($response['receipt_id']) ? $response['receipt_id'] : null;
+                $payment_id = isset($response['payment_id']) ? $response['payment_id'] : null;
+                $lastResult = ['receipt_id' => $receipt_id, 'payment_id' => $payment_id];
             } else {
-                PaymentRequest::where('id', $value->id)->update(['is_checking' => 'Y']);
+                $value->is_checking = 'Y';
+                $value->save();
 
                 $paymentResponseModel = PaymentResponse::updateOrCreate(
                     ['transaction_id' => $value->id],
                     [
-                        'order_id' => $value->order_id,
-                        'payment_status' => "N",
+                        'order_id'        => $value->order_id,
+                        'payment_status'  => 'N',
                         'processing_date' => now(),
-                        'tracking_id' => $value->transaction_id,
-                        'bank_ref_no' => $response['ezpaytranid'] === "NA" ? NULL : $response['ezpaytranid'],
-                        'payment_geteway' => 'Eazypay',
-                        'response_data' => json_encode($response),
-                        'payment_message' => "Payment Failed",
+                        'tracking_id'     => $value->transaction_id,
+                        'bank_ref_no'     => isset($data['txnID']) ? $data['txnID'] : null,
+                        'payment_geteway' => 'PGPay',
+                        'response_data'   => json_encode($data),
+                        'payment_message' => isset($data['txnRespDescription']) ? $data['txnRespDescription'] : (isset($data['respDescription']) ? $data['respDescription'] : 'Payment Failed'),
                     ]
                 );
             }
+
             DB::commit();
 
-            return ['receipt_id' => $receipt_id, 'payment_id' => $payment_id];
+            if ($targetTxnId !== null) {
+                return $lastResult;
+            }
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error("Payment processing failed for transaction_id: {$value->transaction_id}", [
+            Log::channel('payment')->error("Payment processing failed for transaction_id: {$value->transaction_id}", [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
         }
     }
+
+    return $lastResult;
 }
 
 function processPendingPaymentsAll()
@@ -781,26 +805,32 @@ function processPendingPaymentsAll()
         DB::beginTransaction();
 
         try {
-            $response = checkEazypayTransaction($value->transaction_id);
+            $statusResponse = PaymentController::checkIciciPaymentStatus($value->transaction_id, $value->amount);
 
-            $status = strtolower(trim($response['status']));
+            if (!$statusResponse['success']) {
+                DB::rollBack();
+                continue;
+            }
 
-            $receipt_id = null;
-            $payment_id = null;
+            $data = $statusResponse['data'];
+            $respCode = isset($data['responseCode']) ? (string)$data['responseCode'] : '';
+            $txnRespCode = isset($data['txnResponseCode']) ? (string)$data['txnResponseCode'] : '';
+            $txnStatus = isset($data['txnStatus']) ? strtoupper((string)$data['txnStatus']) : '';
 
-            if (in_array($status, ['rip', 'sip', 'success'])) {
+            $isSuccess = ($respCode === '000' || $respCode === '0000' || $txnRespCode === '0000' || $txnStatus === 'SUC');
 
+            if ($isSuccess) {
                 $paymentResponseModel = PaymentResponse::updateOrCreate(
                     ['transaction_id' => $value->id],
                     [
-                        'order_id' => $value->order_id,
-                        'payment_status' => "Y",
+                        'order_id'        => $value->order_id,
+                        'payment_status'  => 'Y',
                         'processing_date' => now(),
-                        'tracking_id' => $value->transaction_id,
-                        'bank_ref_no' => $response['ezpaytranid'],
-                        'payment_geteway' => 'Eazypay',
-                        'response_data' => json_encode($response),
-                        'payment_message' => "Payment Successful",
+                        'tracking_id'     => $value->transaction_id,
+                        'bank_ref_no'     => isset($data['txnID']) ? $data['txnID'] : null,
+                        'payment_geteway' => 'PGPay',
+                        'response_data'   => json_encode($data),
+                        'payment_message' => isset($data['txnRespDescription']) ? $data['txnRespDescription'] : (isset($data['respDescription']) ? $data['respDescription'] : 'Payment Successful'),
                     ]
                 );
 
@@ -809,37 +839,35 @@ function processPendingPaymentsAll()
                 $value->save();
 
                 $sessionData = json_decode($value->payment_session_data, true);
+                $resAmount = isset($data['amount']) ? (float)$data['amount'] : (float)$value->amount;
+                $payableSum = is_array($sessionData['payable']) ? array_sum($sessionData['payable']) : (float)$sessionData['payable'];
+                $bankCharges = $resAmount - (float)$payableSum;
 
-                $bankCharges = (float) $response['amount'] - (float) array_sum($sessionData['payable']);
-
-                $paymentMode = !empty($response['PaymentMode']) ? $response['PaymentMode'] : $response['Payment_Mode'];
-                $response = processPayment($sessionData, $value, $bankCharges, $paymentMode);
-
-                $receipt_id = $response['receipt_id'];
-                $payment_id = $response['payment_id'];
+                $paymentMode = isset($data['paymentMode']) ? $data['paymentMode'] : '';
+                processPayment($sessionData, $value, $bankCharges, $paymentMode);
             } else {
-                PaymentRequest::where('id', $value->id)->update(['is_checking' => 'Y']);
+                $value->is_checking = 'Y';
+                $value->save();
 
                 $paymentResponseModel = PaymentResponse::updateOrCreate(
                     ['transaction_id' => $value->id],
                     [
-                        'order_id' => $value->order_id,
-                        'payment_status' => "N",
+                        'order_id'        => $value->order_id,
+                        'payment_status'  => 'N',
                         'processing_date' => now(),
-                        'tracking_id' => $value->transaction_id,
-                        'bank_ref_no' => $response['ezpaytranid'] === "NA" ? NULL : $response['ezpaytranid'],
-                        'payment_geteway' => 'Eazypay',
-                        'response_data' => json_encode($response),
-                        'payment_message' => "Payment Failed",
+                        'tracking_id'     => $value->transaction_id,
+                        'bank_ref_no'     => isset($data['txnID']) ? $data['txnID'] : null,
+                        'payment_geteway' => 'PGPay',
+                        'response_data'   => json_encode($data),
+                        'payment_message' => isset($data['txnRespDescription']) ? $data['txnRespDescription'] : (isset($data['respDescription']) ? $data['respDescription'] : 'Payment Failed'),
                     ]
                 );
             }
-            DB::commit();
 
-            return ['receipt_id' => $receipt_id, 'payment_id' => $payment_id];
+            DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error("Payment processing failed for transaction_id: {$value->transaction_id}", [
+            Log::channel('payment')->error("Payment processing failed for transaction_id: {$value->transaction_id}", [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
