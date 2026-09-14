@@ -48,5 +48,5 @@ Route::post('/ajax/reset-password', [MemberController::class, 'resetPassword']);
 
 /** Payments */
 Route::post('member/ipayments', [PaymentController::class, 'payment']);
-Route::post('payment-response', [PaymentController::class, 'paymentResponse']);
+Route::match(['get', 'post'], 'payment-response', [PaymentController::class, 'paymentResponse']);
 Route::get('member/response', [PaymentController::class, 'response']);

@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Log;
+use Illuminate\Support\Facades\Log;
 
 class ProcessPendingPaymentsAll extends Command
 {
@@ -19,7 +19,7 @@ class ProcessPendingPaymentsAll extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Process all pending PGPay payments from the past 7 days';
 
     /**
      * Execute the console command.
