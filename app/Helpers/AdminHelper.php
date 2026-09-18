@@ -711,7 +711,7 @@ function processPendingPayments($targetTxnId = null)
         try {
             $statusResponse = PaymentController::checkIciciPaymentStatus($value->transaction_id, $value->amount);
 
-            if (!$statusResponse['success']) {
+            if (!$statusResponse['txnStatus']) {
                 DB::rollBack();
                 continue;
             }
@@ -721,7 +721,7 @@ function processPendingPayments($targetTxnId = null)
             $txnRespCode = isset($data['txnResponseCode']) ? (string)$data['txnResponseCode'] : '';
             $txnStatus = isset($data['txnStatus']) ? strtoupper((string)$data['txnStatus']) : '';
 
-            $isSuccess = ($respCode === '000' || $respCode === '0000' || $txnRespCode === '0000' || $txnStatus === 'SUC');
+            $isSuccess = ($txnStatus === 'SUC');
 
             $receipt_id = null;
             $payment_id = null;
@@ -807,7 +807,7 @@ function processPendingPaymentsAll()
         try {
             $statusResponse = PaymentController::checkIciciPaymentStatus($value->transaction_id, $value->amount);
 
-            if (!$statusResponse['success']) {
+            if (!$statusResponse['txnStatus']) {
                 DB::rollBack();
                 continue;
             }
@@ -817,7 +817,7 @@ function processPendingPaymentsAll()
             $txnRespCode = isset($data['txnResponseCode']) ? (string)$data['txnResponseCode'] : '';
             $txnStatus = isset($data['txnStatus']) ? strtoupper((string)$data['txnStatus']) : '';
 
-            $isSuccess = ($respCode === '000' || $respCode === '0000' || $txnRespCode === '0000' || $txnStatus === 'SUC');
+            $isSuccess = ($txnStatus === 'SUC');
 
             if ($isSuccess) {
                 $paymentResponseModel = PaymentResponse::updateOrCreate(

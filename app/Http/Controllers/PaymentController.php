@@ -202,9 +202,6 @@ class PaymentController extends Controller
             $txnStatus = strtoupper((string)$request->input('txnStatus', ''));
 
             $paymentStatus = (
-                $responseCode === '0000' ||
-                $responseCode === '000' ||
-                $txnResponseCode === '0000' ||
                 $txnStatus === 'SUC'
             );
 
