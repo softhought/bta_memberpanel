@@ -27,10 +27,6 @@ class PaymentController extends Controller
 
         $totalAmount = is_array($data['amount']) ? array_sum($data['amount']) : (float)$data['amount'];
 
-        // $email = "sumanvar405@gmail.com";
-        // $mobileNo = "8944961893";
-        // $totalAmount = 1;
-
         $dataArray = array_merge($data, [
             'member_code'      => $memberCode,
             'member_name'      => $memberName,
@@ -206,9 +202,6 @@ class PaymentController extends Controller
             $txnStatus = strtoupper((string)$request->input('txnStatus', ''));
 
             $paymentStatus = (
-                $responseCode === '0000' ||
-                $responseCode === '000' ||
-                $txnResponseCode === '0000' ||
                 $txnStatus === 'SUC'
             );
 
