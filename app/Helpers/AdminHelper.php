@@ -711,7 +711,7 @@ function processPendingPayments($targetTxnId = null)
         try {
             $statusResponse = PaymentController::checkIciciPaymentStatus($value->transaction_id, $value->amount);
 
-            if (!$statusResponse['txnStatus']) {
+            if ($statusResponse['txnStatus'] != 'SUC') {
                 DB::rollBack();
                 continue;
             }
@@ -807,7 +807,7 @@ function processPendingPaymentsAll()
         try {
             $statusResponse = PaymentController::checkIciciPaymentStatus($value->transaction_id, $value->amount);
 
-            if (!$statusResponse['txnStatus']) {
+            if ($statusResponse['txnStatus'] != 'SUC') {
                 DB::rollBack();
                 continue;
             }
