@@ -500,7 +500,7 @@ function processPayment($sessionData, $paymentRequestModel, $bankCharges = 0, $p
         $memberReceiptDetailModel = MemberReceiptDetail::updateOrCreate(
             [
                 'receipt_master_id' => $memberReceiptMasterModel->receipt_id,
-                'year' => date('Y'),
+                'year' => explode(' ', $sessionData['description'][$key])[1],
                 'month_id' => $monthId,
             ],
             [
@@ -711,7 +711,7 @@ function processPendingPayments($targetTxnId = null)
         try {
             $statusResponse = PaymentController::checkIciciPaymentStatus($value->transaction_id, $value->amount);
 
-            if (!$statusResponse['txnStatus']) {
+            if (empty($statusResponse['success']) || empty($statusResponse['data'])) {
                 DB::rollBack();
                 continue;
             }
@@ -807,7 +807,7 @@ function processPendingPaymentsAll()
         try {
             $statusResponse = PaymentController::checkIciciPaymentStatus($value->transaction_id, $value->amount);
 
-            if (!$statusResponse['txnStatus']) {
+            if (empty($statusResponse['success']) || empty($statusResponse['data'])) {
                 DB::rollBack();
                 continue;
             }
