@@ -492,16 +492,59 @@ function processPayment($sessionData, $paymentRequestModel, $bankCharges = 0, $p
     );
 
     // Create Receipt Details
+    $assignedInReceipt = [];
+    $enrollmentId = !empty($sessionData['enrollment_id'])
+        ? $sessionData['enrollment_id']
+        : (!empty($paymentRequestModel->enrollment_id) ? $paymentRequestModel->enrollment_id : 0);
+
+    $memberId = !empty($sessionData['member_id'])
+        ? $sessionData['member_id']
+        : (!empty($paymentRequestModel->member_id) ? $paymentRequestModel->member_id : 0);
+
     foreach ($sessionData['month_id'] as $key => $monthId) {
         $crAccountId = DB::table('programme_commercial_component')
             ->where('component_id', $sessionData['component_id'][$key])
             ->value('account_id');
 
+        $descParts = explode(' ', $sessionData['description'][$key] ?? '');
+        $targetYear = isset($descParts[1]) && is_numeric($descParts[1]) ? (int)$descParts[1] : (int)date('Y');
+        $targetMonthId = (int)$monthId;
+
+        // If same month receipt is already available for this enrollment, advance by +1 month (after 12, start from 1 and year + 1)
+        $maxIterations = 120;
+        $iterationCount = 0;
+        while (
+            $iterationCount < $maxIterations &&
+            (
+                in_array("{$targetYear}-{$targetMonthId}", $assignedInReceipt, true) ||
+                DB::table('member_receipt_details as mrd')
+                    ->join('member_receipt_master as mrm', 'mrd.receipt_master_id', '=', 'mrm.receipt_id')
+                    ->join('payment_master as pm', 'pm.receipt_master_id', '=', 'mrm.receipt_id')
+                    ->where('pm.enrollment_id', $enrollmentId)
+                    ->where('pm.member_id', $memberId)
+                    ->where('pm.is_cancel', 'N')
+                    ->where('mrm.is_active', 'Y')
+                    ->where('mrd.year', (string)$targetYear)
+                    ->where('mrd.month_id', $targetMonthId)
+                    ->where('mrm.receipt_id', '!=', $memberReceiptMasterModel->receipt_id)
+                    ->exists()
+            )
+        ) {
+            $targetMonthId++;
+            if ($targetMonthId > 12) {
+                $targetMonthId = 1;
+                $targetYear++;
+            }
+            $iterationCount++;
+        }
+
+        $assignedInReceipt[] = "{$targetYear}-{$targetMonthId}";
+
         $memberReceiptDetailModel = MemberReceiptDetail::updateOrCreate(
             [
                 'receipt_master_id' => $memberReceiptMasterModel->receipt_id,
-                'year' => explode(' ', $sessionData['description'][$key])[1],
-                'month_id' => $monthId,
+                'year' => (string)$targetYear,
+                'month_id' => $targetMonthId,
             ],
             [
                 'cr_ac_id' => $crAccountId,
